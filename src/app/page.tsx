@@ -34,7 +34,7 @@ export default function Home() {
   // Translations Dictionary
   const t = {
     en: {
-      role: "Programmer | Backend Developer | Document Automation Enthusiast",
+      role: "Programmer | Backend Developer | Software Engineer",
       intro: "I am a software developer passionate about building systems that make document workflows effortless and automated. I specialize in Backend Development, Document Processing, and Cloud Architecture (Azure).",
       contact: "Contact Me",
       downloadCV: "Download CV",
