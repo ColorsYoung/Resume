@@ -110,11 +110,63 @@ export default function Home() {
   const [activeSection, setActiveSection] = useState<string>('about');
   const [cursorPos, setCursorPos] = useState({ x: -100, y: -100 });
   const [cursorVisible, setCursorVisible] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [toast, setToast] = useState<{ show: boolean; message: string }>({ show: false, message: '' });
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
 
   useScrollReveal();
 
-  // Particle Background
+  // Scroll Progress logic
+  useEffect(() => {
+    const handleScroll = () => {
+      const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+      if (totalHeight > 0) {
+        setScrollProgress((window.scrollY / totalHeight) * 100);
+      }
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Toast Auto-hide logic
+  useEffect(() => {
+    if (toast.show) {
+      const timer = setTimeout(() => {
+        setToast(prev => ({ ...prev, show: false }));
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [toast.show]);
+
+  const showToast = (message: string) => {
+    setToast({ show: true, message });
+  };
+
+  const handleContactClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    navigator.clipboard.writeText('Chanchaichakam1997@gmail.com')
+      .then(() => {
+        showToast(
+          lang === 'en'
+            ? 'Email copied to clipboard! 📋'
+            : 'คัดลอกอีเมลแล้ว! 📋'
+        );
+      })
+      .catch(() => {});
+  };
+
+  // Reusable Magnetic Hover Handler
+  const handleMagneticMove = (e: React.MouseEvent<HTMLElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - (rect.left + rect.width / 2);
+    const y = e.clientY - (rect.top + rect.height / 2);
+    e.currentTarget.style.transform = `translate(${x * 0.35}px, ${y * 0.35}px)`;
+  };
+
+  const handleMagneticLeave = (e: React.MouseEvent<HTMLElement>) => {
+    e.currentTarget.style.transform = 'translate(0px, 0px)';
+  };
+
+  // Particle Background with Repel Physics
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -128,6 +180,20 @@ export default function Home() {
     };
     resize();
     window.addEventListener('resize', resize);
+
+    const mouse = { x: -1000, y: -1000, active: false };
+    const handleMouseMove = (e: MouseEvent) => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+      mouse.active = true;
+    };
+    const handleMouseLeave = () => {
+      mouse.x = -1000;
+      mouse.y = -1000;
+      mouse.active = false;
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseleave', handleMouseLeave);
 
     const particles: { x: number; y: number; vx: number; vy: number; r: number }[] = [];
     const COUNT = 70;
@@ -143,17 +209,37 @@ export default function Home() {
 
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
       for (const p of particles) {
+        // Move particle naturally
         p.x += p.vx;
         p.y += p.vy;
-        if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
-        if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+
+        // Repel from cursor when mouse is active
+        if (mouse.active) {
+          const dx = p.x - mouse.x;
+          const dy = p.y - mouse.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 150) {
+            const force = (150 - dist) / 150;
+            const repelStrength = 1.8;
+            p.x += (dx / dist) * force * repelStrength;
+            p.y += (dy / dist) * force * repelStrength;
+          }
+        }
+
+        // Boundary bounce check
+        if (p.x < 0) { p.x = 0; p.vx *= -1; }
+        else if (p.x > canvas.width) { p.x = canvas.width; p.vx *= -1; }
+        if (p.y < 0) { p.y = 0; p.vy *= -1; }
+        else if (p.y > canvas.height) { p.y = canvas.height; p.vy *= -1; }
 
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
         ctx.fillStyle = 'rgba(187, 134, 252, 0.6)';
         ctx.fill();
       }
+
       for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
           const dx = particles[i].x - particles[j].x;
@@ -172,7 +258,12 @@ export default function Home() {
       animId = requestAnimationFrame(draw);
     };
     draw();
-    return () => { cancelAnimationFrame(animId); window.removeEventListener('resize', resize); };
+    return () => { 
+      cancelAnimationFrame(animId); 
+      window.removeEventListener('resize', resize);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseleave', handleMouseLeave);
+    };
   }, []);
 
   // Active Section tracking (Nav highlight)
@@ -503,6 +594,14 @@ export default function Home() {
   return (
     <main className="container" style={{ position: 'relative' }}>
 
+      {/* Premium Scroll Progress Bar */}
+      <div
+        className="scroll-progress"
+        style={{
+          width: `${scrollProgress}%`,
+        }}
+      />
+
       {/* Custom Cursor Follower */}
       <div
         className="cursor-follower"
@@ -541,6 +640,8 @@ export default function Home() {
           {/* Theme Toggle */}
           <button
             onClick={toggleTheme}
+            onMouseMove={handleMagneticMove}
+            onMouseLeave={handleMagneticLeave}
             style={{
               background: 'rgba(255,255,255,0.05)',
               border: '1px solid var(--card-border)',
@@ -579,6 +680,8 @@ export default function Home() {
           <div style={{ display: 'flex', gap: '0.5rem', background: 'rgba(255,255,255,0.05)', padding: '0.35rem 0.75rem', borderRadius: '20px', border: '1px solid var(--card-border)' }}>
             <button
               onClick={() => setLang('en')}
+              onMouseMove={handleMagneticMove}
+              onMouseLeave={handleMagneticLeave}
               style={{
                 background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.8rem',
                 fontWeight: lang === 'en' ? 'bold' : 'normal',
@@ -591,6 +694,8 @@ export default function Home() {
             <span style={{ color: 'var(--divider)' }}>|</span>
             <button
               onClick={() => setLang('th')}
+              onMouseMove={handleMagneticMove}
+              onMouseLeave={handleMagneticLeave}
               style={{
                 background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.8rem',
                 fontWeight: lang === 'th' ? 'bold' : 'normal',
@@ -611,26 +716,52 @@ export default function Home() {
         </h2>
 
         <div className="hero-actions">
-          <a href="mailto:Chanchaichakam1997@gmail.com" className="btn btn-primary">
+          <a 
+            href="mailto:Chanchaichakam1997@gmail.com" 
+            onClick={handleContactClick}
+            onMouseMove={handleMagneticMove}
+            onMouseLeave={handleMagneticLeave}
+            className="btn btn-primary"
+          >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
               <polyline points="22,6 12,13 2,6"></polyline>
             </svg>
             {currentT.contact}
           </a>
-          <a href="https://github.com/ColorsYoung" target="_blank" rel="noopener noreferrer" className="btn btn-social">
+          <a 
+            href="https://github.com/ColorsYoung" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            onMouseMove={handleMagneticMove}
+            onMouseLeave={handleMagneticLeave}
+            className="btn btn-social"
+          >
             <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
               <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
             </svg>
             GitHub
           </a>
-          <a href="https://www.linkedin.com/in/chanchai-chakam" target="_blank" rel="noopener noreferrer" className="btn btn-social">
+          <a 
+            href="https://www.linkedin.com/in/chanchai-chakam" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            onMouseMove={handleMagneticMove}
+            onMouseLeave={handleMagneticLeave}
+            className="btn btn-social"
+          >
             <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
               <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
             </svg>
             LinkedIn
           </a>
-          <a href="/resume.pdf" download className="btn btn-outline">
+          <a 
+            href="/resume.pdf" 
+            download 
+            onMouseMove={handleMagneticMove}
+            onMouseLeave={handleMagneticLeave}
+            className="btn btn-outline"
+          >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
               <polyline points="7 10 12 15 17 10"></polyline>
@@ -694,6 +825,16 @@ export default function Home() {
                 const y = e.clientY - rect.top;
                 e.currentTarget.style.setProperty('--mouse-x', `${x}px`);
                 e.currentTarget.style.setProperty('--mouse-y', `${y}px`);
+
+                // 3D Tilt calculation
+                const normX = (x / rect.width) - 0.5;
+                const normY = (y / rect.height) - 0.5;
+                const tiltX = -normY * 12; // max tilt 12 degrees
+                const tiltY = normX * 12;
+                e.currentTarget.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale3d(1.02, 1.02, 1.02)`;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
               }}
             >
               <h2 className="project-title">
@@ -826,6 +967,16 @@ export default function Home() {
       <footer>
         <p>&copy; {new Date().getFullYear()} Chanchai Chakam. Built with Next.js.</p>
       </footer>
+
+      {/* Toast Notification */}
+      <div className={`toast-notification${toast.show ? ' show' : ''}`}>
+        <div className="toast-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" width="16" height="16">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+        </div>
+        <div className="toast-message">{toast.message}</div>
+      </div>
     </main>
   );
 }
