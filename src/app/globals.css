@@ -174,16 +174,7 @@ header p {
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   position: relative;
   overflow: hidden;
-  opacity: 0;
-  transform: translateY(30px);
-  animation: fadeInUp 0.8s forwards;
 }
-
-.project-card:nth-child(1) { animation-delay: 0.1s; }
-.project-card:nth-child(2) { animation-delay: 0.2s; }
-.project-card:nth-child(3) { animation-delay: 0.3s; }
-.project-card:nth-child(4) { animation-delay: 0.4s; }
-.project-card:nth-child(5) { animation-delay: 0.5s; }
 
 .project-card::before {
   content: '';
@@ -206,6 +197,26 @@ header p {
 
 .project-card:hover::before {
   transform: scaleX(1);
+}
+
+.project-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: radial-gradient(400px circle at var(--mouse-x) var(--mouse-y), rgba(157, 78, 221, 0.15), transparent 40%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.project-card:hover::after {
+  opacity: 1;
+}
+
+.project-card > * {
+  position: relative;
+  z-index: 2;
 }
 
 .project-title {
@@ -593,16 +604,11 @@ footer {
 .timeline-item {
   position: relative;
   margin-bottom: 3rem;
-  opacity: 0;
-  animation: fadeInUp 0.8s forwards;
 }
 
 .timeline-item:last-child {
   margin-bottom: 0;
 }
-
-.timeline-item:nth-child(2) { animation-delay: 0.2s; }
-.timeline-item:nth-child(3) { animation-delay: 0.4s; }
 
 .timeline-dot {
   position: absolute;
@@ -662,4 +668,60 @@ footer {
   color: var(--text-secondary);
   line-height: 1.6;
   font-size: 1rem;
+}
+
+/* Scroll Animations */
+.animate-on-scroll {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275), transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  will-change: opacity, transform;
+}
+
+.animate-on-scroll.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Project Filters */
+.project-filters {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-color);
+  padding: 0.5rem 1.5rem;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: inherit;
+  font-weight: 500;
+}
+
+.filter-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.filter-btn.active {
+  background: var(--accent-light);
+  color: #000;
+  border-color: var(--accent-color);
+  box-shadow: 0 4px 15px rgba(157, 78, 221, 0.3);
+}
+
+/* Cursor Blink for Typewriter */
+.cursor-blink {
+  animation: blink 1s step-end infinite;
+  color: var(--accent-light);
+  font-weight: 300;
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
 }

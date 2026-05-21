@@ -1,6 +1,90 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+
+const Typewriter = ({ words, loop = true, typingSpeed = 70, deletingSpeed = 40, delay = 1500 }: { words: string[], loop?: boolean, typingSpeed?: number, deletingSpeed?: number, delay?: number }) => {
+  const [text, setText] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [loopNum, setLoopNum] = useState(0);
+  const [typingDelay, setTypingDelay] = useState(typingSpeed);
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    const handleType = () => {
+      const i = loopNum % words.length;
+      const fullText = words[i];
+
+      setText(
+        isDeleting
+          ? fullText.substring(0, text.length - 1)
+          : fullText.substring(0, text.length + 1)
+      );
+
+      setTypingDelay(isDeleting ? deletingSpeed : typingSpeed);
+
+      if (!isDeleting && text === fullText) {
+        if (!loop && loopNum === words.length - 1) return;
+        timer = setTimeout(() => setIsDeleting(true), delay);
+      } else if (isDeleting && text === '') {
+        setIsDeleting(false);
+        setLoopNum(loopNum + 1);
+      } else {
+        timer = setTimeout(handleType, typingDelay);
+      }
+    };
+
+    timer = setTimeout(handleType, typingDelay);
+    return () => clearTimeout(timer);
+  }, [text, isDeleting, loopNum, typingDelay, words, typingSpeed, deletingSpeed, delay]);
+
+  return (
+    <span>
+      {text}
+      <span className="cursor-blink">|</span>
+    </span>
+  );
+};
+
+function useScrollReveal() {
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    
+    // Initial observe
+    document.querySelectorAll('.animate-on-scroll:not(.is-visible)').forEach((el) => {
+      observer.observe(el);
+    });
+
+    // Watch for new dynamically added elements
+    const mutationObserver = new MutationObserver((mutations) => {
+      mutations.forEach(mutation => {
+        mutation.addedNodes.forEach(node => {
+          if (node.nodeType === 1) {
+            const el = node as Element;
+            if (el.classList && el.classList.contains('animate-on-scroll')) {
+              observer.observe(el);
+            }
+            const children = el.querySelectorAll?.('.animate-on-scroll:not(.is-visible)');
+            children?.forEach(child => observer.observe(child));
+          }
+        });
+      });
+    });
+
+    mutationObserver.observe(document.body, { childList: true, subtree: true });
+
+    return () => {
+      observer.disconnect();
+      mutationObserver.disconnect();
+    };
+  }, []);
+}
 import StackIcon from 'tech-stack-icons';
 import { Ollama } from '@lobehub/icons';
 
@@ -12,16 +96,19 @@ type Project = {
   title: string;
   description: string;
   tags: string[];
-  github: string;
+  github?: string;
+  websites?: { label: string; url: string }[];
   longDescription: string;
   features: string[];
-  icon: React.ReactNode;
 };
 
 export default function Home() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [lang, setLang] = useState<Language>('en');
   const [theme, setTheme] = useState<Theme>('dark');
+  const [filter, setFilter] = useState<string>('All');
+
+  useScrollReveal();
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -34,45 +121,67 @@ export default function Home() {
   // Translations Dictionary
   const t = {
     en: {
-      role: "Programmer | Backend Developer | Software Engineer",
-      intro: "I am a software developer passionate about building systems that make document workflows effortless and automated. I specialize in Backend Development, Document Processing, and Cloud Architecture (Azure).",
+      role: "Software Engineer | Full Stack",
       contact: "Contact Me",
       downloadCV: "Download CV",
       aboutTitle: "About Me",
       aboutContent: (
         <>
-          Currently, I am focusing on exploring <strong>Document AI</strong> technologies and managing file storage systems using <strong>Azure Blob Storage</strong>,
-          along with designing <strong>Microservices</strong> architectures. My ultimate goal is to build a highly accurate platform that helps enterprises process documents with maximum efficiency.
-          <br /><br />
-          <em style={{ color: 'var(--accent-light)', fontStyle: 'italic', fontWeight: 500 }}>
-            &quot;Technology is a tool that helps us build a better world.&quot; 🌟
-          </em>
+          <p style={{ minHeight: '120px' }}>
+            <Typewriter
+              words={["Hi, I'm a Full Stack Software Engineer with a strong focus on building reliable backend systems and modern enterprise web applications. I enjoy leveraging Cloud technologies and finding practical ways to integrate AI to solve real-world business challenges. I'm passionate about writing clean, scalable code that delivers actual value."]}
+              loop={false}
+              typingSpeed={15}
+            />
+          </p>
+          <div style={{ marginTop: '1.5rem', padding: '1.25rem', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', border: '1px solid var(--card-border)', textAlign: 'left' }}>
+            <h3 style={{ fontSize: '1.1rem', marginBottom: '0.5rem', color: 'var(--accent-light)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <span>🎓</span> Education
+            </h3>
+            <p style={{ margin: 0, lineHeight: '1.6' }}>
+              <strong>B.Eng. in Computer Engineering</strong><br />
+              Rajamangala University of Technology Isan (Surin Campus)
+              <span style={{ display: 'block', fontSize: '0.9rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>Graduated: Nov 2020</span>
+            </p>
+          </div>
         </>
       ),
       expTitle: "Work Experience",
       coreTechTitle: "Core Technologies",
       viewRepo: "View Repository",
+      visitWebsite: "Visit Website",
       keyFeatures: "Key Features & Integrations",
     },
     th: {
-      role: "Programmer | Backend Developer | Document Automation Enthusiast",
-      intro: "ผมเป็นนักพัฒนาซอฟต์แวร์ที่หลงใหลในการสร้างระบบที่ช่วยทำให้การทำงานกับเอกสารเป็นเรื่องง่ายและอัตโนมัติ เชี่ยวชาญด้าน Backend Development, Document Processing, และ Cloud Architecture (Azure)",
+      role: "Software Engineer | Full Stack",
       contact: "Contact Me",
       downloadCV: "Download CV",
       aboutTitle: "About Me",
       aboutContent: (
         <>
-          ปัจจุบันผมกำลังมุ่งเน้นการศึกษาเทคโนโลยี <strong>AI อ่านเอกสาร (Document AI)</strong> และการจัดการระบบเก็บไฟล์ด้วย <strong>Azure Blob Storage</strong>
-          ตลอดจนการวางสถาปัตยกรรม <strong>Microservices</strong> เป้าหมายสูงสุดของผมคือการสร้าง Platform ที่ช่วยองค์กรประมวลผลเอกสารได้อย่างมีประสิทธิภาพ และแม่นยำสูง
-          <br /><br />
-          <em style={{ color: 'var(--accent-light)', fontStyle: 'italic', fontWeight: 500 }}>
-            &quot;เทคโนโลยีคือเครื่องมือที่ช่วยให้เราสร้างสิ่งที่ดีขึ้นสำหรับโลก&quot; 🌟
-          </em>
+          <p style={{ minHeight: '120px' }}>
+            <Typewriter
+              words={["สวัสดีครับ ผมเป็น Software Engineer มีประสบการณ์ทำทั้งหน้าเว็บแอปพลิเคชันและระบบหลังบ้าน (Backend) ให้กับโปรเจกต์ระดับองค์กร ผมชอบนำเทคโนโลยีอย่าง Cloud Services และ AI มาประยุกต์ใช้เพื่อแก้ปัญหาทางธุรกิจ โดยมุ่งเน้นที่การเขียนโค้ดที่ดูแลรวดเร็ว ขยายตัวได้ง่าย และตอบโจทย์การใช้งานจริง"]}
+              loop={false}
+              typingSpeed={15}
+            />
+          </p>
+          <div style={{ marginTop: '1.5rem', padding: '1.25rem', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', border: '1px solid var(--card-border)', textAlign: 'left' }}>
+            <h3 style={{ fontSize: '1.1rem', marginBottom: '0.5rem', color: 'var(--accent-light)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <span>🎓</span> การศึกษา
+            </h3>
+            <p style={{ margin: 0, lineHeight: '1.6' }}>
+              <strong>ปริญญาตรี วิศวกรรมคอมพิวเตอร์</strong><br />
+              มหาวิทยาลัยเทคโนโลยีราชมงคลอีสาน วิทยาเขตสุรินทร์
+              <span style={{ display: 'block', fontSize: '0.9rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>จบการศึกษา: พฤศจิกายน 2563</span>
+            </p>
+          </div>
         </>
       ),
       expTitle: "Work Experience",
       coreTechTitle: "Core Technologies",
       viewRepo: "View Repository",
+      visitWebsite: "เข้าสู่เว็บไซต์",
       keyFeatures: "Key Features & Integrations",
     }
   };
@@ -81,162 +190,150 @@ export default function Home() {
 
   const getProjects = (l: Language): Project[] => [
     {
+      id: 'oil-tracking-api',
+      title: 'Oil Tracking & Tax API',
+      description: l === 'en'
+        ? 'API for managing tax documents and inventory in the oil industry with Multi-Cloud architecture.'
+        : 'ระบบ API สำหรับบริหารจัดการเอกสาร ภาษี และคลังสินค้าสำหรับอุตสาหกรรมน้ำมัน (Multi-Cloud)',
+      tags: ['Node.js', 'Express', 'AWS', 'Azure', 'Prisma', 'MSSQL'],
+      longDescription: l === 'en'
+        ? 'Developed an API to manage corporate data, oil products, and connect with OCR systems for automated tax document processing.'
+        : 'พัฒนาระบบ API สำหรับบริหารจัดการเอกสาร ภาษี รองรับการจัดการข้อมูลองค์กร และเชื่อมต่อระบบ OCR เพื่ออ่านแบบฟอร์มเอกสารทางภาษีสรรพสามิตโดยอัตโนมัติ',
+      features: l === 'en' ? [
+        'Developed Serverless architecture on Azure and migrated Core API to AWS (Elastic Beanstalk)',
+        'Managed Multi-Cloud infrastructure (AWS & Azure) for Compute, Database, and Storage',
+        'Integrated Azure AI Document Intelligence (OCR) for tax document data extraction',
+        'Developed Real-time notifications via Socket.IO and background processing',
+        'Managed both Relational (MSSQL) and NoSQL (Azure Cosmos DB) databases'
+      ] : [
+        'พัฒนาระบบด้วยสถาปัตยกรรม Serverless บน Azure และมีส่วนร่วมในการย้าย Core API ไปยัง AWS',
+        'บริหารจัดการระบบแบบ Multi-Cloud (AWS และ Azure) สำหรับ Compute, Database และ Storage',
+        'เชื่อมต่อ Azure AI Document Intelligence (OCR) เพื่อดึงข้อมูลแบบฟอร์มภาษี',
+        'พัฒนาระบบ Real-time ด้วย Socket.IO และจัดการ Background processing',
+        'จัดการฐานข้อมูล Relational (MSSQL) และ NoSQL (Azure Cosmos DB)'
+      ]
+    },
+    {
       id: 'excise-car-system',
       title: 'Excise Classic Car System',
       description: l === 'en'
-        ? 'A mission-critical tax assessment system for the Excise Department involving complex financial logic and master data management.'
-        : 'ระบบประเมินราคารถยนต์และคำนวณภาษีสำหรับกรมสรรพสามิตที่มีความซับซ้อนด้าน Business Logic ทางบัญชีและภาษี',
-      tags: ['Node.js', 'Prisma', 'MSSQL', 'AI Integration', 'React'],
-      github: '#',
+        ? 'Management and tax assessment system for classic cars with decoupled Frontend and Backend architecture.'
+        : 'ระบบจัดการและประเมินสภาพรถยนต์คลาสสิก ออกแบบสถาปัตยกรรมแยกส่วน Frontend และ Backend อย่างเป็นระบบ',
+      tags: ['React 18', 'TypeScript', 'Node.js', 'Prisma', 'MSSQL'],
       longDescription: l === 'en'
-        ? 'A comprehensive suite comprising a modular Backend API, an Admin Backoffice, and automated CronJobs. It handles intricate tax calculations including CIF, Customs Duty, and Excise Tax to determine Recommended Retail Prices.'
-        : 'ระบบสรรพสามิตที่ประกอบด้วย 3 ส่วนหลัก: Backend API, Admin Backoffice และ Automated CronJobs รองรับการคำนวณภาษีที่ซับซ้อน (CIF, Customs Duty, Excise Tax) เพื่อหาราคาขายปลีกแนะนำ',
+        ? 'A decoupled enterprise system for the Excise Department. Primarily responsible for developing the Officer Portal (Backoffice) and RESTful APIs.'
+        : 'ระบบสำหรับกรมสรรพสามิต แยกส่วนการทำงานระหว่าง User Portal และ Officer Portal โดยรับผิดชอบหลักในการพัฒนา Officer Portal และระบบ API',
       features: l === 'en' ? [
-        'Modular Backend architecture (Node.js, Prisma, MSSQL)',
-        'Complex tax calculation pipeline (CIF, Material Cost, Profit Margin)',
-        'AI-powered data cleaning using Local LLMs (Ollama) for raw vehicle data',
-        'Automated CronJobs for currency exchange rates and workflow cleanup',
-        'Secure file management integrated with AWS S3'
+        'Developed Officer Portal (Backoffice) using React 18 and TypeScript',
+        'Implemented Role-Based Access Control (RBAC) via React Router v6',
+        'Developed RESTful API with Node.js, Express, and TypeScript',
+        'Optimized MSSQL database using Prisma ORM for enhanced Type-safety',
+        'Built client-side PDF and Excel report generation using jsPDF and ExcelJS'
       ] : [
-        'สถาปัตยกรรม Backend แบบ Modular (Node.js, Prisma, MSSQL)',
-        'ระบบคำนวณภาษีที่ซับซ้อน (CIF, ต้นทุนวัสดุ, อัตรากำไร)',
-        'ใช้ AI (Ollama) ในการทำ Data Cleaning ข้อมูลรถยนต์ดิบ',
-        'ระบบ CronJobs อัตโนมัติสำหรับดึงอัตราแลกเปลี่ยนและจัดการ Workflow',
-        'จัดการไฟล์อย่างปลอดภัยด้วยการเชื่อมต่อ AWS S3'
-      ],
-      icon: <span style={{ fontSize: '1.5rem' }}>🚗</span>
+        'พัฒนา Officer Portal (Backoffice) ด้วย React 18 และ TypeScript สำหรับเจ้าหน้าที่',
+        'พัฒนาระบบจัดการสิทธิ์การเข้าถึงข้อมูล (RBAC) ผ่าน React Router v6',
+        'พัฒนา RESTful API ด้วย Node.js, Express และ TypeScript',
+        'ปรับปรุงการจัดการฐานข้อมูล MSSQL โดยใช้ Prisma ORM เพื่อเพิ่ม Type-safety',
+        'พัฒนาระบบสร้างรายงาน (PDF และ Excel) ในฝั่งไคลเอนต์ด้วย jsPDF และ ExcelJS'
+      ]
     },
     {
-      id: 'excise-wine-api',
-      title: 'Excise Wine Cloud API',
+      id: 'lucky-tabien',
+      title: 'LuckyTabien Platform',
       description: l === 'en'
-        ? 'A high-performance Serverless API built with Go to serve mobile applications with robust identity and access management.'
-        : 'ระบบ API ประสิทธิภาพสูงบนสถาปัตยกรรม Serverless (Go) สำหรับ Mobile Application พร้อมระบบ IAM ที่แข็งแกร่ง',
-      tags: ['Golang', 'GCP Functions', 'Docker', 'IAM', 'Serverless'],
-      github: '#',
-      longDescription: l === 'en'
-        ? 'Developed using Go and deployed on Google Cloud Functions. Features a custom HTTP wrapper for middleware management and a comprehensive Identity and Access Management (IAM) system.'
-        : 'พัฒนาด้วยภาษา Go บน Google Cloud Functions มีการสร้าง Custom Wrapper สำหรับจัดการ Middleware และระบบจัดการสิทธิ์ผู้ใช้งาน (IAM) ที่ละเอียด',
-      features: l === 'en' ? [
-        'Serverless architecture using Google Cloud Functions',
-        'Robust IAM system (Identity and Access Management)',
-        'Custom Golang middleware and RESTful handler wrappers',
-        'Containerized development environment with Docker and Compose',
-        'CI/CD integration using buildspec.yaml'
-      ] : [
-        'สถาปัตยกรรมแบบ Serverless บน Google Cloud Functions',
-        'ระบบ IAM (Identity and Access Management) ที่สมบูรณ์',
-        'Custom Golang Middleware และ RESTful Handler Wrapper',
-        'ระบบ Containerization ด้วย Docker และ Docker Compose',
-        'รองรับ CI/CD ด้วย buildspec.yaml'
+        ? 'A vehicle license plate trading platform with isolated Customer and Admin portals.'
+        : 'ระบบแพลตฟอร์มซื้อ-ขายทะเบียนรถมงคล โดยออกแบบสถาปัตยกรรมแยกส่วนระหว่างระบบลูกค้าและหลังบ้าน',
+      tags: ['React', 'Node.js', 'Firebase', 'MySQL', 'Sequelize'],
+      websites: [
+        { label: 'LuckyTabien', url: 'https://luckytabien.com/' },
+        { label: 'TabienHiend', url: 'https://www.tabienhiend.com/' }
       ],
-      icon: <span style={{ fontSize: '1.5rem' }}>🍷</span>
-    },
-    {
-      id: 'catfish-dashboard',
-      title: 'Next.js Analytics Dashboard',
-      description: l === 'en'
-        ? 'A modern data management platform leveraging the latest Next.js 15 features for complex data visualization and reporting.'
-        : 'แพลตฟอร์มจัดการข้อมูลสมัยใหม่ที่ใช้ฟีเจอร์ล่าสุดของ Next.js 15 สำหรับการแสดงผลข้อมูลเชิงลึกและออกรายงาน',
-      tags: ['Next.js 15', 'Chakra UI', 'NextAuth v5', 'Chart.js', 'Turbopack'],
-      github: '#',
       longDescription: l === 'en'
-        ? 'A high-performance dashboard featuring Next.js 15 App Router and Turbopack. It integrates complex statistical visualizations and secure authentication flows.'
-        : 'แดชบอร์ดประสิทธิภาพสูงที่ใช้ Next.js 15 App Router และ Turbopack พร้อมระบบแสดงผลสถิติที่ซับซ้อนและระบบยืนยันตัวตนที่ปลอดภัย',
+        ? 'Developed a platform for buying and selling premium license plates. Utilized architecture to isolate customer-facing apps from the admin management portal.'
+        : 'พัฒนาระบบแพลตฟอร์มซื้อ-ขายทะเบียนรถมงคล (LuckyTabien) ทำงานร่วมกับ API บน Cloud โดยแยกระบบฝั่งลูกค้า (Customer Portal) และหลังบ้าน (Admin Portal)',
       features: l === 'en' ? [
-        'Latest Next.js 15 features including App Router and Turbopack',
-        'Secure authentication using NextAuth v5 (Beta)',
-        'Complex data visualization with Chart.js and custom plugins',
-        'Fluid UI/UX with Chakra UI and Framer Motion animations',
-        'Modular state management with Zustand'
+        'Developed RESTful API for system management using Serverless architecture',
+        'Built Admin Portal with React, Vite, and Zod for validation',
+        'Integrated Excel data processing for bulk license plate import/export',
+        'Isolated Customer Portals built with React, Material UI, and Emotion',
+        'Managed deployment and cloud functions via Firebase Ecosystem'
       ] : [
-        'ใช้ฟีเจอร์ล่าสุดของ Next.js 15 (App Router, Turbopack)',
-        'ระบบยืนยันตัวตน NextAuth v5 (Beta)',
-        'แสดงผลข้อมูลเชิงสถิติซับซ้อนด้วย Chart.js และ Custom Plugins',
-        'UI/UX ที่ลื่นไหลด้วย Chakra UI และ Framer Motion',
-        'จัดการ State แบบ Modular ด้วย Zustand'
-      ],
-      icon: <span style={{ fontSize: '1.5rem' }}>📊</span>
-    },
-    {
-      id: 'stealth-automation',
-      title: 'Stealth Web Automation',
-      description: l === 'en'
-        ? 'Advanced web automation scripts designed for high-concurrency booking systems with anti-bot detection evasion.'
-        : 'สคริปต์ Web Automation ขั้นสูงสำหรับการจองคิวที่มีการแข่งขันสูง พร้อมระบบหลบเลี่ยงการตรวจจับบอท',
-      tags: ['Node.js', 'Playwright', 'Stealth Plugins', 'Automation'],
-      github: 'https://github.com/ColorsYoung/Autofill-Monjong',
-      longDescription: l === 'en'
-        ? 'Developed scripts for high-stakes booking scenarios using Playwright with stealth plugins to bypass anti-fingerprinting and bot detection mechanisms.'
-        : 'พัฒนาสคริปต์สำหรับการจองคิวที่มีการแข่งขันสูง โดยใช้ Playwright ร่วมกับ Stealth Plugins เพื่อหลบหลี่ยงระบบตรวจจับบอทและ Anti-fingerprinting',
-      features: l === 'en' ? [
-        'Bot detection evasion using playwright-extra and stealth plugins',
-        'High-speed DOM manipulation and automated form filling',
-        'Reverse engineering of web workflows for optimized booking',
-        'Headless browser automation with customized fingerprints'
-      ] : [
-        'หลบหลีกการตรวจจับบอทด้วย playwright-extra และ stealth plugins',
-        'จัดการ DOM และกรอกข้อมูลอัตโนมัติด้วยความเร็วสูง',
-        'ทำ Reverse Engineering ขั้นตอนการทำงานของเว็บเพื่อเพิ่มโอกาสในการจอง',
-        'ระบบ Headless Browser Automation พร้อมการปรับแต่ง Fingerprint'
-      ],
-      icon: <span style={{ fontSize: '1.5rem' }}>🤖</span>
+        'พัฒนา RESTful API สำหรับจัดการข้อมูลด้วยสถาปัตยกรรม Serverless',
+        'พัฒนาระบบ Admin Portal ด้วย React, Vite และ Zod สำหรับจัดการข้อมูล',
+        'ประมวลผลและจัดการข้อมูลผ่านไฟล์ Excel (Import/Export)',
+        'แยกระบบหน้าบ้านสำหรับลูกค้าทั่วไป (Customer Portal) ในการค้นหาและเลือกซื้อทะเบียน',
+        'ใช้งานบริการ Cloud Services และ Serverless ผ่าน Firebase Functions'
+      ]
     },
     {
       id: 'trading-ollama',
-      title: 'Bitkub AI Trading Bot',
+      title: 'AI Trading Bot (Ollama)',
       description: l === 'en'
-        ? 'Automated cryptocurrency trading bot leveraging Local LLMs (Ollama) for real-time market analysis.'
-        : 'บอทเทรดคริปโตอัตโนมัติที่ใช้ Local LLMs (Ollama) ในการวิเคราะห์ตลาดแบบ Real-time',
+        ? 'Automated cryptocurrency trading bot using Local LLMs for real-time market analysis.'
+        : 'บอทเทรดคริปโตอัตโนมัติใช้ Local LLMs (Ollama) ในการวิเคราะห์ตลาดและประมวลผลคำสั่งซื้อขาย',
       tags: ['Python', 'Ollama', 'Bitkub API', 'Pandas', 'AI/LLM'],
       github: 'https://github.com/ColorsYoung/bitkub-ollama',
       longDescription: l === 'en'
-        ? 'A sophisticated trading bot that uses local AI models to interpret market conditions and execute flexible trading strategies via Bitkub API v3.'
-        : 'บอทเทรดที่ใช้ AI ประมวลผลสภาวะตลาดและปรับกลยุทธ์การเทรดผ่าน Bitkub API v3 อย่างยืดหยุ่น',
+        ? 'Developed an automated cryptocurrency trading bot using Local LLMs (Ollama) for real-time market analysis and trade execution.'
+        : 'พัฒนากลยุทธ์การเทรดด้วยการบูรณาการระบบ AI เข้ากับข้อมูลตลาดแบบ Real-time เพื่อสั่งการซื้อขายแบบอัตโนมัติผ่าน Exchange API',
       features: l === 'en' ? [
-        'AI-Powered Decisions using local LLMs (Ollama)',
-        'Direct integration with Bitkub API v3',
-        'Real-time Technical Analysis (RSI, EMA, MACD)',
-        'Secure API management via environment variables'
+        'Integrated Local Ollama (Llama 3.1) to process market data and generate trading signals',
+        'Built data processing pipeline using Pandas for technical indicators (RSI, EMA, MACD)',
+        'Integrated Bitkub API v3 and Binance API (via ccxt) for trade execution',
+        'Developed execution system with a "Dry Run" mode for safe strategy testing',
+        'Managed API credentials securely using python-dotenv'
       ] : [
-        'ตัดสินใจเทรดด้วยพลัง AI จาก Local LLMs (Ollama)',
-        'เชื่อมต่อโดยตรงกับ Bitkub API v3',
-        'วิเคราะห์ทางเทคนิค (RSI, EMA, MACD) แบบ Real-time',
-        'จัดการ API Keys อย่างปลอดภัยผ่าน Environment Variables'
-      ],
-      icon: <span style={{ fontSize: '1.5rem' }}>📈</span>
+        'บูรณาการ Local Ollama เพื่อประมวลผลข้อมูลตลาดและสร้างสัญญาณเทรด',
+        'พัฒนาระบบประมวลผลข้อมูลด้วย Pandas เพื่อคำนวณ Technical Indicators',
+        'เชื่อมต่อระบบเข้ากับ Bitkub API และ Binance API',
+        'พัฒนาระบบจัดการคำสั่งซื้อขายและจัดการความเสี่ยง (มีโหมด Dry Run)',
+        'จัดการ API credentials อย่างปลอดภัยผ่าน python-dotenv'
+      ]
     }
   ];
 
   const projects = getProjects(lang);
 
+  const getFilteredProjects = () => {
+    if (filter === 'All') return projects;
+    return projects.filter(p => {
+      const text = p.tags.join(' ') + ' ' + p.description;
+      if (filter === 'Frontend') return text.includes('React');
+      if (filter === 'Backend') return text.includes('Node.js') || text.includes('Python') || text.includes('Express');
+      if (filter === 'AI') return text.includes('AI') || text.includes('Ollama') || text.includes('Document AI');
+      if (filter === 'Cloud') return text.includes('Firebase') || text.includes('Azure') || text.includes('AWS');
+      return false;
+    });
+  };
+  const filteredProjects = getFilteredProjects();
+
   const getExperiences = (l: Language) => [
     {
       id: 1,
-      role: l === 'en' ? 'Senior Backend Developer' : 'นักพัฒนาระบบ Backend อาวุโส',
-      company: 'Excise Department Projects',
-      period: '2023 - Present',
+      role: l === 'en' ? 'Software Engineer' : 'นักพัฒนาซอฟต์แวร์',
+      company: 'Thinkbit Co., Ltd.',
+      period: l === 'en' ? '2024 - Present' : '2567 - ปัจจุบัน',
       description: l === 'en'
-        ? 'Architected complex tax calculation engines and modular APIs using Node.js, Go, and Prisma. Integrated AI (Ollama) for data cleaning and automated critical financial workflows with high precision.'
-        : 'ออกแบบระบบคำนวณภาษีและ API แบบ Modular ด้วย Node.js, Go และ Prisma นำ AI (Ollama) มาใช้ในการทำ Data Cleaning และสร้าง Workflow อัตโนมัติสำหรับข้อมูลทางการเงินที่มีความสำคัญสูง'
+        ? 'Developed and maintained enterprise-level applications, encompassing complex backend systems (Node.js, Cloud Architecture), decoupled frontends, and integrated local AI for data processing.'
+        : 'พัฒนาและดูแลระบบ Enterprise ให้กับลูกค้าระดับองค์กร ครอบคลุมทั้งฝั่ง Frontend และ Backend (Node.js, Cloud Architecture) รวมถึงนำ AI มาประยุกต์ใช้ในระบบ'
     },
     {
       id: 2,
-      role: l === 'en' ? 'Full Stack Engineer' : 'วิศวกร Full Stack',
-      company: 'Enterprise Analytics & Dashboards',
-      period: '2022 - Present',
+      role: l === 'en' ? 'Programmer' : 'โปรแกรมเมอร์',
+      company: 'Vicky Enterprise',
+      period: l === 'en' ? 'Apr 2023 - May 2024' : 'เม.ย. 2566 - พ.ค. 2567',
       description: l === 'en'
-        ? 'Developed high-performance dashboards using Next.js 15 and Chakra UI. Focused on complex data visualization, secure authentication (NextAuth v5), and performance optimization with Turbopack.'
-        : 'พัฒนาระบบ Dashboard ประสิทธิภาพสูงด้วย Next.js 15 และ Chakra UI เน้นการแสดงผลข้อมูลซับซ้อน ระบบยืนยันตัวตน NextAuth v5 และเพิ่มความเร็วด้วย Turbopack'
+        ? 'Maintained the corporate website and developed internal reporting tools using Microsoft SQL Server. Handled annual sales forecasting and provided internal IT support.'
+        : 'พัฒนาและปรับปรุงเว็บไซต์องค์กร สร้างระบบรายงานผลด้วย Microsoft SQL Server จัดทำโฟกัสยอดขายรายปี และดูแลสนับสนุนงานด้าน IT ภายในบริษัท'
     },
     {
       id: 3,
-      role: l === 'en' ? 'Automation & Cloud Specialist' : 'ผู้เชี่ยวชาญด้าน Automation และ Cloud',
-      company: 'Serverless APIs & Web Automation',
-      period: '2022 - 2023',
+      role: l === 'en' ? 'Programmer' : 'โปรแกรมเมอร์',
+      company: 'Phatra Progress Co., Ltd.',
+      period: l === 'en' ? 'Mar 2022 - Nov 2022' : 'มี.ค. 2565 - พ.ย. 2565',
       description: l === 'en'
-        ? 'Built Serverless APIs in Go for GCP. Developed stealth automation scripts using Playwright to bypass bot detection for high-concurrency booking systems and scrapers.'
-        : 'สร้าง Serverless API ด้วย Go บน GCP พัฒนาสคริปต์ Automation ขั้นสูงด้วย Playwright ที่รองรับการหลบหลี่ยงระบบตรวจจับบอทสำหรับการจองคิวและการดึงข้อมูล'
+        ? 'Developed modules and functions for Microsoft Dynamics 365 using X++. Built customized reports via SSRS, and provided technical support for AX system users.'
+        : 'พัฒนาและออกแบบ Modules สำหรับ Microsoft Dynamics 365 ด้วยภาษา X++ สร้างรายงานด้วย SSRS และให้คำปรึกษาแก่ผู้ใช้งานระบบ AX'
     }
   ];
 
@@ -269,7 +366,7 @@ export default function Home() {
       techs: [
         { name: 'AWS', icon: <StackIcon name="aws" style={{ width: 32, height: 32 }} /> },
         { name: 'Azure', icon: <StackIcon name="azure" style={{ width: 32, height: 32 }} /> },
-        { name: 'GCP', icon: <span style={{ fontSize: '32px' }}>☁️</span> },
+        { name: 'GCP', icon: <img src="/GCPIcon.png" alt="GCP" style={{ width: 32, height: 32, objectFit: 'contain' }} /> },
         { name: 'Docker', icon: <StackIcon name="docker" style={{ width: 32, height: 32 }} /> },
         { name: 'MSSQL', icon: <img src="/mssql.png" alt="MSSQL" style={{ width: 32, height: 32, objectFit: 'contain' }} /> },
       ]
@@ -370,7 +467,6 @@ export default function Home() {
         <h2 style={{ fontSize: '1.5rem', color: 'var(--accent-light)', marginBottom: '1.5rem', fontWeight: 600 }}>
           {currentT.role}
         </h2>
-        <p>{currentT.intro}</p>
 
         <div className="hero-actions">
           <a href="mailto:Chanchaichakam1997@gmail.com" className="btn btn-primary">
@@ -403,11 +499,11 @@ export default function Home() {
         </div>
       </header>
 
-      <section id="about" style={{ textAlign: 'center', padding: '3rem 0', maxWidth: '800px', margin: '0 auto' }}>
+      <section id="about" className="animate-on-scroll" style={{ textAlign: 'center', padding: '3rem 0', maxWidth: '800px', margin: '0 auto' }}>
         <h2 className="section-title" style={{ marginBottom: '1.5rem' }}>{currentT.aboutTitle}</h2>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem', lineHeight: '1.8' }}>
+        <div style={{ color: 'var(--text-secondary)', fontSize: '1.1rem', lineHeight: '1.8' }}>
           {currentT.aboutContent}
-        </p>
+        </div>
       </section>
 
       {/* Experience Timeline */}
@@ -415,7 +511,7 @@ export default function Home() {
         <h2 className="section-title">{currentT.expTitle}</h2>
         <div className="timeline">
           {experiences.map((exp, idx) => (
-            <div key={exp.id} className="timeline-item">
+            <div key={exp.id} className="timeline-item animate-on-scroll">
               <div className="timeline-dot"></div>
               <div className="timeline-content">
                 <span className="timeline-period">{exp.period}</span>
@@ -428,38 +524,80 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="projects" className="projects-grid">
-        {projects.map((project) => (
-          <article
-            key={project.id}
-            className="project-card"
-            onClick={() => setSelectedProject(project)}
-            title="Click to view details"
-          >
-            <h2 className="project-title">
-              {project.icon}
-              {project.title}
-            </h2>
-            <p className="project-desc">{project.description}</p>
-            <div className="tags">
-              {project.tags.map(tag => (
-                <span key={tag} className="tag">{tag}</span>
-              ))}
-            </div>
-            <a
-              href={project.github}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="github-link"
-              onClick={(e) => e.stopPropagation()}
+      <section id="projects" style={{ paddingTop: '4rem' }}>
+        <h2 className="section-title animate-on-scroll">Projects</h2>
+
+        <div className="project-filters animate-on-scroll">
+          {['All', 'Frontend', 'Backend', 'AI', 'Cloud'].map(f => (
+            <button
+              key={f}
+              className={`filter-btn ${filter === f ? 'active' : ''}`}
+              onClick={() => setFilter(f)}
             >
-              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
-              </svg>
-              {currentT.viewRepo}
-            </a>
-          </article>
-        ))}
+              {f}
+            </button>
+          ))}
+        </div>
+
+        <div className="projects-grid">
+          {filteredProjects.map((project) => (
+            <article
+              key={project.id}
+              className="project-card animate-on-scroll"
+              onClick={() => setSelectedProject(project)}
+              title="Click to view details"
+              onMouseMove={(e) => {
+                const rect = e.currentTarget.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                e.currentTarget.style.setProperty('--mouse-x', `${x}px`);
+                e.currentTarget.style.setProperty('--mouse-y', `${y}px`);
+              }}
+            >
+              <h2 className="project-title">
+                {project.title}
+              </h2>
+              <p className="project-desc">{project.description}</p>
+              <div className="tags">
+                {project.tags.map(tag => (
+                  <span key={tag} className="tag">{tag}</span>
+                ))}
+              </div>
+              {project.github && (
+                <a
+                  href={project.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="github-link"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
+                  </svg>
+                  {currentT.viewRepo}
+                </a>
+              )}
+              {project.websites && project.websites.map((site, index) => (
+                <a
+                  key={index}
+                  href={site.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="github-link"
+                  style={{ background: 'var(--accent-light)', color: '#000', border: 'none', marginLeft: index > 0 || project.github ? '0.5rem' : '0' }}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18" xmlns="http://www.w3.org/2000/svg" style={{ marginRight: '0.2rem' }}>
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                    <polyline points="15 3 21 3 21 9"></polyline>
+                    <line x1="10" y1="14" x2="21" y2="3"></line>
+                  </svg>
+                  {site.label}
+                </a>
+              ))}
+            </article>
+          ))}
+        </div>
       </section>
 
       {/* Premium Tech Stack Display */}
@@ -467,7 +605,7 @@ export default function Home() {
         <h2 className="section-title" style={{ marginBottom: '2rem' }}>{currentT.coreTechTitle}</h2>
         <div className="tech-groups-container">
           {techGroups.map((group, _idx) => (
-            <div key={_idx} className="tech-group-card">
+            <div key={_idx} className="tech-group-card animate-on-scroll">
               <h3 className="tech-group-title">{group.title}</h3>
               <div className="tech-items-grid">
                 {group.techs.map((tech, techIdx) => (
@@ -491,7 +629,6 @@ export default function Home() {
             </button>
             <div className="modal-body">
               <h2 style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                {selectedProject.icon}
                 {selectedProject.title}
               </h2>
               <div className="tags" style={{ marginBottom: '1.5rem' }}>
@@ -508,18 +645,37 @@ export default function Home() {
                 ))}
               </ul>
 
-              <a
-                href={selectedProject.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="github-link"
-                style={{ marginTop: '1rem', display: 'inline-flex' }}
-              >
-                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
-                </svg>
-                {currentT.viewRepo}
-              </a>
+              {selectedProject.github && (
+                <a
+                  href={selectedProject.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="github-link"
+                  style={{ marginTop: '1rem', display: 'inline-flex' }}
+                >
+                  <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
+                  </svg>
+                  {currentT.viewRepo}
+                </a>
+              )}
+              {selectedProject.websites && selectedProject.websites.map((site, index) => (
+                <a
+                  key={index}
+                  href={site.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="github-link"
+                  style={{ marginTop: '1rem', display: 'inline-flex', background: 'var(--accent-light)', color: '#000', border: 'none', marginLeft: index > 0 || selectedProject.github ? '0.5rem' : '0' }}
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18" xmlns="http://www.w3.org/2000/svg" style={{ marginRight: '0.2rem' }}>
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                    <polyline points="15 3 21 3 21 9"></polyline>
+                    <line x1="10" y1="14" x2="21" y2="3"></line>
+                  </svg>
+                  {site.label}
+                </a>
+              ))}
             </div>
           </div>
         </div>
