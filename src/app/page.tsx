@@ -107,8 +107,125 @@ export default function Home() {
   const [lang, setLang] = useState<Language>('en');
   const [theme, setTheme] = useState<Theme>('dark');
   const [filter, setFilter] = useState<string>('All');
+  const [activeSection, setActiveSection] = useState<string>('about');
+  const [cursorPos, setCursorPos] = useState({ x: -100, y: -100 });
+  const [cursorVisible, setCursorVisible] = useState(false);
+  const canvasRef = React.useRef<HTMLCanvasElement>(null);
 
   useScrollReveal();
+
+  // Particle Background
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let animId: number;
+    const resize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    resize();
+    window.addEventListener('resize', resize);
+
+    const particles: { x: number; y: number; vx: number; vy: number; r: number }[] = [];
+    const COUNT = 70;
+    for (let i = 0; i < COUNT; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: (Math.random() - 0.5) * 0.4,
+        r: Math.random() * 2 + 1,
+      });
+    }
+
+    const draw = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (const p of particles) {
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+        if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(187, 134, 252, 0.6)';
+        ctx.fill();
+      }
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 120) {
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.strokeStyle = `rgba(187, 134, 252, ${0.15 * (1 - dist / 120)})`;
+            ctx.lineWidth = 0.8;
+            ctx.stroke();
+          }
+        }
+      }
+      animId = requestAnimationFrame(draw);
+    };
+    draw();
+    return () => { cancelAnimationFrame(animId); window.removeEventListener('resize', resize); };
+  }, []);
+
+  // Active Section tracking (Nav highlight)
+  useEffect(() => {
+    const sections = ['about', 'experience', 'projects', 'tech'];
+    const observers: IntersectionObserver[] = [];
+    sections.forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const obs = new IntersectionObserver(
+        ([entry]) => { if (entry.isIntersecting) setActiveSection(id); },
+        { threshold: 0.3 }
+      );
+      obs.observe(el);
+      observers.push(obs);
+    });
+    return () => observers.forEach(o => o.disconnect());
+  }, []);
+
+  // Cursor Follower
+  useEffect(() => {
+    const move = (e: MouseEvent) => {
+      setCursorPos({ x: e.clientX, y: e.clientY });
+      setCursorVisible(true);
+    };
+    const hide = () => setCursorVisible(false);
+    window.addEventListener('mousemove', move);
+    window.addEventListener('mouseleave', hide);
+    return () => { window.removeEventListener('mousemove', move); window.removeEventListener('mouseleave', hide); };
+  }, []);
+
+  // Timeline Active Highlight
+  useEffect(() => {
+    const updateItems = () => {
+      const items = document.querySelectorAll('.timeline-item');
+      if (items.length === 0) return;
+      const obs = new IntersectionObserver(
+        (entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              document.querySelectorAll('.timeline-item').forEach(i => i.classList.remove('active'));
+              entry.target.classList.add('active');
+            }
+          });
+        },
+        { threshold: 0.6 }
+      );
+      items.forEach(el => obs.observe(el));
+      return obs;
+    };
+    const obs = updateItems();
+    return () => obs?.disconnect();
+  });
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -386,13 +503,38 @@ export default function Home() {
   return (
     <main className="container" style={{ position: 'relative' }}>
 
+      {/* Custom Cursor Follower */}
+      <div
+        className="cursor-follower"
+        style={{
+          left: cursorPos.x,
+          top: cursorPos.y,
+          opacity: cursorVisible ? 1 : 0,
+        }}
+      />
+
+      {/* Full-page Particle Background */}
+      <canvas
+        ref={canvasRef}
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          pointerEvents: 'none',
+          zIndex: 0,
+          opacity: 0.45,
+        }}
+      />
+
       {/* Modern Sticky Navigation */}
       <nav className="nav-container">
         <div className="nav-links">
-          <a href="#about" className="nav-link">About</a>
-          <a href="#experience" className="nav-link">Experience</a>
-          <a href="#projects" className="nav-link">Projects</a>
-          <a href="#tech" className="nav-link">Skills</a>
+          <a href="#about" className={`nav-link${activeSection === 'about' ? ' active' : ''}`}>About</a>
+          <a href="#experience" className={`nav-link${activeSection === 'experience' ? ' active' : ''}`}>Experience</a>
+          <a href="#projects" className={`nav-link${activeSection === 'projects' ? ' active' : ''}`}>Projects</a>
+          <a href="#tech" className={`nav-link${activeSection === 'tech' ? ' active' : ''}`}>Skills</a>
         </div>
 
         <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
