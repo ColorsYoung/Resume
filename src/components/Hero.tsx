@@ -28,7 +28,7 @@ export const Hero: React.FC<HeroProps> = ({
         <div className="avatar-image-wrapper">
           <Image
             className="avatar-image"
-            src="/developer_avatar.png"
+            src="/ProfileNoom.jpeg"
             alt="Chanchai Chakam Avatar"
             fill
             sizes="155px"

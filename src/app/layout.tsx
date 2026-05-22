@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     siteName: 'Chanchai Chakam Resume',
     images: [
       {
-        url: '/developer_avatar.png',
+        url: '/ProfileNoom.jpeg',
         width: 512,
         height: 512,
         alt: 'Chanchai Chakam Avatar',
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     card: 'summary',
     title: 'Chanchai Chakam | Software Engineer Portfolio',
     description: 'Full Stack Software Engineer resume portfolio showcasing Multi-Cloud architectures, real-time backend systems, local AI integration, and responsive web platforms.',
-    images: ['/developer_avatar.png'],
+    images: ['/ProfileNoom.jpeg'],
   },
 };
 
@@ -70,7 +70,7 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#bb86fc" />
         <link rel="icon" href="/favicon.ico" />
-        <link rel="apple-touch-icon" href="/developer_avatar.png" />
+        <link rel="apple-touch-icon" href="/ProfileNoom.jpeg" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

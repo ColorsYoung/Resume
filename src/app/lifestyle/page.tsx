@@ -56,6 +56,8 @@ const LifestyleGallery = ({ lang }: { lang: 'en' | 'th' }) => {
     }
   ];
 
+  const activeItemData = items.find(item => item.id === activeItem);
+
   return (
     <div className="lifestyle-gallery-wrapper">
       <div className="lifestyle-grid">
@@ -78,29 +80,29 @@ const LifestyleGallery = ({ lang }: { lang: 'en' | 'th' }) => {
                 <p className="lifestyle-subtitle">{item.subtitle}</p>
               </div>
             </div>
-
-            {/* Expandable Stats Overlay */}
-            {activeItem === item.id && (
-              <div className="lifestyle-details-overlay" onClick={(e) => { e.stopPropagation(); setActiveItem(null); }}>
-                <div className="lifestyle-details-content" onClick={(e) => e.stopPropagation()}>
-                  <button className="lifestyle-close-btn" onClick={() => setActiveItem(null)}>×</button>
-                  <h4 style={{ margin: '0 0 0.5rem', color: 'var(--accent-light)', fontSize: '1.2rem' }}>{item.title}</h4>
-                  <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: '1.5', margin: '0 0 1.25rem' }}>{item.details}</p>
-                  
-                  <div className="lifestyle-stats-grid">
-                    {item.stats.map((st, i) => (
-                      <div key={i} className="lifestyle-stat-box">
-                        <div className="lifestyle-stat-val">{st.value}</div>
-                        <div className="lifestyle-stat-lbl">{st.label}</div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
         ))}
       </div>
+
+      {/* Expandable Stats Overlay — rendered at root level to bypass parent 3D/transform bounding box constraints */}
+      {activeItemData && (
+        <div className="lifestyle-details-overlay" onClick={() => setActiveItem(null)}>
+          <div className="lifestyle-details-content" onClick={(e) => e.stopPropagation()}>
+            <button className="lifestyle-close-btn" onClick={() => setActiveItem(null)}>×</button>
+            <h4 style={{ margin: '0 0 0.5rem', color: 'var(--accent-light)', fontSize: '1.2rem' }}>{activeItemData.title}</h4>
+            <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: '1.5', margin: '0 0 1.25rem' }}>{activeItemData.details}</p>
+            
+            <div className="lifestyle-stats-grid">
+              {activeItemData.stats.map((st, i) => (
+                <div key={i} className="lifestyle-stat-box">
+                  <div className="lifestyle-stat-val">{st.value}</div>
+                  <div className="lifestyle-stat-lbl">{st.label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
