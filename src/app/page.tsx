@@ -20,6 +20,7 @@ import { Experience } from '../components/Experience';
 import { Projects } from '../components/Projects';
 import { Skills } from '../components/Skills';
 import { GitHubHeatmap } from '../components/GitHubHeatmap';
+import { Quotes } from '../components/Quotes';
 import { Contact } from '../components/Contact';
 import { Typewriter } from '../components/Typewriter';
 
@@ -48,7 +49,7 @@ function useScrollReveal() {
         }
       });
     }, { threshold: 0.1 });
-    
+
     document.querySelectorAll('.animate-on-scroll:not(.is-visible)').forEach((el) => {
       observer.observe(el);
     });
@@ -96,7 +97,6 @@ export default function Home() {
   const [commandQuery, setCommandQuery] = useState('');
   const [commandHighlight, setCommandHighlight] = useState(0);
   const [expandedExp, setExpandedExp] = useState<Set<number>>(new Set());
-  const [testimonialIndex, setTestimonialIndex] = useState(0);
   const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' });
   const [contactStatus, setContactStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
   const [showConfetti, setShowConfetti] = useState(false);
@@ -176,7 +176,7 @@ export default function Home() {
             : 'คัดลอกอีเมลแล้ว! 📋'
         );
       })
-      .catch(() => {});
+      .catch(() => { });
   };
 
   // Reusable Magnetic Hover Handler
@@ -234,7 +234,7 @@ export default function Home() {
 
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
+
       for (const p of particles) {
         p.x += p.vx;
         p.y += p.vy;
@@ -280,8 +280,8 @@ export default function Home() {
       animId = requestAnimationFrame(draw);
     };
     draw();
-    return () => { 
-      cancelAnimationFrame(animId); 
+    return () => {
+      cancelAnimationFrame(animId);
       window.removeEventListener('resize', resize);
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseleave', handleMouseLeave);
@@ -400,14 +400,6 @@ export default function Home() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [lang, commandPaletteOpen, showToast]);
 
-  // Testimonial auto-rotation
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTestimonialIndex(prev => (prev + 1) % 3);
-    }, 6000);
-    return () => clearInterval(timer);
-  }, []);
-
   // Translations Dictionary
   const t = {
     en: {
@@ -441,7 +433,6 @@ export default function Home() {
       viewRepo: "View Repository",
       visitWebsite: "Visit Website",
       keyFeatures: "Key Features & Integrations",
-      testimonialsTitle: "What People Say",
       contactTitle: "Get In Touch",
       contactSubtitle: "Have a project in mind or want to collaborate? Feel free to reach out!",
       contactName: "Your Name",
@@ -490,7 +481,6 @@ export default function Home() {
       viewRepo: "View Repository",
       visitWebsite: "เข้าสู่เว็บไซต์",
       keyFeatures: "Key Features & Integrations",
-      testimonialsTitle: "เสียงจากเพื่อนร่วมงาน",
       contactTitle: "ติดต่อผม",
       contactSubtitle: "มีโปรเจกต์ในใจหรืออยากร่วมงานกัน? ส่งข้อความมาได้เลยครับ!",
       contactName: "ชื่อของคุณ",
@@ -727,7 +717,7 @@ export default function Home() {
       techs: [
         { name: 'AWS', icon: <StackIcon name="aws" style={{ width: 32, height: 32 }} />, level: 80 },
         { name: 'Azure', icon: <StackIcon name="azure" style={{ width: 32, height: 32 }} />, level: 75 },
-        { name: 'GCP', icon: <img src="/GCPIcon.png" alt="GCP" style={{ width: 32, height: 32, objectFit: 'contain' }} />, level: 55 },
+        { name: 'GCP', icon: <img src="/gcp.png" alt="GCP" style={{ width: 32, height: 32, objectFit: 'contain' }} />, level: 55 },
         { name: 'Docker', icon: <StackIcon name="docker" style={{ width: 32, height: 32 }} />, level: 70 },
         { name: 'MSSQL', icon: <img src="/mssql.png" alt="MSSQL" style={{ width: 32, height: 32, objectFit: 'contain' }} />, level: 80 },
       ]
@@ -744,36 +734,9 @@ export default function Home() {
     }
   ];
 
-  const testimonials = useMemo(() => [
-    {
-      text: lang === 'en'
-        ? "Chanchai consistently delivers high-quality code and takes full ownership of complex backend systems. His ability to architect Multi-Cloud solutions across AWS and Azure is truly impressive. A reliable engineer you can count on."
-        : "ชาญชัย ส่งมอบโค้ดที่มีคุณภาพสูงอย่างสม่ำเสมอ และรับผิดชอบระบบ Backend ที่ซับซ้อนได้เต็มที่ ความสามารถในการออกแบบสถาปัตยกรรม Multi-Cloud บน AWS และ Azure น่าประทับใจมาก เป็น Engineer ที่ไว้วางใจได้",
-      author: lang === 'en' ? "Senior Developer" : "Senior Developer",
-      role: lang === 'en' ? "Team Lead at Thinkbit" : "Team Lead ที่ Thinkbit",
-      initials: "SD"
-    },
-    {
-      text: lang === 'en'
-        ? "Working with Chanchai was a great experience. He's proactive, communicates clearly about technical challenges, and always delivers on time. His work on the Classic Car System exceeded our expectations."
-        : "การทำงานร่วมกับชาญชัยเป็นประสบการณ์ที่ดีมาก เขาทำงานเชิงรุก สื่อสารเรื่องเทคนิคได้ชัดเจน และส่งมอบงานตรงเวลาเสมอ ผลงานในโปรเจกต์ระบบรถคลาสสิกเกินความคาดหวังของเรา",
-      author: lang === 'en' ? "Project Manager" : "Project Manager",
-      role: lang === 'en' ? "Thinkbit Co., Ltd." : "Thinkbit Co., Ltd.",
-      initials: "PM"
-    },
-    {
-      text: lang === 'en'
-        ? "Chanchai has a strong problem-solving mindset. When we faced a complex data migration challenge, he designed an elegant solution that saved the team weeks of work. His code is clean and well-documented."
-        : "ชาญชัยมีทักษะการแก้ปัญหาที่แข็งแกร่ง เมื่อเราเจอปัญหาการย้ายข้อมูลที่ซับซ้อน เขาออกแบบวิธีแก้ปัญหาที่เรียบร้อยช่วยประหยัดเวลาทีมได้หลายสัปดาห์ โค้ดของเขาสะอาดและมี Documentation ที่ดี",
-      author: lang === 'en' ? "Backend Developer" : "Backend Developer",
-      role: lang === 'en' ? "Colleague at Thinkbit" : "เพื่อนร่วมงานที่ Thinkbit",
-      initials: "BD"
-    }
-  ], [lang]);
-
   const architectureDiagrams: Record<string, string> = {
     'oil-tracking-api':
-`┌──────────┐    ┌──────────────┐    ┌─────────────┐
+      `┌──────────┐    ┌──────────────┐    ┌─────────────┐
 │  Client  │───▶│  API Gateway │───▶│  Express.js │
 │(Frontend)│    │ (AWS/Azure)  │    │  (AWS EB)   │
 └──────────┘    └──────────────┘    └──────┬──────┘
@@ -791,7 +754,7 @@ export default function Home() {
              └──────────┘`,
 
     'excise-car-system':
-`┌──────────────┐              ┌──────────────┐
+      `┌──────────────┐              ┌──────────────┐
 │ User Portal  │              │Officer Portal│
 │  (React 18)  │              │ (Backoffice) │
 └──────┬───────┘              └──────┬───────┘
@@ -809,7 +772,7 @@ export default function Home() {
              └──────────────┘`,
 
     'lucky-tabien':
-`┌──────────────┐  ┌──────────────┐
+      `┌──────────────┐  ┌──────────────┐
 │  LuckyTabien │  │ TabienHiend  │
 │  (Customer)  │  │  (Customer)  │
 └──────┬───────┘  └──────┬───────┘
@@ -832,7 +795,7 @@ export default function Home() {
        └────────────────┘`,
 
     'trading-ollama':
-`┌──────────────┐    ┌──────────────┐
+      `┌──────────────┐    ┌──────────────┐
 │  Market Data │    │   Ollama     │
 │  (API Feed)  │    │ (Llama 3.1) │
 └──────┬───────┘    └──────┬───────┘
@@ -1014,7 +977,7 @@ export default function Home() {
       />
 
       {/* About Me Section (Clean Centered Layout) */}
-      <About currentT={currentT} lang={lang} />
+      {/* <About currentT={currentT} lang={lang} /> */}
 
       {/* Experience Timeline */}
       <Experience
@@ -1022,9 +985,6 @@ export default function Home() {
         expandedExp={expandedExp}
         toggleExpand={toggleExpand}
         currentT={currentT}
-        testimonials={testimonials}
-        testimonialIndex={testimonialIndex}
-        setTestimonialIndex={setTestimonialIndex}
       />
 
       {/* Projects Section */}
@@ -1043,6 +1003,9 @@ export default function Home() {
 
       {/* 12. Simulated Interactive GitHub Heatmap Section */}
       <GitHubHeatmap lang={lang} />
+
+      {/* 13. Inspirational Quotes Section */}
+      <Quotes />
 
       {/* Modern Glassmorphic Subpage Explore CTAs */}
       <section className="animate-on-scroll" style={{ padding: '3rem 0 1rem', maxWidth: '850px', margin: '0 auto' }}>
@@ -1064,12 +1027,12 @@ export default function Home() {
           }}>
             <div>
               <h3 style={{ fontSize: '1.3rem', color: 'var(--text-primary)', marginBottom: '0.75rem', fontWeight: 700 }}>
-                {lang === 'en' ? "✍️ Things I'm Interested In" : '✍️ สิ่งที่กำลังสนใจอยู่'}
+                {lang === 'en' ? "Interesting articles I'd like to share." : 'บทความน่าสนใจของผมที่อยากแบ่งปัน'}
               </h3>
               <p style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', lineHeight: '1.6', marginBottom: '1.5rem', maxWidth: '340px' }}>
                 {lang === 'en'
-                  ? 'Explore my personal technical blog on Multi-Cloud APIs, Local LLM trading bot automation, and database tuning notes.'
-                  : 'ร่วมเปิดกระดาษบันทึกทางเทคนิค การทดลองใช้บอทเทรด LLM, จูนฐานข้อมูล และสถาปัตยกรรมคลาวด์'}
+                  ? 'This blog is a place where I collect and share articles, ideas, and experiences that I find interesting and valuable — from technology and software engineering to thoughts and stories from everyday life. I hope these writings will be useful not only for myself, but also for others who share the same interests.'
+                  : 'Blog ที่ผมสร้างขึ้นเพื่อรวบรวมบทความ เรื่องราว และไอเดียที่ผมพบว่าน่าสนใจและมีคุณค่า ทั้งในโลกของเทคโนโลยี การพัฒนา Software และประสบการณ์ต่างๆที่อยากนำมาแบ่งปัน ผมหวังว่าเนื้อหาเหล่านี้จะเป็นประโยชน์ทั้งกับตัวผมเองและเพื่อนๆที่มีความสนใจเหมือนกันครับ'}
               </p>
             </div>
             <a href="/blog" style={{
@@ -1086,14 +1049,14 @@ export default function Home() {
               boxShadow: '0 4px 15px rgba(187, 134, 252, 0.3)',
               transition: 'all 0.3s ease'
             }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-2px)';
-              e.currentTarget.style.boxShadow = '0 6px 20px rgba(187, 134, 252, 0.5)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = '0 4px 15px rgba(187, 134, 252, 0.3)';
-            }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 6px 20px rgba(187, 134, 252, 0.5)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 4px 15px rgba(187, 134, 252, 0.3)';
+              }}
             >
               {lang === 'en' ? 'Open Blog →' : 'เข้าสู่บล็อก →'}
             </a>
@@ -1116,12 +1079,12 @@ export default function Home() {
           }}>
             <div>
               <h3 style={{ fontSize: '1.3rem', color: 'var(--text-primary)', marginBottom: '0.75rem', fontWeight: 700 }}>
-                {lang === 'en' ? '📷 My Lifestyle & Hobbies' : '📷 ไลฟ์สไตล์และกิจกรรมสุดโปรด'}
+                {lang === 'en' ? 'My Lifestyle & Travel' : 'บันทึกเรื่องราวความทรงจำ และไลฟ์สไตล์ กิจกรรมต่างๆ ของผม'}
               </h3>
               <p style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', lineHeight: '1.6', marginBottom: '1.5rem', maxWidth: '340px' }}>
                 {lang === 'en'
-                  ? 'Step outside the IDE! Explore my outdoor travel logs, classic street photography, and aesthetic pour-over coffee crafts.'
-                  : 'ก้าวออกจากคอมพิวเตอร์และโลกของการเขียนโค้ด! ร่วมแชร์ประสบการณ์เดินป่า ถ่ายรูปสตรีท และชงกาแฟพิเศษของผม'}
+                  ? 'Step away from the computer and the world of coding! Here, I share experiences beyond programming — from hiking and street photography to many other things I’m passionate about and would love to share with everyone.'
+                  : 'ก้าวออกจากคอมพิวเตอร์และโลกของการเขียนโค้ด! ร่วมแชร์ประสบการณ์ของชีวิตนอกเหนือจากเรื่องการเขียนโปรแกรม ไม่ว่าจะเป็น การเดินป่า ถ่ายรูปสตรีทและอื่นๆอีกมากมายที่ผมอยากแบ่งปันให้ทุกคนได้อ่านกันครับ'}
               </p>
             </div>
             <a href="/lifestyle" style={{
@@ -1138,16 +1101,16 @@ export default function Home() {
               boxShadow: '0 4px 15px rgba(187, 134, 252, 0.3)',
               transition: 'all 0.3s ease'
             }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-2px)';
-              e.currentTarget.style.boxShadow = '0 6px 20px rgba(187, 134, 252, 0.5)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = '0 4px 15px rgba(187, 134, 252, 0.3)';
-            }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 6px 20px rgba(187, 134, 252, 0.5)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 4px 15px rgba(187, 134, 252, 0.3)';
+              }}
             >
-              {lang === 'en' ? 'Explore My Life →' : 'สำรวจไลฟ์สไตล์ของผม →'}
+              {lang === 'en' ? 'Lifestyle and interests →' : 'ไลฟ์สไตล์ และความชอบของผม →'}
             </a>
           </div>
         </div>
@@ -1166,7 +1129,7 @@ export default function Home() {
       {/* Footer & Telemetry Mini Display */}
       <footer>
         <p>&copy; {new Date().getFullYear()} Chanchai Chakam. Built with Next.js.</p>
-        
+
         {/* Telemetry live status overlay inside footer */}
         <div style={{ marginTop: '0.75rem', fontSize: '0.72rem', color: 'var(--text-muted)', display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.25rem 0.65rem', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--card-border)', borderRadius: '12px' }}>
           <span className="pulse-active-dot" />
@@ -1204,7 +1167,7 @@ export default function Home() {
       {commandPaletteOpen && (
         <div className="command-palette-overlay" onClick={() => setCommandPaletteOpen(false)}>
           <div className="command-palette" onClick={(e) => e.stopPropagation()}>
-            
+
             {/* Live Analytics Dashboard inside Command Palette */}
             <div className="telemetry-widget">
               <div className="telemetry-title">

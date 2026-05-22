@@ -12,13 +12,6 @@ interface ExperienceItem {
   achievements: string[];
 }
 
-interface TestimonialItem {
-  text: string;
-  initials: string;
-  author: string;
-  role: string;
-}
-
 interface ExperienceProps {
   experiences: ExperienceItem[];
   expandedExp: Set<number>;
@@ -29,11 +22,7 @@ interface ExperienceProps {
     expandMore: string;
     techStack: string;
     achievements: string;
-    testimonialsTitle: string;
   };
-  testimonials: TestimonialItem[];
-  testimonialIndex: number;
-  setTestimonialIndex: (index: number) => void;
 }
 
 export const Experience: React.FC<ExperienceProps> = ({
@@ -41,9 +30,6 @@ export const Experience: React.FC<ExperienceProps> = ({
   expandedExp,
   toggleExpand,
   currentT,
-  testimonials,
-  testimonialIndex,
-  setTestimonialIndex
 }) => {
   return (
     <>
@@ -87,33 +73,6 @@ export const Experience: React.FC<ExperienceProps> = ({
               </div>
             </div>
           ))}
-        </div>
-      </section>
-
-      {/* Testimonials Section */}
-      <section className="testimonial-section animate-on-scroll">
-        <h2 className="section-title">{currentT.testimonialsTitle}</h2>
-        <div className="testimonial-carousel">
-          <div className="testimonial-card" key={testimonialIndex}>
-            <span className="testimonial-quote-mark">&ldquo;</span>
-            <p className="testimonial-text">{testimonials[testimonialIndex].text}</p>
-            <div className="testimonial-author">
-              <div className="testimonial-avatar">{testimonials[testimonialIndex].initials}</div>
-              <div className="testimonial-author-info">
-                <div className="testimonial-author-name">{testimonials[testimonialIndex].author}</div>
-                <div className="testimonial-author-role">{testimonials[testimonialIndex].role}</div>
-              </div>
-            </div>
-          </div>
-          <div className="testimonial-nav">
-            {testimonials.map((_, idx) => (
-              <button
-                key={idx}
-                className={`testimonial-dot${idx === testimonialIndex ? ' active' : ''}`}
-                onClick={() => setTestimonialIndex(idx)}
-              />
-            ))}
-          </div>
         </div>
       </section>
     </>

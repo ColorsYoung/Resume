@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 interface NavbarProps {
   activeSection: string;
@@ -28,18 +29,43 @@ export const Navbar: React.FC<NavbarProps> = ({
   handleMagneticMove,
   handleMagneticLeave
 }) => {
+  const pathname = usePathname();
+  const t = {
+    en: {
+      about: 'About',
+      experience: 'Experience',
+      projects: 'Projects',
+      skills: 'Skills',
+      blog: 'Blog',
+      lifestyle: 'Lifestyle',
+      contact: 'Contact'
+    },
+    th: {
+      about: 'เกี่ยวกับผม',
+      experience: 'ประสบการณ์',
+      projects: 'โปรเจกต์',
+      skills: 'ทักษะ',
+      blog: 'บล็อก',
+      lifestyle: 'ไลฟ์สไตล์',
+      contact: 'ติดต่อ'
+    }
+  };
+
+  const currentT = t[lang];
+
   return (
     <>
       {/* Modern Sticky Navigation */}
       <nav className="nav-container">
         {/* Desktop nav-links */}
         <div className="nav-links">
-          <a href="#about" className={`nav-link${activeSection === 'about' ? ' active' : ''}`}>About</a>
-          <a href="#experience" className={`nav-link${activeSection === 'experience' ? ' active' : ''}`}>Experience</a>
-          <a href="#projects" className={`nav-link${activeSection === 'projects' ? ' active' : ''}`}>Projects</a>
-          <a href="#tech" className={`nav-link${activeSection === 'tech' ? ' active' : ''}`}>Skills</a>
-          <Link href="/blog" className="nav-link">{lang === 'en' ? 'Interests' : 'สิ่งที่สนใจ'}</Link>
-          <a href="#contact" className={`nav-link${activeSection === 'contact' ? ' active' : ''}`}>Contact</a>
+          <a href="/#about" className={`nav-link${activeSection === 'about' ? ' active' : ''}`}>{currentT.about}</a>
+          <a href="/#experience" className={`nav-link${activeSection === 'experience' ? ' active' : ''}`}>{currentT.experience}</a>
+          <a href="/#projects" className={`nav-link${activeSection === 'projects' ? ' active' : ''}`}>{currentT.projects}</a>
+          <a href="/#tech" className={`nav-link${activeSection === 'tech' ? ' active' : ''}`}>{currentT.skills}</a>
+          <Link href="/blog" className={`nav-link${pathname === '/blog' ? ' active' : ''}`}>{currentT.blog}</Link>
+          <Link href="/lifestyle" className={`nav-link${pathname === '/lifestyle' ? ' active' : ''}`}>{currentT.lifestyle}</Link>
+          <a href="/#contact" className={`nav-link${activeSection === 'contact' ? ' active' : ''}`}>{currentT.contact}</a>
         </div>
 
         <div style={{ display: 'flex', gap: '0.65rem', alignItems: 'center' }}>
@@ -129,16 +155,17 @@ export const Navbar: React.FC<NavbarProps> = ({
       {/* Mobile Sliding Navigation Drawer */}
       <div className={`mobile-drawer${mobileMenuOpen ? ' open' : ''}`}>
         <div className="mobile-drawer-links">
-          <button onClick={() => handleMobileLinkClick('about')} className={`mobile-drawer-link${activeSection === 'about' ? ' active' : ''}`}>About</button>
-          <button onClick={() => handleMobileLinkClick('experience')} className={`mobile-drawer-link${activeSection === 'experience' ? ' active' : ''}`}>Experience</button>
-          <button onClick={() => handleMobileLinkClick('projects')} className={`mobile-drawer-link${activeSection === 'projects' ? ' active' : ''}`}>Projects</button>
-          <button onClick={() => handleMobileLinkClick('tech')} className={`mobile-drawer-link${activeSection === 'tech' ? ' active' : ''}`}>Skills</button>
-          <button onClick={() => { setMobileMenuOpen(false); }} className="mobile-drawer-link">
-            <Link href="/blog" style={{ color: 'inherit', textDecoration: 'none' }}>
-              {lang === 'en' ? 'Interests' : 'สิ่งที่สนใจ'}
-            </Link>
+          <button onClick={() => handleMobileLinkClick('about')} className={`mobile-drawer-link${activeSection === 'about' ? ' active' : ''}`}>{currentT.about}</button>
+          <button onClick={() => handleMobileLinkClick('experience')} className={`mobile-drawer-link${activeSection === 'experience' ? ' active' : ''}`}>{currentT.experience}</button>
+          <button onClick={() => handleMobileLinkClick('projects')} className={`mobile-drawer-link${activeSection === 'projects' ? ' active' : ''}`}>{currentT.projects}</button>
+          <button onClick={() => handleMobileLinkClick('tech')} className={`mobile-drawer-link${activeSection === 'tech' ? ' active' : ''}`}>{currentT.skills}</button>
+          <button onClick={() => { setMobileMenuOpen(false); }} className={`mobile-drawer-link${pathname === '/blog' ? ' active' : ''}`}>
+            <Link href="/blog" style={{ color: 'inherit', textDecoration: 'none' }}>{currentT.blog}</Link>
           </button>
-          <button onClick={() => handleMobileLinkClick('contact')} className={`mobile-drawer-link${activeSection === 'contact' ? ' active' : ''}`}>Contact</button>
+          <button onClick={() => { setMobileMenuOpen(false); }} className={`mobile-drawer-link${pathname === '/lifestyle' ? ' active' : ''}`}>
+            <Link href="/lifestyle" style={{ color: 'inherit', textDecoration: 'none' }}>{currentT.lifestyle}</Link>
+          </button>
+          <button onClick={() => handleMobileLinkClick('contact')} className={`mobile-drawer-link${activeSection === 'contact' ? ' active' : ''}`}>{currentT.contact}</button>
         </div>
 
         {/* Mobile Control Dashboard */}

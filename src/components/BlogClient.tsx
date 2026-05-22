@@ -225,6 +225,7 @@ export default function BlogClient({ articles }: { articles: Article[] }) {
 
   return (
     <div className="docs-container">
+      <div className="docs-container-noise" />
 
       {/* Top Navbar */}
       <header className="docs-navbar">
@@ -234,7 +235,7 @@ export default function BlogClient({ articles }: { articles: Article[] }) {
           </Link>
           <span style={{ color: 'var(--card-border)', fontSize: '1.2rem' }}>|</span>
           <span style={{ fontWeight: 800, fontSize: '1.1rem', background: 'linear-gradient(135deg, #fff 0%, var(--accent-light) 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-            {lang === 'en' ? 'Sharing Knowledge' : 'บทความที่อยากแบ่งปัน'}
+            {lang === 'en' ? 'Engineering Notes' : 'บันทึกวิศวกรรม'}
           </span>
         </div>
 
