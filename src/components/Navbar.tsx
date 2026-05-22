@@ -53,19 +53,27 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   const currentT = t[lang];
 
+  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+    e.preventDefault();
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <>
       {/* Modern Sticky Navigation */}
       <nav className="nav-container">
         {/* Desktop nav-links */}
         <div className="nav-links">
-          <a href="/#about" className={`nav-link${activeSection === 'about' ? ' active' : ''}`}>{currentT.about}</a>
-          <a href="/#experience" className={`nav-link${activeSection === 'experience' ? ' active' : ''}`}>{currentT.experience}</a>
-          <a href="/#projects" className={`nav-link${activeSection === 'projects' ? ' active' : ''}`}>{currentT.projects}</a>
-          <a href="/#tech" className={`nav-link${activeSection === 'tech' ? ' active' : ''}`}>{currentT.skills}</a>
+          <a href="#about" onClick={(e) => handleLinkClick(e, 'about')} className={`nav-link${activeSection === 'about' ? ' active' : ''}`}>{currentT.about}</a>
+          <a href="#experience" onClick={(e) => handleLinkClick(e, 'experience')} className={`nav-link${activeSection === 'experience' ? ' active' : ''}`}>{currentT.experience}</a>
+          <a href="#projects" onClick={(e) => handleLinkClick(e, 'projects')} className={`nav-link${activeSection === 'projects' ? ' active' : ''}`}>{currentT.projects}</a>
+          <a href="#tech" onClick={(e) => handleLinkClick(e, 'tech')} className={`nav-link${activeSection === 'tech' ? ' active' : ''}`}>{currentT.skills}</a>
           <Link href="/blog" className={`nav-link${pathname === '/blog' ? ' active' : ''}`}>{currentT.blog}</Link>
           <Link href="/lifestyle" className={`nav-link${pathname === '/lifestyle' ? ' active' : ''}`}>{currentT.lifestyle}</Link>
-          <a href="/#contact" className={`nav-link${activeSection === 'contact' ? ' active' : ''}`}>{currentT.contact}</a>
+          <a href="#contact" onClick={(e) => handleLinkClick(e, 'contact')} className={`nav-link${activeSection === 'contact' ? ' active' : ''}`}>{currentT.contact}</a>
         </div>
 
         <div style={{ display: 'flex', gap: '0.65rem', alignItems: 'center' }}>

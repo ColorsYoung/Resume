@@ -977,7 +977,7 @@ export default function Home() {
       />
 
       {/* About Me Section (Clean Centered Layout) */}
-      {/* <About currentT={currentT} lang={lang} /> */}
+      <About currentT={currentT} lang={lang} />
 
       {/* Experience Timeline */}
       <Experience
