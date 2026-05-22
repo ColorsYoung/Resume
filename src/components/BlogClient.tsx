@@ -56,6 +56,14 @@ export default function BlogClient({ articles }: { articles: Article[] }) {
     }
   }, [articles]);
 
+  // Scroll to top when article changes
+  useEffect(() => {
+    if (selectedArticleId) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [selectedArticleId]);
+
+
   const toggleTheme = () => {
     setTheme(prev => prev === 'dark' ? 'light' : 'dark');
   };
@@ -71,25 +79,22 @@ export default function BlogClient({ articles }: { articles: Article[] }) {
     }
   };
 
-  // Scroll to top when article changes
-  useEffect(() => {
-    if (!selectedArticleId) return;
+  const [showScrollTop, setShowScrollTop] = useState(false);
 
-    const scrollToTop = () => {
-      // 1. Try scrolling the content area div (internal scroll)
-      const contentArea = document.querySelector('.docs-content-area');
-      if (contentArea) {
-        contentArea.scrollTop = 0;
-      }
-      // 2. Also try scrolling the window (standard scroll)
-      window.scrollTo(0, 0);
+  // Handle Scroll to Top visibility
+  useEffect(() => {
+    const handleScroll = () => {
+      // Check window scroll position
+      setShowScrollTop(window.scrollY > 300);
     };
 
-    // Execute immediately and again after a short delay to ensure DOM is ready
-    scrollToTop();
-    const timeout = setTimeout(scrollToTop, 10);
-    return () => clearTimeout(timeout);
-  }, [selectedArticleId]);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   // Find active article
   const activeArticle = useMemo(() => {
@@ -235,7 +240,7 @@ export default function BlogClient({ articles }: { articles: Article[] }) {
           </Link>
           <span style={{ color: 'var(--card-border)', fontSize: '1.2rem' }}>|</span>
           <span style={{ fontWeight: 800, fontSize: '1.1rem', background: 'linear-gradient(135deg, #fff 0%, var(--accent-light) 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-            {lang === 'en' ? 'Engineering Notes' : 'บันทึกวิศวกรรม'}
+            {lang === 'en' ? 'Interesting Articles' : 'บทความน่าสนใจ'}
           </span>
         </div>
 
@@ -448,6 +453,17 @@ export default function BlogClient({ articles }: { articles: Article[] }) {
         )}
 
       </div>
+      
+      {/* Scroll to Top Button */}
+      <button 
+        className={`back-to-top ${showScrollTop ? 'visible' : ''}`}
+        onClick={scrollToTop}
+        aria-label="Scroll to top"
+      >
+        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="18 15 12 9 6 15"></polyline>
+        </svg>
+      </button>
     </div>
   );
 }

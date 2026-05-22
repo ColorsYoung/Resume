@@ -2489,12 +2489,11 @@ footer {
   }
 }
 
-/* ===== Blog/Lifestyle Content Styling (Friendly Font) ===== */
-.blog-article-body, 
+/* ===== Blog/Lifestyle Content Styling (Reverted) ===== */
+.blog-article-body,
 .lifestyle-details-content {
-  font-family: var(--font-friendly);
+  font-family: inherit;
 }
-
 .blog-article-body p {
   margin-bottom: 1.25rem;
 }
@@ -2669,6 +2668,7 @@ footer {
   flex-direction: column;
   position: relative;
   overflow: hidden;
+  height: 100vh; /* Added this to constrain height */
 }
 
 /* WOW Background Layer 1: Animated Mesh Gradients */
@@ -2806,6 +2806,8 @@ footer {
   flex: 1;
   position: relative;
   z-index: 10;
+  height: calc(100vh - 64px); /* Constrain height to viewport */
+  overflow: hidden; /* Prevent parent scrolling */
 }
 
 /* Left Sidebar - High Transparency Glass */
@@ -2813,10 +2815,8 @@ footer {
   width: 300px;
   flex-shrink: 0;
   border-right: 1px solid var(--card-border);
-  height: calc(100vh - 64px);
-  position: sticky;
-  top: 64px;
-  overflow-y: auto;
+  height: 100%; /* Fill parent */
+  overflow-y: auto; /* Scroll internally */
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
