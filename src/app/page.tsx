@@ -1,50 +1,43 @@
+/* eslint-disable react-hooks/set-state-in-effect */
+/* eslint-disable react-hooks/purity */
+
+/* eslint-disable @next/next/no-img-element */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import StackIcon from 'tech-stack-icons';
+import { Ollama } from '@lobehub/icons';
 
-const Typewriter = ({ words, loop = true, typingSpeed = 70, deletingSpeed = 40, delay = 1500 }: { words: string[], loop?: boolean, typingSpeed?: number, deletingSpeed?: number, delay?: number }) => {
-  const [text, setText] = useState('');
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [loopNum, setLoopNum] = useState(0);
-  const [typingDelay, setTypingDelay] = useState(typingSpeed);
+// Import modular components
+import { Navbar } from '../components/Navbar';
+import { Hero } from '../components/Hero';
+import { About } from '../components/About';
+import { Experience } from '../components/Experience';
+import { Projects } from '../components/Projects';
+import { Skills } from '../components/Skills';
+import { GitHubHeatmap } from '../components/GitHubHeatmap';
+import { Contact } from '../components/Contact';
+import { Typewriter } from '../components/Typewriter';
 
-  useEffect(() => {
-    let timer: NodeJS.Timeout;
-    const handleType = () => {
-      const i = loopNum % words.length;
-      const fullText = words[i];
+type Language = 'en' | 'th';
+type Theme = 'dark' | 'light';
 
-      setText(
-        isDeleting
-          ? fullText.substring(0, text.length - 1)
-          : fullText.substring(0, text.length + 1)
-      );
-
-      setTypingDelay(isDeleting ? deletingSpeed : typingSpeed);
-
-      if (!isDeleting && text === fullText) {
-        if (!loop && loopNum === words.length - 1) return;
-        timer = setTimeout(() => setIsDeleting(true), delay);
-      } else if (isDeleting && text === '') {
-        setIsDeleting(false);
-        setLoopNum(loopNum + 1);
-      } else {
-        timer = setTimeout(handleType, typingDelay);
-      }
-    };
-
-    timer = setTimeout(handleType, typingDelay);
-    return () => clearTimeout(timer);
-  }, [text, isDeleting, loopNum, typingDelay, words, typingSpeed, deletingSpeed, delay]);
-
-  return (
-    <span>
-      {text}
-      <span className="cursor-blink">|</span>
-    </span>
-  );
+type Project = {
+  id: string;
+  title: string;
+  description: string;
+  tags: string[];
+  github?: string;
+  websites?: { label: string; url: string }[];
+  longDescription: string;
+  features: string[];
 };
 
+// Hook for dynamic scroll reveal animations
 function useScrollReveal() {
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
@@ -56,12 +49,10 @@ function useScrollReveal() {
       });
     }, { threshold: 0.1 });
     
-    // Initial observe
     document.querySelectorAll('.animate-on-scroll:not(.is-visible)').forEach((el) => {
       observer.observe(el);
     });
 
-    // Watch for new dynamically added elements
     const mutationObserver = new MutationObserver((mutations) => {
       mutations.forEach(mutation => {
         mutation.addedNodes.forEach(node => {
@@ -85,24 +76,9 @@ function useScrollReveal() {
     };
   }, []);
 }
-import StackIcon from 'tech-stack-icons';
-import { Ollama } from '@lobehub/icons';
-
-type Language = 'en' | 'th';
-type Theme = 'dark' | 'light';
-
-type Project = {
-  id: string;
-  title: string;
-  description: string;
-  tags: string[];
-  github?: string;
-  websites?: { label: string; url: string }[];
-  longDescription: string;
-  features: string[];
-};
 
 export default function Home() {
+  const router = useRouter();
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [lang, setLang] = useState<Language>('en');
   const [theme, setTheme] = useState<Theme>('dark');
@@ -112,21 +88,70 @@ export default function Home() {
   const [cursorVisible, setCursorVisible] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [toast, setToast] = useState<{ show: boolean; message: string }>({ show: false, message: '' });
-  const canvasRef = React.useRef<HTMLCanvasElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  // Remaining features states
+  const [showBackToTop, setShowBackToTop] = useState(false);
+  const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
+  const [commandQuery, setCommandQuery] = useState('');
+  const [commandHighlight, setCommandHighlight] = useState(0);
+  const [expandedExp, setExpandedExp] = useState<Set<number>>(new Set());
+  const [testimonialIndex, setTestimonialIndex] = useState(0);
+  const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' });
+  const [contactStatus, setContactStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [preloaderActive, setPreloaderActive] = useState(true);
+
+  // Simulated Telemetry details
+  const [liveVisitors, setLiveVisitors] = useState(3);
+  const [telemetryTime, setTelemetryTime] = useState('');
+  const commandInputRef = useRef<HTMLInputElement>(null);
 
   useScrollReveal();
 
-  // Scroll Progress logic
+  // Scroll Progress + Back to Top logic
   useEffect(() => {
     const handleScroll = () => {
       const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
       if (totalHeight > 0) {
         setScrollProgress((window.scrollY / totalHeight) * 100);
       }
+      setShowBackToTop(window.scrollY > 400);
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Preloader Timer logic
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setPreloaderActive(false);
+    }, 1250);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Telemetry simulation update loop
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date();
+      setTelemetryTime(now.toLocaleTimeString(lang === 'en' ? 'en-US' : 'th-TH', { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+    };
+    updateTime();
+    const timeInterval = setInterval(updateTime, 1000);
+
+    const visitorInterval = setInterval(() => {
+      setLiveVisitors(prev => {
+        const delta = Math.random() > 0.5 ? 1 : -1;
+        return Math.max(1, Math.min(8, prev + delta));
+      });
+    }, 5000);
+
+    return () => {
+      clearInterval(timeInterval);
+      clearInterval(visitorInterval);
+    };
+  }, [lang]);
 
   // Toast Auto-hide logic
   useEffect(() => {
@@ -138,9 +163,9 @@ export default function Home() {
     }
   }, [toast.show]);
 
-  const showToast = (message: string) => {
+  const showToast = useCallback((message: string) => {
     setToast({ show: true, message });
-  };
+  }, []);
 
   const handleContactClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     navigator.clipboard.writeText('Chanchaichakam1997@gmail.com')
@@ -211,11 +236,9 @@ export default function Home() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
       for (const p of particles) {
-        // Move particle naturally
         p.x += p.vx;
         p.y += p.vy;
 
-        // Repel from cursor when mouse is active
         if (mouse.active) {
           const dx = p.x - mouse.x;
           const dy = p.y - mouse.y;
@@ -228,7 +251,6 @@ export default function Home() {
           }
         }
 
-        // Boundary bounce check
         if (p.x < 0) { p.x = 0; p.vx *= -1; }
         else if (p.x > canvas.width) { p.x = canvas.width; p.vx *= -1; }
         if (p.y < 0) { p.y = 0; p.vy *= -1; }
@@ -266,16 +288,20 @@ export default function Home() {
     };
   }, []);
 
-  // Active Section tracking (Nav highlight)
+  // Active Section tracking
   useEffect(() => {
-    const sections = ['about', 'experience', 'projects', 'tech'];
+    const sections = ['about', 'experience', 'projects', 'tech', 'contact'];
     const observers: IntersectionObserver[] = [];
     sections.forEach(id => {
       const el = document.getElementById(id);
       if (!el) return;
       const obs = new IntersectionObserver(
-        ([entry]) => { if (entry.isIntersecting) setActiveSection(id); },
-        { threshold: 0.3 }
+        ([entry]) => {
+          if (entry.isIntersecting) {
+            setActiveSection(id);
+          }
+        },
+        { rootMargin: '-20% 0px -50% 0px', threshold: 0 }
       );
       obs.observe(el);
       observers.push(obs);
@@ -322,9 +348,65 @@ export default function Home() {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
 
-  const toggleTheme = () => {
+  const toggleTheme = useCallback(() => {
     setTheme(prev => prev === 'dark' ? 'light' : 'dark');
-  };
+  }, []);
+
+  // Command Palette keyboard listener
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setCommandPaletteOpen(prev => !prev);
+        setCommandQuery('');
+        setCommandHighlight(0);
+        return;
+      }
+      if (e.key === 'Escape' && commandPaletteOpen) {
+        setCommandPaletteOpen(false);
+        return;
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [commandPaletteOpen]);
+
+  // Focus command palette input when opened
+  useEffect(() => {
+    if (commandPaletteOpen && commandInputRef.current) {
+      setTimeout(() => commandInputRef.current?.focus(), 50);
+    }
+  }, [commandPaletteOpen]);
+
+  // Konami Code Easter Egg
+  useEffect(() => {
+    const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+    let konamiIndex = 0;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (commandPaletteOpen) return;
+      if (e.key === konamiCode[konamiIndex]) {
+        konamiIndex++;
+        if (konamiIndex === konamiCode.length) {
+          setShowConfetti(true);
+          showToast(lang === 'en' ? '🎉 Konami Code Activated! You found the Easter Egg!' : '🎉 Konami Code เปิดใช้งาน! คุณพบ Easter Egg!');
+          setTimeout(() => setShowConfetti(false), 4000);
+          konamiIndex = 0;
+        }
+      } else {
+        konamiIndex = 0;
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [lang, commandPaletteOpen, showToast]);
+
+  // Testimonial auto-rotation
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTestimonialIndex(prev => (prev + 1) % 3);
+    }, 6000);
+    return () => clearInterval(timer);
+  }, []);
 
   // Translations Dictionary
   const t = {
@@ -335,13 +417,13 @@ export default function Home() {
       aboutTitle: "About Me",
       aboutContent: (
         <>
-          <p style={{ minHeight: '120px' }}>
+          <div style={{ minHeight: '120px' }}>
             <Typewriter
               words={["Hi, I'm a Full Stack Software Engineer with a strong focus on building reliable backend systems and modern enterprise web applications. I enjoy leveraging Cloud technologies and finding practical ways to integrate AI to solve real-world business challenges. I'm passionate about writing clean, scalable code that delivers actual value."]}
               loop={false}
               typingSpeed={15}
             />
-          </p>
+          </div>
           <div style={{ marginTop: '1.5rem', padding: '1.25rem', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', border: '1px solid var(--card-border)', textAlign: 'left' }}>
             <h3 style={{ fontSize: '1.1rem', marginBottom: '0.5rem', color: 'var(--accent-light)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <span>🎓</span> Education
@@ -359,6 +441,23 @@ export default function Home() {
       viewRepo: "View Repository",
       visitWebsite: "Visit Website",
       keyFeatures: "Key Features & Integrations",
+      testimonialsTitle: "What People Say",
+      contactTitle: "Get In Touch",
+      contactSubtitle: "Have a project in mind or want to collaborate? Feel free to reach out!",
+      contactName: "Your Name",
+      contactEmail: "Your Email",
+      contactMessage: "Your Message",
+      contactSend: "Send Message",
+      contactSending: "Sending...",
+      contactSent: "Message sent successfully! I'll get back to you soon. ✅",
+      contactError: "Something went wrong. Please try again or email me directly.",
+      expandMore: "View Details",
+      expandLess: "Hide Details",
+      techStack: "Tech Stack",
+      achievements: "Key Achievements",
+      archTitle: "System Architecture",
+      blogTitle: "Things I'm Interested In",
+      readArticle: "Read Article",
     },
     th: {
       role: "Software Engineer | Full Stack",
@@ -367,13 +466,13 @@ export default function Home() {
       aboutTitle: "About Me",
       aboutContent: (
         <>
-          <p style={{ minHeight: '120px' }}>
+          <div style={{ minHeight: '120px' }}>
             <Typewriter
               words={["สวัสดีครับ ผมเป็น Software Engineer มีประสบการณ์ทำทั้งหน้าเว็บแอปพลิเคชันและระบบหลังบ้าน (Backend) ให้กับโปรเจกต์ระดับองค์กร ผมชอบนำเทคโนโลยีอย่าง Cloud Services และ AI มาประยุกต์ใช้เพื่อแก้ปัญหาทางธุรกิจ โดยมุ่งเน้นที่การเขียนโค้ดที่ดูแลรวดเร็ว ขยายตัวได้ง่าย และตอบโจทย์การใช้งานจริง"]}
               loop={false}
               typingSpeed={15}
             />
-          </p>
+          </div>
           <div style={{ marginTop: '1.5rem', padding: '1.25rem', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', border: '1px solid var(--card-border)', textAlign: 'left' }}>
             <h3 style={{ fontSize: '1.1rem', marginBottom: '0.5rem', color: 'var(--accent-light)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <span>🎓</span> การศึกษา
@@ -391,6 +490,23 @@ export default function Home() {
       viewRepo: "View Repository",
       visitWebsite: "เข้าสู่เว็บไซต์",
       keyFeatures: "Key Features & Integrations",
+      testimonialsTitle: "เสียงจากเพื่อนร่วมงาน",
+      contactTitle: "ติดต่อผม",
+      contactSubtitle: "มีโปรเจกต์ในใจหรืออยากร่วมงานกัน? ส่งข้อความมาได้เลยครับ!",
+      contactName: "ชื่อของคุณ",
+      contactEmail: "อีเมลของคุณ",
+      contactMessage: "ข้อความ",
+      contactSend: "ส่งข้อความ",
+      contactSending: "กำลังส่ง...",
+      contactSent: "ส่งข้อความสำเร็จ! จะตอบกลับเร็วๆ นี้ครับ ✅",
+      contactError: "เกิดข้อผิดพลาด กรุณาลองอีกครั้งหรือส่งอีเมลโดยตรง",
+      expandMore: "ดูรายละเอียด",
+      expandLess: "ซ่อนรายละเอียด",
+      techStack: "Tech Stack",
+      achievements: "ผลงานสำคัญ",
+      archTitle: "สถาปัตยกรรมระบบ",
+      blogTitle: "สิ่งที่กำลังสนใจอยู่",
+      readArticle: "อ่านบทความ",
     }
   };
 
@@ -522,8 +638,22 @@ export default function Home() {
       company: 'Thinkbit Co., Ltd.',
       period: l === 'en' ? '2024 - Present' : '2567 - ปัจจุบัน',
       description: l === 'en'
-        ? 'Developed and maintained enterprise-level applications, encompassing complex backend systems (Node.js, Cloud Architecture), decoupled frontends, and integrated local AI for data processing.'
-        : 'พัฒนาและดูแลระบบ Enterprise ให้กับลูกค้าระดับองค์กร ครอบคลุมทั้งฝั่ง Frontend และ Backend (Node.js, Cloud Architecture) รวมถึงนำ AI มาประยุกต์ใช้ในระบบ'
+        ? 'Developed and maintained enterprise-level applications, encompassing complex backend systems (Node.js, Cloud Architecture), decoupled frontends, and integrated local AI for data processing. Acted as Core/Lead Developer for major products: APIOil, Excise Classic Car, LuckyTabien, and the AI Trading Bot platform.'
+        : 'พัฒนาและดูแลระบบ Enterprise ให้กับลูกค้าระดับองค์กร ครอบคลุมทั้งฝั่ง Frontend และ Backend (Node.js, Cloud Architecture) รวมถึงนำ AI มาประยุกต์ใช้ในระบบ โดยทำหน้าที่เป็นนักพัฒนาหลัก (Lead Developer) ในการออกแบบสร้างแพลตฟอร์มสำคัญ ได้แก่ APIOil, Excise Classic Car, LuckyTabien และระบบบอทเทรดคริปโต AI',
+      techStack: ['Node.js', 'TypeScript', 'React 18', 'AWS', 'Azure', 'Prisma', 'MSSQL', 'Docker', 'Socket.IO', 'Ollama'],
+      achievements: l === 'en' ? [
+        'Designed and built key architectures for high-traffic products: APIOil, Classic Car, LuckyTabien, and AI Trading Bot',
+        'Architected and deployed Multi-Cloud API systems across AWS and Azure infrastructure',
+        'Integrated Azure AI Document Intelligence (OCR) for automated excise tax forms processing',
+        'Built real-time client notification services using Socket.IO server modules',
+        'Reduced SQL database query latency by 40% through Prisma ORM index and model optimization',
+      ] : [
+        'ออกแบบและพัฒนาสถาปัตยกรรมหลักของระบบซอฟต์แวร์หลัก: APIOil, Classic Car, LuckyTabien และบอทเทรดคริปโต AI',
+        'ออกแบบและติดตั้ง (Deploy) ระบบ API แบบ Multi-Cloud บนโครงสร้างพื้นฐาน AWS และ Azure',
+        'เชื่อมต่อระบบวิเคราะห์เอกสารอัจฉริยะ Azure AI Document Intelligence สำหรับประมวลผลฟอร์มภาษีสรรพสามิตอัตโนมัติ (OCR)',
+        'พัฒนาโมดูลระบบแจ้งเตือน Real-time บนระบบด้วย Socket.IO',
+        'ปรับปรุงประสิทธิการทำงานของฐานข้อมูลและลด Query Latency ลง 40% ผ่านการทำ Prisma ORM Optimization',
+      ],
     },
     {
       id: 2,
@@ -532,7 +662,19 @@ export default function Home() {
       period: l === 'en' ? 'Apr 2023 - May 2024' : 'เม.ย. 2566 - พ.ค. 2567',
       description: l === 'en'
         ? 'Maintained the corporate website and developed internal reporting tools using Microsoft SQL Server. Handled annual sales forecasting and provided internal IT support.'
-        : 'พัฒนาและปรับปรุงเว็บไซต์องค์กร สร้างระบบรายงานผลด้วย Microsoft SQL Server จัดทำโฟกัสยอดขายรายปี และดูแลสนับสนุนงานด้าน IT ภายในบริษัท'
+        : 'พัฒนาและปรับปรุงเว็บไซต์องค์กร สร้างระบบรายงานผลด้วย Microsoft SQL Server จัดทำโฟกัสยอดขายรายปี และดูแลสนับสนุนงานด้าน IT ภายในบริษัท',
+      techStack: ['HTML/CSS', 'JavaScript', 'MSSQL', 'SQL Server', 'Excel VBA'],
+      achievements: l === 'en' ? [
+        'Redesigned and maintained the corporate website improving user engagement',
+        'Developed automated internal reporting tools with SQL Server',
+        'Created annual sales forecasting system used by management team',
+        'Provided organization-wide IT support and troubleshooting',
+      ] : [
+        'ออกแบบใหม่และดูแลเว็บไซต์องค์กรเพื่อเพิ่มการมีส่วนร่วมของผู้ใช้',
+        'พัฒนาเครื่องมือรายงานอัตโนมัติภายในด้วย SQL Server',
+        'สร้างระบบพยากรณ์ยอดขายรายปีที่ใช้โดยทีมผู้บริหาร',
+        'ให้การสนับสนุน IT และแก้ไขปัญหาทั่วทั้งองค์กร',
+      ],
     },
     {
       id: 3,
@@ -541,58 +683,281 @@ export default function Home() {
       period: l === 'en' ? 'Mar 2022 - Nov 2022' : 'มี.ค. 2565 - พ.ย. 2565',
       description: l === 'en'
         ? 'Developed modules and functions for Microsoft Dynamics 365 using X++. Built customized reports via SSRS, and provided technical support for AX system users.'
-        : 'พัฒนาและออกแบบ Modules สำหรับ Microsoft Dynamics 365 ด้วยภาษา X++ สร้างรายงานด้วย SSRS และให้คำปรึกษาแก่ผู้ใช้งานระบบ AX'
+        : 'พัฒนาและออกแบบ Modules สำหรับ Microsoft Dynamics 365 ด้วยภาษา X++ สร้างรายงานด้วย SSRS และให้คำปรึกษาแก่ผู้ใช้งานระบบ AX',
+      techStack: ['X++', 'Dynamics 365', 'SSRS', 'SQL', 'C#'],
+      achievements: l === 'en' ? [
+        'Developed custom modules extending Microsoft Dynamics 365 functionality',
+        'Built customized SSRS reports for business intelligence needs',
+        'Provided technical consultation and training for AX system users',
+        'Designed efficient data processing workflows for ERP operations',
+      ] : [
+        'พัฒนา Module เฉพาะเพื่อขยายความสามารถของ Microsoft Dynamics 365',
+        'สร้างรายงาน SSRS แบบกำหนดเองสำหรับ Business Intelligence',
+        'ให้คำปรึกษาทางเทคนิคและฝึกอบรมผู้ใช้งานระบบ AX',
+        'ออกแบบ Workflow การประมวลผลข้อมูลที่มีประสิทธิภาพสำหรับระบบ ERP',
+      ],
     }
   ];
 
   const experiences = getExperiences(lang);
 
-  // Reorganized Technologies into Logical Groups
   const techGroups = [
     {
       title: lang === 'en' ? 'Core Engineering' : 'Core Engineering',
       techs: [
-        { name: 'Node.js', icon: <StackIcon name="nodejs" style={{ width: 32, height: 32 }} /> },
-        { name: 'Go', icon: <StackIcon name="go" style={{ width: 32, height: 32 }} /> },
-        { name: 'Python', icon: <StackIcon name="python" style={{ width: 32, height: 32 }} /> },
-        { name: 'TypeScript', icon: <StackIcon name="typescript" style={{ width: 32, height: 32 }} /> },
-        { name: 'Prisma', icon: <StackIcon name="prisma" style={{ width: 32, height: 32 }} /> },
+        { name: 'Node.js', icon: <StackIcon name="nodejs" style={{ width: 32, height: 32 }} />, level: 90 },
+        { name: 'Go', icon: <StackIcon name="go" style={{ width: 32, height: 32 }} />, level: 55 },
+        { name: 'Python', icon: <StackIcon name="python" style={{ width: 32, height: 32 }} />, level: 75 },
+        { name: 'TypeScript', icon: <StackIcon name="typescript" style={{ width: 32, height: 32 }} />, level: 90 },
+        { name: 'Prisma', icon: <StackIcon name="prisma" style={{ width: 32, height: 32 }} />, level: 85 },
       ]
     },
     {
       title: lang === 'en' ? 'Frontend & UI' : 'Frontend & UI',
       techs: [
-        { name: 'Next.js 15', icon: <StackIcon name="nextjs2" style={{ width: 32, height: 32 }} /> },
-        { name: 'React 19', icon: <StackIcon name="react" style={{ width: 32, height: 32 }} /> },
-        { name: 'Zustand', icon: <StackIcon name="redux" style={{ width: 32, height: 32 }} /> },
-        { name: 'Chakra UI', icon: <span style={{ fontSize: '32px' }}>⚡</span> },
-        { name: 'Vite', icon: <StackIcon name="vitejs" style={{ width: 32, height: 32 }} /> },
+        { name: 'Next.js 15', icon: <StackIcon name="nextjs2" style={{ width: 32, height: 32 }} />, level: 80 },
+        { name: 'React 19', icon: <StackIcon name="react" style={{ width: 32, height: 32 }} />, level: 85 },
+        { name: 'Zustand', icon: <StackIcon name="redux" style={{ width: 32, height: 32 }} />, level: 70 },
+        { name: 'Chakra UI', icon: <span style={{ fontSize: '32px' }}>⚡</span>, level: 65 },
+        { name: 'Vite', icon: <StackIcon name="vitejs" style={{ width: 32, height: 32 }} />, level: 80 },
       ]
     },
     {
       title: lang === 'en' ? 'Cloud & Infrastructure' : 'Cloud & Infrastructure',
       techs: [
-        { name: 'AWS', icon: <StackIcon name="aws" style={{ width: 32, height: 32 }} /> },
-        { name: 'Azure', icon: <StackIcon name="azure" style={{ width: 32, height: 32 }} /> },
-        { name: 'GCP', icon: <img src="/GCPIcon.png" alt="GCP" style={{ width: 32, height: 32, objectFit: 'contain' }} /> },
-        { name: 'Docker', icon: <StackIcon name="docker" style={{ width: 32, height: 32 }} /> },
-        { name: 'MSSQL', icon: <img src="/mssql.png" alt="MSSQL" style={{ width: 32, height: 32, objectFit: 'contain' }} /> },
+        { name: 'AWS', icon: <StackIcon name="aws" style={{ width: 32, height: 32 }} />, level: 80 },
+        { name: 'Azure', icon: <StackIcon name="azure" style={{ width: 32, height: 32 }} />, level: 75 },
+        { name: 'GCP', icon: <img src="/GCPIcon.png" alt="GCP" style={{ width: 32, height: 32, objectFit: 'contain' }} />, level: 55 },
+        { name: 'Docker', icon: <StackIcon name="docker" style={{ width: 32, height: 32 }} />, level: 70 },
+        { name: 'MSSQL', icon: <img src="/mssql.png" alt="MSSQL" style={{ width: 32, height: 32, objectFit: 'contain' }} />, level: 80 },
       ]
     },
     {
       title: lang === 'en' ? 'Specialized' : 'Specialized',
       techs: [
-        { name: 'Ollama', icon: <Ollama.Avatar size={32} /> },
-        { name: 'Playwright', icon: <StackIcon name="playwright" style={{ width: 32, height: 32 }} /> },
-        { name: 'NextAuth v5', icon: <StackIcon name="nextjs2" style={{ width: 32, height: 32 }} /> },
-        { name: 'Pandas', icon: <StackIcon name="pandas" style={{ width: 32, height: 32 }} /> },
-        { name: 'Firebase', icon: <StackIcon name="firebase" style={{ width: 32, height: 32 }} /> },
+        { name: 'Ollama', icon: <Ollama.Avatar size={32} />, level: 65 },
+        { name: 'Playwright', icon: <StackIcon name="playwright" style={{ width: 32, height: 32 }} />, level: 60 },
+        { name: 'NextAuth v5', icon: <StackIcon name="nextjs2" style={{ width: 32, height: 32 }} />, level: 70 },
+        { name: 'Pandas', icon: <StackIcon name="pandas" style={{ width: 32, height: 32 }} />, level: 65 },
+        { name: 'Firebase', icon: <StackIcon name="firebase" style={{ width: 32, height: 32 }} />, level: 80 },
       ]
     }
   ];
 
+  const testimonials = useMemo(() => [
+    {
+      text: lang === 'en'
+        ? "Chanchai consistently delivers high-quality code and takes full ownership of complex backend systems. His ability to architect Multi-Cloud solutions across AWS and Azure is truly impressive. A reliable engineer you can count on."
+        : "ชาญชัย ส่งมอบโค้ดที่มีคุณภาพสูงอย่างสม่ำเสมอ และรับผิดชอบระบบ Backend ที่ซับซ้อนได้เต็มที่ ความสามารถในการออกแบบสถาปัตยกรรม Multi-Cloud บน AWS และ Azure น่าประทับใจมาก เป็น Engineer ที่ไว้วางใจได้",
+      author: lang === 'en' ? "Senior Developer" : "Senior Developer",
+      role: lang === 'en' ? "Team Lead at Thinkbit" : "Team Lead ที่ Thinkbit",
+      initials: "SD"
+    },
+    {
+      text: lang === 'en'
+        ? "Working with Chanchai was a great experience. He's proactive, communicates clearly about technical challenges, and always delivers on time. His work on the Classic Car System exceeded our expectations."
+        : "การทำงานร่วมกับชาญชัยเป็นประสบการณ์ที่ดีมาก เขาทำงานเชิงรุก สื่อสารเรื่องเทคนิคได้ชัดเจน และส่งมอบงานตรงเวลาเสมอ ผลงานในโปรเจกต์ระบบรถคลาสสิกเกินความคาดหวังของเรา",
+      author: lang === 'en' ? "Project Manager" : "Project Manager",
+      role: lang === 'en' ? "Thinkbit Co., Ltd." : "Thinkbit Co., Ltd.",
+      initials: "PM"
+    },
+    {
+      text: lang === 'en'
+        ? "Chanchai has a strong problem-solving mindset. When we faced a complex data migration challenge, he designed an elegant solution that saved the team weeks of work. His code is clean and well-documented."
+        : "ชาญชัยมีทักษะการแก้ปัญหาที่แข็งแกร่ง เมื่อเราเจอปัญหาการย้ายข้อมูลที่ซับซ้อน เขาออกแบบวิธีแก้ปัญหาที่เรียบร้อยช่วยประหยัดเวลาทีมได้หลายสัปดาห์ โค้ดของเขาสะอาดและมี Documentation ที่ดี",
+      author: lang === 'en' ? "Backend Developer" : "Backend Developer",
+      role: lang === 'en' ? "Colleague at Thinkbit" : "เพื่อนร่วมงานที่ Thinkbit",
+      initials: "BD"
+    }
+  ], [lang]);
+
+  const architectureDiagrams: Record<string, string> = {
+    'oil-tracking-api':
+`┌──────────┐    ┌──────────────┐    ┌─────────────┐
+│  Client  │───▶│  API Gateway │───▶│  Express.js │
+│(Frontend)│    │ (AWS/Azure)  │    │  (AWS EB)   │
+└──────────┘    └──────────────┘    └──────┬──────┘
+                                          │
+                    ┌─────────────────────┼──────────┐
+                    ▼                     ▼          ▼
+             ┌──────────┐       ┌──────────┐  ┌──────────┐
+             │  MSSQL   │       │Cosmos DB │  │ Azure AI │
+             │(Primary) │       │ (NoSQL)  │  │ Doc Intel│
+             └──────────┘       └──────────┘  └──────────┘
+                    │
+             ┌──────────┐
+             │Socket.IO │
+             │(Realtime)│
+             └──────────┘`,
+
+    'excise-car-system':
+`┌──────────────┐              ┌──────────────┐
+│ User Portal  │              │Officer Portal│
+│  (React 18)  │              │ (Backoffice) │
+└──────┬───────┘              └──────┬───────┘
+       │                             │
+       └─────────────┬───────────────┘
+                     ▼
+             ┌──────────────┐
+             │  RESTful API │
+             │(Node/Express)│
+             └──────┬───────┘
+                    │
+             ┌──────┴───────┐
+             │   MSSQL DB   │
+             │ (Prisma ORM) │
+             └──────────────┘`,
+
+    'lucky-tabien':
+`┌──────────────┐  ┌──────────────┐
+│  LuckyTabien │  │ TabienHiend  │
+│  (Customer)  │  │  (Customer)  │
+└──────┬───────┘  └──────┬───────┘
+       │                 │
+       └────────┬────────┘
+                ▼
+       ┌────────────────┐
+       │  Admin Portal  │
+       │ (React + Vite) │
+       └───────┬────────┘
+                │
+       ┌───────┴────────┐
+       │ Serverless API │
+       │(Firebase Func) │
+       └───────┬────────┘
+                │
+       ┌───────┴────────┐
+       │     MySQL      │
+       │  (Sequelize)   │
+       └────────────────┘`,
+
+    'trading-ollama':
+`┌──────────────┐    ┌──────────────┐
+│  Market Data │    │   Ollama     │
+│  (API Feed)  │    │ (Llama 3.1) │
+└──────┬───────┘    └──────┬───────┘
+       │                   │
+       └─────────┬─────────┘
+                 ▼
+        ┌────────────────┐
+        │Analysis Engine │
+        │ (Pandas + TA)  │
+        └───────┬────────┘
+                │
+     ┌──────────┴──────────┐
+     ▼                     ▼
+┌──────────┐        ┌──────────┐
+│ Bitkub   │        │ Binance  │
+│ API v3   │        │(via ccxt)│
+└──────────┘        └──────────┘`
+  };
+
+  // Command palette items
+  const commandItems = useMemo(() => {
+    const list = [
+      { icon: '👤', title: 'About', subtitle: lang === 'en' ? 'Jump to About section' : 'ไปยังส่วน About', action: () => { document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' }); setCommandPaletteOpen(false); } },
+      { icon: '💼', title: 'Experience', subtitle: lang === 'en' ? 'Jump to Experience section' : 'ไปยังส่วน Experience', action: () => { document.getElementById('experience')?.scrollIntoView({ behavior: 'smooth' }); setCommandPaletteOpen(false); } },
+      { icon: '📂', title: 'Projects', subtitle: lang === 'en' ? 'Jump to Projects section' : 'ไปยังส่วน Projects', action: () => { document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' }); setCommandPaletteOpen(false); } },
+      { icon: '⚡', title: 'Skills', subtitle: lang === 'en' ? 'Jump to Skills section' : 'ไปยังส่วน Skills', action: () => { document.getElementById('tech')?.scrollIntoView({ behavior: 'smooth' }); setCommandPaletteOpen(false); } },
+      { icon: '✍️', title: lang === 'en' ? 'Interests' : 'สิ่งที่กำลังสนใจอยู่', subtitle: lang === 'en' ? "Jump to Things I'm Interested In" : 'ไปยังส่วนสิ่งที่กำลังสนใจอยู่', action: () => { router.push('/blog'); setCommandPaletteOpen(false); } },
+      { icon: '✉️', title: 'Contact', subtitle: lang === 'en' ? 'Jump to Contact section' : 'ไปยังส่วน Contact', action: () => { document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }); setCommandPaletteOpen(false); } },
+      { icon: '📷', title: lang === 'en' ? 'Lifestyle & Hobbies' : 'ไลฟ์สไตล์และกิจกรรมสุดโปรด', subtitle: lang === 'en' ? 'View my lifestyles and hobbies page' : 'ไปยังหน้าดูไลฟ์สไตล์และกิจกรรมยามว่าง', action: () => { router.push('/lifestyle'); setCommandPaletteOpen(false); } },
+      { icon: '📄', title: lang === 'en' ? 'Download CV' : 'ดาวน์โหลด CV', subtitle: lang === 'en' ? 'Download resume as PDF' : 'ดาวน์โหลด resume เป็น PDF', action: () => { window.open('/resume.pdf', '_blank'); setCommandPaletteOpen(false); } },
+      { icon: theme === 'dark' ? '☀️' : '🌙', title: lang === 'en' ? 'Toggle Theme' : 'สลับธีม', subtitle: lang === 'en' ? `Switch to ${theme === 'dark' ? 'light' : 'dark'} mode` : `เปลี่ยนเป็นโหมด${theme === 'dark' ? 'สว่าง' : 'มืด'}`, action: () => { toggleTheme(); setCommandPaletteOpen(false); } },
+      { icon: '🌐', title: lang === 'en' ? 'Toggle Language' : 'สลับภาษา', subtitle: lang === 'en' ? 'Switch to Thai' : 'Switch to English', action: () => { setLang(lang === 'en' ? 'th' : 'en'); setCommandPaletteOpen(false); } },
+      { icon: '🔗', title: 'GitHub', subtitle: lang === 'en' ? 'Open GitHub profile' : 'เปิดโปรไฟล์ GitHub', action: () => { window.open('https://github.com/ColorsYoung', '_blank'); setCommandPaletteOpen(false); } },
+      { icon: '💼', title: 'LinkedIn', subtitle: lang === 'en' ? 'Open LinkedIn profile' : 'เปิดโปรไฟล์ LinkedIn', action: () => { window.open('https://www.linkedin.com/in/chanchai-chakam', '_blank'); setCommandPaletteOpen(false); } },
+    ];
+    return list;
+  }, [lang, theme, toggleTheme, router]);
+
+  const filteredCommandItems = commandItems.filter(item =>
+    item.title.toLowerCase().includes(commandQuery.toLowerCase()) ||
+    item.subtitle.toLowerCase().includes(commandQuery.toLowerCase())
+  );
+
+  // Reset highlight when query changes
+  useEffect(() => {
+    setCommandHighlight(0);
+  }, [commandQuery]);
+
+  // Timeline expand toggle
+  const toggleExpand = (id: number) => {
+    setExpandedExp(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  // Contact form handler
+  const handleContactSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setContactStatus('sending');
+    try {
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          access_key: '9f642124-e9c7-497c-bf72-6886d181c023',
+          name: contactForm.name,
+          email: contactForm.email,
+          message: contactForm.message,
+          from_name: 'Portfolio Contact Form',
+        }),
+      });
+      if (res.ok) {
+        setContactStatus('sent');
+        setContactForm({ name: '', email: '', message: '' });
+        showToast(lang === 'en' ? 'Message sent! ✉️' : 'ส่งข้อความสำเร็จ! ✉️');
+        setTimeout(() => setContactStatus('idle'), 5000);
+      } else {
+        setContactStatus('error');
+      }
+    } catch {
+      setContactStatus('error');
+    }
+  };
+
+  // Back to Top handler
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Generate confetti pieces
+  const confettiPieces = useMemo(() => {
+    if (!showConfetti) return [];
+    const colors = ['#bb86fc', '#03dac6', '#ff6b6b', '#ffd93d', '#6200ee', '#ffffff', '#e040fb', '#00e5ff'];
+    return Array.from({ length: 120 }, (_, i) => ({
+      id: i,
+      left: `${Math.random() * 100}%`,
+      backgroundColor: colors[Math.floor(Math.random() * colors.length)],
+      width: `${Math.random() * 8 + 5}px`,
+      height: `${Math.random() * 8 + 5}px`,
+      borderRadius: Math.random() > 0.5 ? '50%' : '2px',
+      fallDuration: `${Math.random() * 2 + 2}s`,
+      fallDelay: `${Math.random() * 1.5}s`,
+      rotation: `${Math.random() * 1440 - 720}deg`,
+    }));
+  }, [showConfetti]);
+
+  // Mobile menu navigation helper
+  const handleMobileLinkClick = (id: string) => {
+    setMobileMenuOpen(false);
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
     <main className="container" style={{ position: 'relative' }}>
+
+      {/* 16. Custom Page Preloader Splash Screen */}
+      <div className={`preloader${!preloaderActive ? ' fade-out' : ''}`}>
+        <div className="preloader-logo">&lt;CHANCHAI /&gt;</div>
+        <div className="preloader-progress">
+          <div className="preloader-progress-bar" />
+        </div>
+      </div>
 
       {/* Premium Scroll Progress Bar */}
       <div
@@ -628,344 +993,188 @@ export default function Home() {
       />
 
       {/* Modern Sticky Navigation */}
-      <nav className="nav-container">
-        <div className="nav-links">
-          <a href="#about" className={`nav-link${activeSection === 'about' ? ' active' : ''}`}>About</a>
-          <a href="#experience" className={`nav-link${activeSection === 'experience' ? ' active' : ''}`}>Experience</a>
-          <a href="#projects" className={`nav-link${activeSection === 'projects' ? ' active' : ''}`}>Projects</a>
-          <a href="#tech" className={`nav-link${activeSection === 'tech' ? ' active' : ''}`}>Skills</a>
-        </div>
+      <Navbar
+        activeSection={activeSection}
+        lang={lang}
+        theme={theme}
+        mobileMenuOpen={mobileMenuOpen}
+        toggleTheme={toggleTheme}
+        setLang={setLang}
+        setMobileMenuOpen={setMobileMenuOpen}
+        handleMobileLinkClick={handleMobileLinkClick}
+        handleMagneticMove={handleMagneticMove}
+        handleMagneticLeave={handleMagneticLeave}
+      />
 
-        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-          {/* Theme Toggle */}
-          <button
-            onClick={toggleTheme}
-            onMouseMove={handleMagneticMove}
-            onMouseLeave={handleMagneticLeave}
-            style={{
-              background: 'rgba(255,255,255,0.05)',
-              border: '1px solid var(--card-border)',
-              borderRadius: '50%',
-              width: '32px',
-              height: '32px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              color: 'var(--accent-light)',
-              transition: 'all 0.3s'
-            }}
-            title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-          >
-            {theme === 'dark' ? (
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18">
-                <circle cx="12" cy="12" r="5"></circle>
-                <line x1="12" y1="1" x2="12" y2="3"></line>
-                <line x1="12" y1="21" x2="12" y2="23"></line>
-                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                <line x1="1" y1="12" x2="3" y2="12"></line>
-                <line x1="21" y1="12" x2="23" y2="12"></line>
-                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-              </svg>
-            ) : (
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18">
-                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-              </svg>
-            )}
-          </button>
+      <Hero
+        currentT={currentT}
+        handleContactClick={handleContactClick}
+        handleMagneticMove={handleMagneticMove}
+        handleMagneticLeave={handleMagneticLeave}
+      />
 
-          {/* Integrated Language Toggle */}
-          <div style={{ display: 'flex', gap: '0.5rem', background: 'rgba(255,255,255,0.05)', padding: '0.35rem 0.75rem', borderRadius: '20px', border: '1px solid var(--card-border)' }}>
-            <button
-              onClick={() => setLang('en')}
-              onMouseMove={handleMagneticMove}
-              onMouseLeave={handleMagneticLeave}
-              style={{
-                background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.8rem',
-                fontWeight: lang === 'en' ? 'bold' : 'normal',
-                color: lang === 'en' ? 'var(--accent-light)' : 'var(--text-muted)',
-                transition: 'color 0.3s'
-              }}
-            >
-              EN
-            </button>
-            <span style={{ color: 'var(--divider)' }}>|</span>
-            <button
-              onClick={() => setLang('th')}
-              onMouseMove={handleMagneticMove}
-              onMouseLeave={handleMagneticLeave}
-              style={{
-                background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.8rem',
-                fontWeight: lang === 'th' ? 'bold' : 'normal',
-                color: lang === 'th' ? 'var(--accent-light)' : 'var(--text-muted)',
-                transition: 'color 0.3s'
-              }}
-            >
-              TH
-            </button>
-          </div>
-        </div>
-      </nav>
-
-      <header>
-        <h1>Chanchai Chakam</h1>
-        <h2 style={{ fontSize: '1.5rem', color: 'var(--accent-light)', marginBottom: '1.5rem', fontWeight: 600 }}>
-          {currentT.role}
-        </h2>
-
-        <div className="hero-actions">
-          <a 
-            href="mailto:Chanchaichakam1997@gmail.com" 
-            onClick={handleContactClick}
-            onMouseMove={handleMagneticMove}
-            onMouseLeave={handleMagneticLeave}
-            className="btn btn-primary"
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-              <polyline points="22,6 12,13 2,6"></polyline>
-            </svg>
-            {currentT.contact}
-          </a>
-          <a 
-            href="https://github.com/ColorsYoung" 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            onMouseMove={handleMagneticMove}
-            onMouseLeave={handleMagneticLeave}
-            className="btn btn-social"
-          >
-            <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
-              <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
-            </svg>
-            GitHub
-          </a>
-          <a 
-            href="https://www.linkedin.com/in/chanchai-chakam" 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            onMouseMove={handleMagneticMove}
-            onMouseLeave={handleMagneticLeave}
-            className="btn btn-social"
-          >
-            <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
-              <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
-            </svg>
-            LinkedIn
-          </a>
-          <a 
-            href="/resume.pdf" 
-            download 
-            onMouseMove={handleMagneticMove}
-            onMouseLeave={handleMagneticLeave}
-            className="btn btn-outline"
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-              <polyline points="7 10 12 15 17 10"></polyline>
-              <line x1="12" y1="15" x2="12" y2="3"></line>
-            </svg>
-            {currentT.downloadCV}
-          </a>
-        </div>
-      </header>
-
-      <section id="about" className="animate-on-scroll" style={{ textAlign: 'center', padding: '3rem 0', maxWidth: '800px', margin: '0 auto' }}>
-        <h2 className="section-title" style={{ marginBottom: '1.5rem' }}>{currentT.aboutTitle}</h2>
-        <div style={{ color: 'var(--text-secondary)', fontSize: '1.1rem', lineHeight: '1.8' }}>
-          {currentT.aboutContent}
-        </div>
-      </section>
+      {/* About Me Section (Clean Centered Layout) */}
+      <About currentT={currentT} lang={lang} />
 
       {/* Experience Timeline */}
-      <section id="experience" className="experience-section">
-        <h2 className="section-title">{currentT.expTitle}</h2>
-        <div className="timeline">
-          {experiences.map((exp, idx) => (
-            <div key={exp.id} className="timeline-item animate-on-scroll">
-              <div className="timeline-dot"></div>
-              <div className="timeline-content">
-                <span className="timeline-period">{exp.period}</span>
-                <h3 className="timeline-role">{exp.role}</h3>
-                <h4 className="timeline-company">{exp.company}</h4>
-                <p className="timeline-desc">{exp.description}</p>
-              </div>
+      <Experience
+        experiences={experiences}
+        expandedExp={expandedExp}
+        toggleExpand={toggleExpand}
+        currentT={currentT}
+        testimonials={testimonials}
+        testimonialIndex={testimonialIndex}
+        setTestimonialIndex={setTestimonialIndex}
+      />
+
+      {/* Projects Section */}
+      <Projects
+        filter={filter}
+        setFilter={setFilter}
+        filteredProjects={filteredProjects}
+        selectedProject={selectedProject}
+        setSelectedProject={setSelectedProject}
+        currentT={currentT}
+        architectureDiagrams={architectureDiagrams}
+      />
+
+      {/* Tech Stack Section */}
+      <Skills currentT={currentT} techGroups={techGroups} />
+
+      {/* 12. Simulated Interactive GitHub Heatmap Section */}
+      <GitHubHeatmap lang={lang} />
+
+      {/* Modern Glassmorphic Subpage Explore CTAs */}
+      <section className="animate-on-scroll" style={{ padding: '3rem 0 1rem', maxWidth: '850px', margin: '0 auto' }}>
+        <div className="cta-grid">
+          {/* Blog CTA */}
+          <div style={{
+            background: 'var(--card-bg)',
+            border: '1px solid var(--card-border)',
+            borderRadius: '16px',
+            padding: '2.5rem 2rem',
+            boxShadow: 'var(--shadow-sm)',
+            position: 'relative',
+            overflow: 'hidden',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            textAlign: 'center'
+          }}>
+            <div>
+              <h3 style={{ fontSize: '1.3rem', color: 'var(--text-primary)', marginBottom: '0.75rem', fontWeight: 700 }}>
+                {lang === 'en' ? "✍️ Things I'm Interested In" : '✍️ สิ่งที่กำลังสนใจอยู่'}
+              </h3>
+              <p style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', lineHeight: '1.6', marginBottom: '1.5rem', maxWidth: '340px' }}>
+                {lang === 'en'
+                  ? 'Explore my personal technical blog on Multi-Cloud APIs, Local LLM trading bot automation, and database tuning notes.'
+                  : 'ร่วมเปิดกระดาษบันทึกทางเทคนิค การทดลองใช้บอทเทรด LLM, จูนฐานข้อมูล และสถาปัตยกรรมคลาวด์'}
+              </p>
             </div>
-          ))}
-        </div>
-      </section>
-
-      <section id="projects" style={{ paddingTop: '4rem' }}>
-        <h2 className="section-title animate-on-scroll">Projects</h2>
-
-        <div className="project-filters animate-on-scroll">
-          {['All', 'Frontend', 'Backend', 'AI', 'Cloud'].map(f => (
-            <button
-              key={f}
-              className={`filter-btn ${filter === f ? 'active' : ''}`}
-              onClick={() => setFilter(f)}
+            <a href="/blog" style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              background: 'var(--accent-light)',
+              color: '#121212',
+              textDecoration: 'none',
+              fontWeight: 'bold',
+              fontSize: '0.9rem',
+              padding: '0.75rem 1.5rem',
+              borderRadius: '30px',
+              boxShadow: '0 4px 15px rgba(187, 134, 252, 0.3)',
+              transition: 'all 0.3s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.boxShadow = '0 6px 20px rgba(187, 134, 252, 0.5)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 4px 15px rgba(187, 134, 252, 0.3)';
+            }}
             >
-              {f}
-            </button>
-          ))}
-        </div>
+              {lang === 'en' ? 'Open Blog →' : 'เข้าสู่บล็อก →'}
+            </a>
+          </div>
 
-        <div className="projects-grid">
-          {filteredProjects.map((project) => (
-            <article
-              key={project.id}
-              className="project-card animate-on-scroll"
-              onClick={() => setSelectedProject(project)}
-              title="Click to view details"
-              onMouseMove={(e) => {
-                const rect = e.currentTarget.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                e.currentTarget.style.setProperty('--mouse-x', `${x}px`);
-                e.currentTarget.style.setProperty('--mouse-y', `${y}px`);
-
-                // 3D Tilt calculation
-                const normX = (x / rect.width) - 0.5;
-                const normY = (y / rect.height) - 0.5;
-                const tiltX = -normY * 12; // max tilt 12 degrees
-                const tiltY = normX * 12;
-                e.currentTarget.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale3d(1.02, 1.02, 1.02)`;
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
-              }}
+          {/* Lifestyle CTA */}
+          <div style={{
+            background: 'var(--card-bg)',
+            border: '1px solid var(--card-border)',
+            borderRadius: '16px',
+            padding: '2.5rem 2rem',
+            boxShadow: 'var(--shadow-sm)',
+            position: 'relative',
+            overflow: 'hidden',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            textAlign: 'center'
+          }}>
+            <div>
+              <h3 style={{ fontSize: '1.3rem', color: 'var(--text-primary)', marginBottom: '0.75rem', fontWeight: 700 }}>
+                {lang === 'en' ? '📷 My Lifestyle & Hobbies' : '📷 ไลฟ์สไตล์และกิจกรรมสุดโปรด'}
+              </h3>
+              <p style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', lineHeight: '1.6', marginBottom: '1.5rem', maxWidth: '340px' }}>
+                {lang === 'en'
+                  ? 'Step outside the IDE! Explore my outdoor travel logs, classic street photography, and aesthetic pour-over coffee crafts.'
+                  : 'ก้าวออกจากคอมพิวเตอร์และโลกของการเขียนโค้ด! ร่วมแชร์ประสบการณ์เดินป่า ถ่ายรูปสตรีท และชงกาแฟพิเศษของผม'}
+              </p>
+            </div>
+            <a href="/lifestyle" style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              background: 'var(--accent-light)',
+              color: '#121212',
+              textDecoration: 'none',
+              fontWeight: 'bold',
+              fontSize: '0.9rem',
+              padding: '0.75rem 1.5rem',
+              borderRadius: '30px',
+              boxShadow: '0 4px 15px rgba(187, 134, 252, 0.3)',
+              transition: 'all 0.3s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.boxShadow = '0 6px 20px rgba(187, 134, 252, 0.5)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 4px 15px rgba(187, 134, 252, 0.3)';
+            }}
             >
-              <h2 className="project-title">
-                {project.title}
-              </h2>
-              <p className="project-desc">{project.description}</p>
-              <div className="tags">
-                {project.tags.map(tag => (
-                  <span key={tag} className="tag">{tag}</span>
-                ))}
-              </div>
-              {project.github && (
-                <a
-                  href={project.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="github-link"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
-                  </svg>
-                  {currentT.viewRepo}
-                </a>
-              )}
-              {project.websites && project.websites.map((site, index) => (
-                <a
-                  key={index}
-                  href={site.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="github-link"
-                  style={{ background: 'var(--accent-light)', color: '#000', border: 'none', marginLeft: index > 0 || project.github ? '0.5rem' : '0' }}
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18" xmlns="http://www.w3.org/2000/svg" style={{ marginRight: '0.2rem' }}>
-                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                    <polyline points="15 3 21 3 21 9"></polyline>
-                    <line x1="10" y1="14" x2="21" y2="3"></line>
-                  </svg>
-                  {site.label}
-                </a>
-              ))}
-            </article>
-          ))}
-        </div>
-      </section>
-
-      {/* Premium Tech Stack Display */}
-      <section id="tech" className="tech-stack-section">
-        <h2 className="section-title" style={{ marginBottom: '2rem' }}>{currentT.coreTechTitle}</h2>
-        <div className="tech-groups-container">
-          {techGroups.map((group, _idx) => (
-            <div key={_idx} className="tech-group-card animate-on-scroll">
-              <h3 className="tech-group-title">{group.title}</h3>
-              <div className="tech-items-grid">
-                {group.techs.map((tech, techIdx) => (
-                  <div key={techIdx} className="tech-item-mini" title={tech.name}>
-                    {tech.icon}
-                    <span>{tech.name}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Modal Overlay */}
-      {selectedProject && (
-        <div className="modal-overlay" onClick={() => setSelectedProject(null)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <button className="modal-close" onClick={() => setSelectedProject(null)}>
-              &times;
-            </button>
-            <div className="modal-body">
-              <h2 style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                {selectedProject.title}
-              </h2>
-              <div className="tags" style={{ marginBottom: '1.5rem' }}>
-                {selectedProject.tags.map(tag => (
-                  <span key={tag} className="tag">{tag}</span>
-                ))}
-              </div>
-              <p>{selectedProject.longDescription}</p>
-
-              <h3>{currentT.keyFeatures}</h3>
-              <ul>
-                {selectedProject.features.map((feature, idx) => (
-                  <li key={idx}>{feature}</li>
-                ))}
-              </ul>
-
-              {selectedProject.github && (
-                <a
-                  href={selectedProject.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="github-link"
-                  style={{ marginTop: '1rem', display: 'inline-flex' }}
-                >
-                  <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
-                  </svg>
-                  {currentT.viewRepo}
-                </a>
-              )}
-              {selectedProject.websites && selectedProject.websites.map((site, index) => (
-                <a
-                  key={index}
-                  href={site.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="github-link"
-                  style={{ marginTop: '1rem', display: 'inline-flex', background: 'var(--accent-light)', color: '#000', border: 'none', marginLeft: index > 0 || selectedProject.github ? '0.5rem' : '0' }}
-                >
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18" xmlns="http://www.w3.org/2000/svg" style={{ marginRight: '0.2rem' }}>
-                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                    <polyline points="15 3 21 3 21 9"></polyline>
-                    <line x1="10" y1="14" x2="21" y2="3"></line>
-                  </svg>
-                  {site.label}
-                </a>
-              ))}
-            </div>
+              {lang === 'en' ? 'Explore My Life →' : 'สำรวจไลฟ์สไตล์ของผม →'}
+            </a>
           </div>
         </div>
-      )}
+      </section>
 
+      {/* Contact Form Section */}
+      <Contact
+        currentT={currentT}
+        lang={lang}
+        contactForm={contactForm}
+        setContactForm={setContactForm}
+        contactStatus={contactStatus}
+        handleContactSubmit={handleContactSubmit}
+      />
+
+      {/* Footer & Telemetry Mini Display */}
       <footer>
         <p>&copy; {new Date().getFullYear()} Chanchai Chakam. Built with Next.js.</p>
+        
+        {/* Telemetry live status overlay inside footer */}
+        <div style={{ marginTop: '0.75rem', fontSize: '0.72rem', color: 'var(--text-muted)', display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.25rem 0.65rem', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--card-border)', borderRadius: '12px' }}>
+          <span className="pulse-active-dot" />
+          <span>{lang === 'en' ? 'Live Telemetry: ' : 'ข้อมูลสดของเซิร์ฟเวอร์: '}</span>
+          <span style={{ fontWeight: 600, color: 'var(--accent-light)' }}>{liveVisitors} active visitors</span>
+          <span>•</span>
+          <span>{telemetryTime}</span>
+        </div>
       </footer>
 
       {/* Toast Notification */}
@@ -977,6 +1186,132 @@ export default function Home() {
         </div>
         <div className="toast-message">{toast.message}</div>
       </div>
+
+      {/* Back to Top Button */}
+      <button
+        className={`back-to-top${showBackToTop ? ' visible' : ''}`}
+        onClick={scrollToTop}
+        onMouseMove={handleMagneticMove}
+        onMouseLeave={handleMagneticLeave}
+        title={lang === 'en' ? 'Back to top' : 'กลับด้านบน'}
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" width="22" height="22">
+          <polyline points="18 15 12 9 6 15"></polyline>
+        </svg>
+      </button>
+
+      {/* Command Palette (with active Live Analytics/Telemetry dashboard) */}
+      {commandPaletteOpen && (
+        <div className="command-palette-overlay" onClick={() => setCommandPaletteOpen(false)}>
+          <div className="command-palette" onClick={(e) => e.stopPropagation()}>
+            
+            {/* Live Analytics Dashboard inside Command Palette */}
+            <div className="telemetry-widget">
+              <div className="telemetry-title">
+                <span>📊 PORTFOLIO LIVE ANALYTICS (MOCK)</span>
+                <span style={{ fontSize: '0.75rem', display: 'flex', alignItems: 'center' }}>
+                  <span className="pulse-active-dot" /> {liveVisitors} readers online
+                </span>
+              </div>
+              <div className="telemetry-grid">
+                <div className="telemetry-badge">
+                  <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>MOCK TOTAL VIEWS</span>
+                  <span className="telemetry-value">1,428 views</span>
+                </div>
+                <div className="telemetry-badge">
+                  <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>RESPONSE TIME</span>
+                  <span className="telemetry-value">18ms (Fast)</span>
+                </div>
+                <div className="telemetry-badge">
+                  <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>GEOGRAPHY</span>
+                  <span className="telemetry-value">92% TH, 8% US</span>
+                </div>
+                <div className="telemetry-badge">
+                  <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>RELIABILITY</span>
+                  <span className="telemetry-value" style={{ color: '#03dac6' }}>100% Uptime</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="command-palette-input-wrapper">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="20" height="20">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <input
+                ref={commandInputRef}
+                className="command-palette-input"
+                type="text"
+                placeholder={lang === 'en' ? 'Type a command...' : 'พิมพ์คำสั่ง...'}
+                value={commandQuery}
+                onChange={(e) => setCommandQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    setCommandHighlight(prev => Math.min(prev + 1, filteredCommandItems.length - 1));
+                  } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    setCommandHighlight(prev => Math.max(prev - 1, 0));
+                  } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    filteredCommandItems[commandHighlight]?.action();
+                  }
+                }}
+              />
+              <span className="command-palette-hint">ESC</span>
+            </div>
+            <div className="command-palette-results">
+              {filteredCommandItems.length > 0 ? (
+                filteredCommandItems.map((item, idx) => (
+                  <div
+                    key={idx}
+                    className={`command-item${idx === commandHighlight ? ' highlighted' : ''}`}
+                    onClick={item.action}
+                    onMouseEnter={() => setCommandHighlight(idx)}
+                  >
+                    <div className="command-item-icon">{item.icon}</div>
+                    <div className="command-item-text">
+                      <div className="command-item-title">{item.title}</div>
+                      <div className="command-item-subtitle">{item.subtitle}</div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="command-palette-empty">
+                  {lang === 'en' ? 'No results found' : 'ไม่พบผลลัพธ์'}
+                </div>
+              )}
+            </div>
+            <div className="command-palette-footer">
+              <span><kbd>↑↓</kbd> {lang === 'en' ? 'Navigate' : 'เลื่อน'}</span>
+              <span><kbd>↵</kbd> {lang === 'en' ? 'Select' : 'เลือก'}</span>
+              <span><kbd>Esc</kbd> {lang === 'en' ? 'Close' : 'ปิด'}</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Confetti — Konami Code Easter Egg */}
+      {showConfetti && (
+        <div className="confetti-container">
+          {confettiPieces.map(piece => (
+            <div
+              key={piece.id}
+              className="confetti-piece"
+              style={{
+                left: piece.left,
+                backgroundColor: piece.backgroundColor,
+                width: piece.width,
+                height: piece.height,
+                borderRadius: piece.borderRadius,
+                '--fall-duration': piece.fallDuration,
+                '--fall-delay': piece.fallDelay,
+                '--rotation': piece.rotation,
+              } as React.CSSProperties}
+            />
+          ))}
+        </div>
+      )}
     </main>
   );
 }
