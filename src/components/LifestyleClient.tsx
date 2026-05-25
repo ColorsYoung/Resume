@@ -14,7 +14,7 @@ export type LifestyleItem = {
   title_th: string;
   subtitle_en: string;
   subtitle_th: string;
-  image: string;
+  images: string[];
   details_en: string;
   details_th: string;
   stats_en: LifestyleStat[];
@@ -24,7 +24,12 @@ export type LifestyleItem = {
 // ===== Inner Gallery Component =====
 const LifestyleGallery = ({ locale, items }: { locale: 'en' | 'th'; items: LifestyleItem[] }) => {
   const [activeItem, setActiveItem] = useState<string | null>(null);
+  const [currentImgIdx, setCurrentImgIdx] = useState(0);
   const activeItemData = items.find(item => item.id === activeItem);
+
+  useEffect(() => {
+    if (activeItemData) setCurrentImgIdx(0);
+  }, [activeItemData]);
 
   // Close on Escape
   useEffect(() => {
@@ -45,9 +50,9 @@ const LifestyleGallery = ({ locale, items }: { locale: 'en' | 'th'; items: Lifes
           >
             <div className="lifestyle-polaroid">
               <div className="lifestyle-img-container">
-                <img src={item.image} alt={locale === 'en' ? item.title_en : item.title_th} className="lifestyle-img" />
+                <img src={item.images[0]} alt={locale === 'en' ? item.title_en : item.title_th} className="lifestyle-img" />
                 <div className="lifestyle-click-hint">
-                  <span>{locale === 'en' ? 'Click to inspect 🔎' : 'คลิกเพื่อดูสถิติ 🔎'}</span>
+                  <span>{locale === 'en' ? 'Click to inspect 🔎' : 'คลิกเพื่อดูอัลบั้ม 🔎'}</span>
                 </div>
               </div>
               <div className="lifestyle-caption">
@@ -63,6 +68,19 @@ const LifestyleGallery = ({ locale, items }: { locale: 'en' | 'th'; items: Lifes
         <div className="lifestyle-details-overlay" onClick={() => setActiveItem(null)}>
           <div className="lifestyle-details-content" onClick={(e) => e.stopPropagation()}>
             <button className="lifestyle-close-btn" onClick={() => setActiveItem(null)}>×</button>
+            
+            {/* Gallery Carousel */}
+            <div className="lifestyle-carousel" style={{ position: 'relative', margin: '0 0 1.5rem', borderRadius: '12px', overflow: 'hidden' }}>
+              <img src={activeItemData.images[currentImgIdx]} alt="Gallery" style={{ width: '100%', height: 'auto', display: 'block' }} />
+              {activeItemData.images.length > 1 && (
+                <>
+                  <button onClick={(e) => { e.stopPropagation(); setCurrentImgIdx(i => (i - 1 + activeItemData.images.length) % activeItemData.images.length); }} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', background: 'rgba(0,0,0,0.5)', color: '#fff', border: 'none', cursor: 'pointer', padding: '10px', borderRadius: '50%' }}>&lt;</button>
+                  <button onClick={(e) => { e.stopPropagation(); setCurrentImgIdx(i => (i + 1) % activeItemData.images.length); }} style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'rgba(0,0,0,0.5)', color: '#fff', border: 'none', cursor: 'pointer', padding: '10px', borderRadius: '50%' }}>&gt;</button>
+                  <div style={{ position: 'absolute', bottom: '10px', left: '50%', transform: 'translateX(-50%)', background: 'rgba(0,0,0,0.5)', color: '#fff', padding: '2px 8px', borderRadius: '10px', fontSize: '0.8rem' }}>{currentImgIdx + 1} / {activeItemData.images.length}</div>
+                </>
+              )}
+            </div>
+
             <h4 style={{ margin: '0 0 0.5rem', color: 'var(--accent-light)', fontSize: '1.2rem' }}>
               {locale === 'en' ? activeItemData.title_en : activeItemData.title_th}
             </h4>

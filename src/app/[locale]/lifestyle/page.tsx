@@ -56,13 +56,24 @@ function getLifestyleItems(): LifestyleItem[] {
       value: s.value,
     }));
 
+    // Auto-discover images in /public/lifestyle/<slug>/
+    const imagesDir = path.join(process.cwd(), "public", "lifestyle", slug);
+    let images: string[] = [];
+    if (fs.existsSync(imagesDir)) {
+      images = fs.readdirSync(imagesDir)
+        .filter(f => /\.(png|jpg|jpeg|gif|svg)$/.test(f))
+        .map(f => `/lifestyle/${slug}/${f}`);
+    } else if (finalEnParsed.data.image) {
+      images = [finalEnParsed.data.image];
+    }
+
     return {
       id: slug,
       title_en: finalEnParsed.data.title ?? slug,
       title_th: finalThParsed.data.title ?? finalEnParsed.data.title ?? slug,
       subtitle_en: finalEnParsed.data.subtitle ?? '',
       subtitle_th: finalThParsed.data.subtitle ?? finalEnParsed.data.subtitle ?? '',
-      image: finalEnParsed.data.image ?? '',
+      images: images,
       details_en: finalEnParsed.content.trim(),
       details_th: finalThParsed.content.trim(),
       stats_en: enStats,
