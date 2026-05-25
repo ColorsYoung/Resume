@@ -128,7 +128,7 @@ export default function Home() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setPreloaderActive(false);
-    }, 1250);
+    }, 500);
     return () => clearTimeout(timer);
   }, []);
 
@@ -414,7 +414,7 @@ export default function Home() {
             <Typewriter
               words={["Hi, I'm a Full Stack Software Engineer with a strong focus on building reliable backend systems and modern enterprise web applications. I enjoy leveraging Cloud technologies and finding practical ways to integrate AI to solve real-world business challenges. I'm passionate about writing clean, scalable code that delivers actual value."]}
               loop={false}
-              typingSpeed={15}
+              typingSpeed={30}
             />
           </div>
         </>
@@ -452,7 +452,7 @@ export default function Home() {
             <Typewriter
               words={["สวัสดีครับ ผมเป็น Software Engineer มีประสบการณ์ทำทั้งหน้าเว็บ(Fontend) และระบบหลังบ้าน(Backend) ให้กับโปรเจกต์ระดับองค์กร ผมชอบนำเทคโนโลยีอย่าง Cloud Services และ AI มาประยุกต์ใช้เพื่อแก้ปัญหาทางธุรกิจ โดยมุ่งเน้นที่การเขียนโค้ดที่ดูแลรวดเร็ว ขยายตัวได้ง่าย และตอบโจทย์การใช้งานจริง"]}
               loop={false}
-              typingSpeed={15}
+              typingSpeed={30}
             />
           </div>
         </>
@@ -799,17 +799,17 @@ export default function Home() {
   // Command palette items
   const commandItems = useMemo(() => {
     const list = [
-      { icon: '👤', title: 'About', subtitle: locale === 'en' ? 'Jump to About section' : 'ไปยังส่วน About', action: () => { document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' }); setCommandPaletteOpen(false); } },
-      { icon: '💼', title: 'Experience', subtitle: locale === 'en' ? 'Jump to Experience section' : 'ไปยังส่วน Experience', action: () => { document.getElementById('experience')?.scrollIntoView({ behavior: 'smooth' }); setCommandPaletteOpen(false); } },
-      { icon: '📂', title: 'Projects', subtitle: locale === 'en' ? 'Jump to Projects section' : 'ไปยังส่วน Projects', action: () => { document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' }); setCommandPaletteOpen(false); } },
-      { icon: '⚡', title: 'Skills', subtitle: locale === 'en' ? 'Jump to Skills section' : 'ไปยังส่วน Skills', action: () => { document.getElementById('tech')?.scrollIntoView({ behavior: 'smooth' }); setCommandPaletteOpen(false); } },
-      { icon: '✍️', title: locale === 'en' ? 'Interests' : 'สิ่งที่กำลังสนใจอยู่', subtitle: locale === 'en' ? "Jump to Things I'm Interested In" : 'ไปยังส่วนสิ่งที่กำลังสนใจอยู่', action: () => { router.push('/blog'); setCommandPaletteOpen(false); } },
-      { icon: '✉️', title: 'Contact', subtitle: locale === 'en' ? 'Jump to Contact section' : 'ไปยังส่วน Contact', action: () => { document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }); setCommandPaletteOpen(false); } },
-      { icon: '📷', title: locale === 'en' ? 'Lifestyle & Hobbies' : 'ไลฟ์สไตล์และกิจกรรมสุดโปรด', subtitle: locale === 'en' ? 'View my lifestyles and hobbies page' : 'ไปยังหน้าดูไลฟ์สไตล์และกิจกรรมยามว่าง', action: () => { router.push('/lifestyle'); setCommandPaletteOpen(false); } },
-      { icon: '📄', title: locale === 'en' ? 'Download CV' : 'ดาวน์โหลด CV', subtitle: locale === 'en' ? 'Download resume as PDF' : 'ดาวน์โหลด resume เป็น PDF', action: () => { window.open('/resume.pdf', '_blank'); setCommandPaletteOpen(false); } },
-      { icon: theme === 'dark' ? '☀️' : '🌙', title: locale === 'en' ? 'Toggle Theme' : 'สลับธีม', subtitle: locale === 'en' ? `Switch to ${theme === 'dark' ? 'light' : 'dark'} mode` : `เปลี่ยนเป็นโหมด${theme === 'dark' ? 'สว่าง' : 'มืด'}`, action: () => { toggleTheme(); setCommandPaletteOpen(false); } },
+      { icon: 'user', title: 'About', subtitle: locale === 'en' ? 'Jump to About section' : 'ไปยังส่วน About', action: () => { document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' }); setCommandPaletteOpen(false); } },
+      { icon: 'briefcase', title: 'Experience', subtitle: locale === 'en' ? 'Jump to Experience section' : 'ไปยังส่วน Experience', action: () => { document.getElementById('experience')?.scrollIntoView({ behavior: 'smooth' }); setCommandPaletteOpen(false); } },
+      { icon: 'folder', title: 'Projects', subtitle: locale === 'en' ? 'Jump to Projects section' : 'ไปยังส่วน Projects', action: () => { document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' }); setCommandPaletteOpen(false); } },
+      { icon: 'code', title: 'Skills', subtitle: locale === 'en' ? 'Jump to Skills section' : 'ไปยังส่วน Skills', action: () => { document.getElementById('tech')?.scrollIntoView({ behavior: 'smooth' }); setCommandPaletteOpen(false); } },
+      { icon: 'book-open', title: locale === 'en' ? 'Interests' : 'สิ่งที่กำลังสนใจอยู่', subtitle: locale === 'en' ? "Jump to Things I'm Interested In" : 'ไปยังส่วนสิ่งที่กำลังสนใจอยู่', action: () => { router.push('/blog'); setCommandPaletteOpen(false); } },
+      { icon: 'mail', title: 'Contact', subtitle: locale === 'en' ? 'Jump to Contact section' : 'ไปยังส่วน Contact', action: () => { document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }); setCommandPaletteOpen(false); } },
+      { icon: 'camera', title: locale === 'en' ? 'Lifestyle & Hobbies' : 'ไลฟ์สไตล์และกิจกรรมสุดโปรด', subtitle: locale === 'en' ? 'View my lifestyles and hobbies page' : 'ไปยังหน้าดูไลฟ์สไตล์และกิจกรรมยามว่าง', action: () => { router.push('/lifestyle'); setCommandPaletteOpen(false); } },
+      { icon: 'file-text', title: locale === 'en' ? 'Download CV' : 'ดาวน์โหลด CV', subtitle: locale === 'en' ? 'Download resume as PDF' : 'ดาวน์โหลด resume เป็น PDF', action: () => { window.open('/resume.pdf', '_blank'); setCommandPaletteOpen(false); } },
+      { icon: theme === 'dark' ? 'sun' : 'moon', title: locale === 'en' ? 'Toggle Theme' : 'สลับธีม', subtitle: locale === 'en' ? `Switch to ${theme === 'dark' ? 'light' : 'dark'} mode` : `เปลี่ยนเป็นโหมด${theme === 'dark' ? 'สว่าง' : 'มืด'}`, action: () => { toggleTheme(); setCommandPaletteOpen(false); } },
       {
-        icon: '🌐',
+        icon: 'globe',
         title: locale === 'en' ? 'Toggle Language' : 'สลับภาษา',
         subtitle: locale === 'en' ? 'Switch to Thai' : 'Switch to English',
         action: () => {
@@ -818,8 +818,8 @@ export default function Home() {
           setCommandPaletteOpen(false);
         }
       },
-      { icon: '🔗', title: 'GitHub', subtitle: locale === 'en' ? 'Open GitHub profile' : 'เปิดโปรไฟล์ GitHub', action: () => { window.open('https://github.com/ColorsYoung', '_blank'); setCommandPaletteOpen(false); } },
-      { icon: '💼', title: 'LinkedIn', subtitle: locale === 'en' ? 'Open LinkedIn profile' : 'เปิดโปรไฟล์ LinkedIn', action: () => { window.open('https://www.linkedin.com/in/chanchai-chakam', '_blank'); setCommandPaletteOpen(false); } },
+      { icon: 'github', title: 'GitHub', subtitle: locale === 'en' ? 'Open GitHub profile' : 'เปิดโปรไฟล์ GitHub', action: () => { window.open('https://github.com/ColorsYoung', '_blank'); setCommandPaletteOpen(false); } },
+      { icon: 'linkedin', title: 'LinkedIn', subtitle: locale === 'en' ? 'Open LinkedIn profile' : 'เปิดโปรไฟล์ LinkedIn', action: () => { window.open('https://www.linkedin.com/in/chanchai-chakam', '_blank'); setCommandPaletteOpen(false); } },
     ];
     return list;
   }, [locale, theme, toggleTheme, router, pathname]);
@@ -1152,38 +1152,10 @@ export default function Home() {
         </svg>
       </button>
 
-      {/* Command Palette (with active Live Analytics/Telemetry dashboard) */}
+      {/* Command Palette */}
       {commandPaletteOpen && (
         <div className="command-palette-overlay" onClick={() => setCommandPaletteOpen(false)}>
           <div className="command-palette" onClick={(e) => e.stopPropagation()}>
-
-            {/* Live Analytics Dashboard inside Command Palette */}
-            <div className="telemetry-widget">
-              <div className="telemetry-title">
-                <span>📊 PORTFOLIO LIVE ANALYTICS (MOCK)</span>
-                <span style={{ fontSize: '0.75rem', display: 'flex', alignItems: 'center' }}>
-                  <span className="pulse-active-dot" /> {liveVisitors} readers online
-                </span>
-              </div>
-              <div className="telemetry-grid">
-                <div className="telemetry-badge">
-                  <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>MOCK TOTAL VIEWS</span>
-                  <span className="telemetry-value">1,428 views</span>
-                </div>
-                <div className="telemetry-badge">
-                  <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>RESPONSE TIME</span>
-                  <span className="telemetry-value">18ms (Fast)</span>
-                </div>
-                <div className="telemetry-badge">
-                  <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>GEOGRAPHY</span>
-                  <span className="telemetry-value">92% TH, 8% US</span>
-                </div>
-                <div className="telemetry-badge">
-                  <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>RELIABILITY</span>
-                  <span className="telemetry-value" style={{ color: '#03dac6' }}>100% Uptime</span>
-                </div>
-              </div>
-            </div>
 
             <div className="command-palette-input-wrapper">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="20" height="20">
@@ -1218,10 +1190,38 @@ export default function Home() {
                   <div
                     key={idx}
                     className={`command-item${idx === commandHighlight ? ' highlighted' : ''}`}
-                    onClick={item.action}
-                    onMouseEnter={() => setCommandHighlight(idx)}
+                    onClick={() => item.action()}
                   >
-                    <div className="command-item-icon">{item.icon}</div>
+                    <div className="command-item-icon">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="18" height="18">
+                        {item.icon === 'user' && <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>}
+                        {item.icon === 'user' && <circle cx="12" cy="7" r="4"></circle>}
+                        {item.icon === 'briefcase' && <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>}
+                        {item.icon === 'briefcase' && <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>}
+                        {item.icon === 'folder' && <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>}
+                        {item.icon === 'code' && <polyline points="16 18 22 12 16 6"></polyline>}
+                        {item.icon === 'code' && <polyline points="8 6 2 12 8 18"></polyline>}
+                        {item.icon === 'book-open' && <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>}
+                        {item.icon === 'book-open' && <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>}
+                        {item.icon === 'mail' && <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>}
+                        {item.icon === 'mail' && <polyline points="22,6 12,13 2,6"></polyline>}
+                        {item.icon === 'camera' && <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>}
+                        {item.icon === 'camera' && <circle cx="12" cy="13" r="4"></circle>}
+                        {item.icon === 'file-text' && <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>}
+                        {item.icon === 'file-text' && <polyline points="14 2 14 8 20 8"></polyline>}
+                        {item.icon === 'sun' && <circle cx="12" cy="12" r="5"></circle>}
+                        {item.icon === 'sun' && <line x1="12" y1="1" x2="12" y2="3"></line>}
+                        {item.icon === 'sun' && <line x1="12" y1="21" x2="12" y2="23"></line>}
+                        {item.icon === 'moon' && <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>}
+                        {item.icon === 'globe' && <circle cx="12" cy="12" r="10"></circle>}
+                        {item.icon === 'globe' && <path d="M2 12h20"></path>}
+                        {item.icon === 'globe' && <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>}
+                        {item.icon === 'github' && <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>}
+                        {item.icon === 'linkedin' && <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>}
+                        {item.icon === 'linkedin' && <rect x="2" y="9" width="4" height="12"></rect>}
+                        {item.icon === 'linkedin' && <circle cx="4" cy="4" r="2"></circle>}
+                      </svg>
+                    </div>
                     <div className="command-item-text">
                       <div className="command-item-title">{item.title}</div>
                       <div className="command-item-subtitle">{item.subtitle}</div>
