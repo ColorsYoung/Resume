@@ -43,8 +43,8 @@ export const Hero: React.FC<HeroProps> = ({
       </h2>
 
       <div className="hero-actions animate-on-scroll">
-        <a 
-          href="mailto:Chanchaichakam1997@gmail.com" 
+        <a
+          href="mailto:Chanchaichakam1997@gmail.com"
           onClick={handleContactClick}
           onMouseMove={handleMagneticMove}
           onMouseLeave={handleMagneticLeave}
@@ -56,10 +56,10 @@ export const Hero: React.FC<HeroProps> = ({
           </svg>
           {currentT.contact}
         </a>
-        <a 
-          href="https://github.com/ColorsYoung" 
-          target="_blank" 
-          rel="noopener noreferrer" 
+        <a
+          href="https://github.com/ColorsYoung"
+          target="_blank"
+          rel="noopener noreferrer"
           onMouseMove={handleMagneticMove}
           onMouseLeave={handleMagneticLeave}
           className="btn btn-social"
@@ -69,10 +69,10 @@ export const Hero: React.FC<HeroProps> = ({
           </svg>
           GitHub
         </a>
-        <a 
-          href="https://www.linkedin.com/in/chanchai-chakam" 
-          target="_blank" 
-          rel="noopener noreferrer" 
+        <a
+          href="https://www.linkedin.com/in/chanchai-chakam"
+          target="_blank"
+          rel="noopener noreferrer"
           onMouseMove={handleMagneticMove}
           onMouseLeave={handleMagneticLeave}
           className="btn btn-social"
@@ -82,9 +82,8 @@ export const Hero: React.FC<HeroProps> = ({
           </svg>
           LinkedIn
         </a>
-        <a 
-          href="/resume.pdf" 
-          download 
+        <a
+          href="/api/download-cv"
           onMouseMove={handleMagneticMove}
           onMouseLeave={handleMagneticLeave}
           className="btn btn-outline"

@@ -412,7 +412,7 @@ export default function Home() {
         <>
           <div style={{ minHeight: '120px' }}>
             <Typewriter
-              words={["Hi, I'm a Full Stack Software Engineer with a strong focus on building reliable backend systems and modern enterprise web applications. I enjoy leveraging Cloud technologies and finding practical ways to integrate AI to solve real-world business challenges. I'm passionate about writing clean, scalable code that delivers actual value."]}
+              words={["Full Stack Developer with experience in building backend systems and web applications across multiple industries. Have worked with cloud technologies (AWS & Azure) and AI integration, mainly focusing on Node.js, TypeScript, and databases. Always looking to grow and contribute to a good engineering team."]}
               loop={false}
               typingSpeed={30}
             />
@@ -450,7 +450,7 @@ export default function Home() {
         <>
           <div style={{ minHeight: '120px' }}>
             <Typewriter
-              words={["สวัสดีครับ ผมเป็น Software Engineer มีประสบการณ์ทำทั้งหน้าเว็บ(Fontend) และระบบหลังบ้าน(Backend) ให้กับโปรเจกต์ระดับองค์กร ผมชอบนำเทคโนโลยีอย่าง Cloud Services และ AI มาประยุกต์ใช้เพื่อแก้ปัญหาทางธุรกิจ โดยมุ่งเน้นที่การเขียนโค้ดที่ดูแลรวดเร็ว ขยายตัวได้ง่าย และตอบโจทย์การใช้งานจริง"]}
+              words={["Full Stack Developer ที่มีประสบการณ์ในการสร้างระบบหลังบ้าน (Backend) และเว็บแอปพลิเคชันในหลากหลายอุตสาหกรรม เคยทำงานร่วมกับเทคโนโลยีคลาวด์ (AWS & Azure) และการเชื่อมต่อ AI โดยเน้นการใช้ Node.js, TypeScript และฐานข้อมูลเป็นหลัก มุ่งมั่นที่จะเรียนรู้ พัฒนาตนเอง และพร้อมที่จะสร้างประโยชน์ร่วมกับทีมวิศวกรรมที่ดี"]}
               loop={false}
               typingSpeed={30}
             />
@@ -617,13 +617,11 @@ export default function Home() {
         'Architected and deployed Multi-Cloud API systems across AWS and Azure infrastructure',
         'Integrated Azure AI Document Intelligence (OCR) for automated excise tax forms processing',
         'Built real-time client notification services using Socket.IO server modules',
-        'Reduced SQL database query latency by 40% through Prisma ORM index and model optimization',
       ] : [
         'ออกแบบและพัฒนาสถาปัตยกรรมหลักของระบบซอฟต์แวร์หลัก: APIOil, Classic Car, LuckyTabien และบอทเทรดคริปโต AI',
         'ออกแบบและติดตั้ง (Deploy) ระบบ API แบบ Multi-Cloud บนโครงสร้างพื้นฐาน AWS และ Azure',
         'เชื่อมต่อระบบวิเคราะห์เอกสารอัจฉริยะ Azure AI Document Intelligence สำหรับประมวลผลฟอร์มภาษีสรรพสามิตอัตโนมัติ (OCR)',
         'พัฒนาโมดูลระบบแจ้งเตือน Real-time บนระบบด้วย Socket.IO',
-        'ปรับปรุงประสิทธิการทำงานของฐานข้อมูลและลด Query Latency ลง 40% ผ่านการทำ Prisma ORM Optimization',
       ],
     },
     {
@@ -689,18 +687,18 @@ export default function Home() {
         { name: 'Next.js 15', icon: <StackIcon name="nextjs2" style={{ width: 32, height: 32 }} />, level: 80 },
         { name: 'React 19', icon: <StackIcon name="react" style={{ width: 32, height: 32 }} />, level: 85 },
         { name: 'Tailwind CSS', icon: <StackIcon name="tailwindcss" style={{ width: 32, height: 32 }} />, level: 80 },
-        { 
-          name: 'Bootstrap', 
+        {
+          name: 'Bootstrap',
           icon: (
             <svg viewBox="0 0 16 16" width="32" height="32" fill="currentColor" style={{ color: '#7952b3' }}>
-              <path d="M12.4 12.48c0 1.25-.8 2.08-2.22 2.08H3.6V2.7h6.2c1.4 0 2.16.7 2.16 1.95 0 1.05-.63 1.62-1.42 1.84.95.2 1.86.85 1.86 1.99zM5.5 5.5v2.8h3.3c.78 0 1.28-.4 1.28-1.07 0-.7-.5-1.1-1.28-1.1H5.5zm0 4.2v3.1h3.7c.83 0 1.34-.4 1.34-1.1 0-.75-.5-1.2-1.34-1.2H5.5z"/>
-              <path d="M0 0h16v16H0z" fill="none"/>
+              <path d="M12.4 12.48c0 1.25-.8 2.08-2.22 2.08H3.6V2.7h6.2c1.4 0 2.16.7 2.16 1.95 0 1.05-.63 1.62-1.42 1.84.95.2 1.86.85 1.86 1.99zM5.5 5.5v2.8h3.3c.78 0 1.28-.4 1.28-1.07 0-.7-.5-1.1-1.28-1.1H5.5zm0 4.2v3.1h3.7c.83 0 1.34-.4 1.34-1.1 0-.75-.5-1.2-1.34-1.2H5.5z" />
+              <path d="M0 0h16v16H0z" fill="none" />
             </svg>
-          ), 
-          level: 75 
+          ),
+          level: 75
         },
-        { name: 'Zustand', icon: <StackIcon name="redux" style={{ width: 32, height: 32 }} />, level: 70 },      ]
-    },    {
+        { name: 'Zustand', icon: <StackIcon name="redux" style={{ width: 32, height: 32 }} />, level: 70 },]
+    }, {
       title: locale === 'en' ? 'Cloud & Infrastructure' : 'Cloud & Infrastructure',
       techs: [
         { name: 'AWS', icon: <StackIcon name="aws" style={{ width: 32, height: 32 }} />, level: 80 },
@@ -813,7 +811,7 @@ export default function Home() {
       { icon: 'book-open', title: locale === 'en' ? 'Interests' : 'สิ่งที่กำลังสนใจอยู่', subtitle: locale === 'en' ? "Jump to Things I'm Interested In" : 'ไปยังส่วนสิ่งที่กำลังสนใจอยู่', action: () => { router.push('/blog'); setCommandPaletteOpen(false); } },
       { icon: 'mail', title: 'Contact', subtitle: locale === 'en' ? 'Jump to Contact section' : 'ไปยังส่วน Contact', action: () => { document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }); setCommandPaletteOpen(false); } },
       { icon: 'camera', title: locale === 'en' ? 'Lifestyle & Hobbies' : 'ไลฟ์สไตล์และกิจกรรมสุดโปรด', subtitle: locale === 'en' ? 'View my lifestyles and hobbies page' : 'ไปยังหน้าดูไลฟ์สไตล์และกิจกรรมยามว่าง', action: () => { router.push('/lifestyle'); setCommandPaletteOpen(false); } },
-      { icon: 'file-text', title: locale === 'en' ? 'Download CV' : 'ดาวน์โหลด CV', subtitle: locale === 'en' ? 'Download resume as PDF' : 'ดาวน์โหลด resume เป็น PDF', action: () => { window.open('/resume.pdf', '_blank'); setCommandPaletteOpen(false); } },
+      { icon: 'file-text', title: locale === 'en' ? 'Download CV' : 'ดาวน์โหลด CV', subtitle: locale === 'en' ? 'Download CV as PDF' : 'ดาวน์โหลด CV เป็น PDF', action: () => { window.open('/CV.pdf', '_blank'); setCommandPaletteOpen(false); } },
       { icon: theme === 'dark' ? 'sun' : 'moon', title: locale === 'en' ? 'Toggle Theme' : 'สลับธีม', subtitle: locale === 'en' ? `Switch to ${theme === 'dark' ? 'light' : 'dark'} mode` : `เปลี่ยนเป็นโหมด${theme === 'dark' ? 'สว่าง' : 'มืด'}`, action: () => { toggleTheme(); setCommandPaletteOpen(false); } },
       {
         icon: 'globe',
