@@ -688,19 +688,26 @@ export default function Home() {
       techs: [
         { name: 'Next.js 15', icon: <StackIcon name="nextjs2" style={{ width: 32, height: 32 }} />, level: 80 },
         { name: 'React 19', icon: <StackIcon name="react" style={{ width: 32, height: 32 }} />, level: 85 },
-        { name: 'Zustand', icon: <StackIcon name="redux" style={{ width: 32, height: 32 }} />, level: 70 },
-        { name: 'Chakra UI', icon: <span style={{ fontSize: '32px' }}>⚡</span>, level: 65 },
-        { name: 'Vite', icon: <StackIcon name="vitejs" style={{ width: 32, height: 32 }} />, level: 80 },
-      ]
-    },
-    {
+        { name: 'Tailwind CSS', icon: <StackIcon name="tailwindcss" style={{ width: 32, height: 32 }} />, level: 80 },
+        { 
+          name: 'Bootstrap', 
+          icon: (
+            <svg viewBox="0 0 16 16" width="32" height="32" fill="currentColor" style={{ color: '#7952b3' }}>
+              <path d="M12.4 12.48c0 1.25-.8 2.08-2.22 2.08H3.6V2.7h6.2c1.4 0 2.16.7 2.16 1.95 0 1.05-.63 1.62-1.42 1.84.95.2 1.86.85 1.86 1.99zM5.5 5.5v2.8h3.3c.78 0 1.28-.4 1.28-1.07 0-.7-.5-1.1-1.28-1.1H5.5zm0 4.2v3.1h3.7c.83 0 1.34-.4 1.34-1.1 0-.75-.5-1.2-1.34-1.2H5.5z"/>
+              <path d="M0 0h16v16H0z" fill="none"/>
+            </svg>
+          ), 
+          level: 75 
+        },
+        { name: 'Zustand', icon: <StackIcon name="redux" style={{ width: 32, height: 32 }} />, level: 70 },      ]
+    },    {
       title: locale === 'en' ? 'Cloud & Infrastructure' : 'Cloud & Infrastructure',
       techs: [
         { name: 'AWS', icon: <StackIcon name="aws" style={{ width: 32, height: 32 }} />, level: 80 },
         { name: 'Azure', icon: <StackIcon name="azure" style={{ width: 32, height: 32 }} />, level: 75 },
+        { name: 'MongoDB', icon: <StackIcon name="mongodb" style={{ width: 32, height: 32 }} />, level: 75 },
         { name: 'GCP', icon: <img src="/gcp.png" alt="GCP" style={{ width: 32, height: 32, objectFit: 'contain' }} />, level: 55 },
         { name: 'Docker', icon: <StackIcon name="docker" style={{ width: 32, height: 32 }} />, level: 70 },
-        { name: 'MSSQL', icon: <img src="/mssql.png" alt="MSSQL" style={{ width: 32, height: 32, objectFit: 'contain' }} />, level: 80 },
       ]
     },
     {
