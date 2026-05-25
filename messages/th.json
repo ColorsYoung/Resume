@@ -1,0 +1,13 @@
+{
+  "Navbar": {
+    "about": "เกี่ยวกับผม",
+    "experience": "ประสบการณ์",
+    "projects": "โปรเจกต์",
+    "skills": "ทักษะ",
+    "blog": "บล็อก",
+    "lifestyle": "ไลฟ์สไตล์",
+    "contact": "ติดต่อ",
+    "lightMode": "โหมดสว่าง",
+    "darkMode": "โหมดมืด"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "Navbar": {
+    "about": "About",
+    "experience": "Experience",
+    "projects": "Projects",
+    "skills": "Skills",
+    "blog": "Blog",
+    "lifestyle": "Lifestyle",
+    "contact": "Contact",
+    "lightMode": "Light Mode",
+    "darkMode": "Dark Mode"
+  }
+}

@@ -7,22 +7,22 @@
 "use client";
 
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, Link, usePathname } from '@/i18n/routing';
+import { useLocale, useTranslations } from 'next-intl';
 import StackIcon from 'tech-stack-icons';
 import { Ollama } from '@lobehub/icons';
 
 // Import modular components
-import { Navbar } from '../components/Navbar';
-import { Hero } from '../components/Hero';
-import { About } from '../components/About';
-import { Experience } from '../components/Experience';
-import { Projects } from '../components/Projects';
-import { Skills } from '../components/Skills';
-import { GitHubHeatmap } from '../components/GitHubHeatmap';
-import { Quotes } from '../components/Quotes';
-import { Contact } from '../components/Contact';
-import { Typewriter } from '../components/Typewriter';
+import { Navbar } from '@/components/Navbar';
+import { Hero } from '@/components/Hero';
+import { About } from '@/components/About';
+import { Experience } from '@/components/Experience';
+import { Projects } from '@/components/Projects';
+import { Skills } from '@/components/Skills';
+import { GitHubHeatmap } from '@/components/GitHubHeatmap';
+import { Quotes } from '@/components/Quotes';
+import { Contact } from '@/components/Contact';
+import { Typewriter } from '@/components/Typewriter';
 
 type Language = 'en' | 'th';
 type Theme = 'dark' | 'light';
@@ -80,8 +80,9 @@ function useScrollReveal() {
 
 export default function Home() {
   const router = useRouter();
+  const pathname = usePathname();
+  const locale = useLocale() as Language;
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-  const [lang, setLang] = useState<Language>('en');
   const [theme, setTheme] = useState<Theme>('dark');
   const [filter, setFilter] = useState<string>('All');
   const [activeSection, setActiveSection] = useState<string>('about');
@@ -135,7 +136,7 @@ export default function Home() {
   useEffect(() => {
     const updateTime = () => {
       const now = new Date();
-      setTelemetryTime(now.toLocaleTimeString(lang === 'en' ? 'en-US' : 'th-TH', { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+      setTelemetryTime(now.toLocaleTimeString(locale === 'en' ? 'en-US' : 'th-TH', { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
     };
     updateTime();
     const timeInterval = setInterval(updateTime, 1000);
@@ -151,7 +152,7 @@ export default function Home() {
       clearInterval(timeInterval);
       clearInterval(visitorInterval);
     };
-  }, [lang]);
+  }, [locale]);
 
   // Toast Auto-hide logic
   useEffect(() => {
@@ -171,7 +172,7 @@ export default function Home() {
     navigator.clipboard.writeText('Chanchaichakam1997@gmail.com')
       .then(() => {
         showToast(
-          lang === 'en'
+          locale === 'en'
             ? 'Email copied to clipboard! 📋'
             : 'คัดลอกอีเมลแล้ว! 📋'
         );
@@ -388,7 +389,7 @@ export default function Home() {
         konamiIndex++;
         if (konamiIndex === konamiCode.length) {
           setShowConfetti(true);
-          showToast(lang === 'en' ? '🎉 Konami Code Activated! You found the Easter Egg!' : '🎉 Konami Code เปิดใช้งาน! คุณพบ Easter Egg!');
+          showToast(locale === 'en' ? '🎉 Konami Code Activated! You found the Easter Egg!' : '🎉 Konami Code เปิดใช้งาน! คุณพบ Easter Egg!');
           setTimeout(() => setShowConfetti(false), 4000);
           konamiIndex = 0;
         }
@@ -398,7 +399,7 @@ export default function Home() {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [lang, commandPaletteOpen, showToast]);
+  }, [locale, commandPaletteOpen, showToast]);
 
   // Translations Dictionary
   const t = {
@@ -416,62 +417,6 @@ export default function Home() {
               typingSpeed={15}
             />
           </div>
-          {/* 
-          <div style={{ 
-            marginTop: '2rem', 
-            padding: '1.5rem', 
-            background: 'linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%)', 
-            borderRadius: '16px', 
-            border: '1px solid rgba(255,255,255,0.08)',
-            boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
-            display: 'flex',
-            gap: '1.25rem',
-            alignItems: 'flex-start',
-            transition: 'transform 0.3s ease, border-color 0.3s ease'
-          }} className="education-card">
-            <div style={{ 
-              background: 'rgba(255,255,255,0.05)', 
-              padding: '0.75rem', 
-              borderRadius: '12px', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center',
-              border: '1px solid rgba(255,255,255,0.1)'
-            }}>
-              <img src="/rmuti.png" alt="RMUTI Logo" style={{ height: '48px', width: 'auto', filter: 'brightness(1.1)' }} />
-            </div>
-            <div style={{ flex: 1 }}>
-              <div style={{ 
-                fontSize: '0.75rem', 
-                fontWeight: 600, 
-                textTransform: 'uppercase', 
-                letterSpacing: '0.05em', 
-                color: 'var(--accent-light)',
-                marginBottom: '0.25rem',
-                opacity: 0.8
-              }}>
-                Education
-              </div>
-              <h3 style={{ fontSize: '1.2rem', margin: '0 0 0.25rem 0', color: '#fff', fontWeight: 600 }}>
-                B.Eng. in Computer Engineering
-              </h3>
-              <p style={{ margin: 0, fontSize: '1rem', color: 'var(--text-secondary)', lineHeight: '1.4' }}>
-                Rajamangala University of Technology Isan
-              </p>
-              <div style={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: '0.5rem', 
-                marginTop: '0.75rem',
-                fontSize: '0.85rem',
-                color: 'var(--text-muted)'
-              }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                Graduated: Nov 2020
-              </div>
-            </div>
-          </div>
-          */}
         </>
       ),
       expTitle: "Work Experience",
@@ -505,67 +450,11 @@ export default function Home() {
         <>
           <div style={{ minHeight: '120px' }}>
             <Typewriter
-              words={["สวัสดีครับ ผมเป็น Software Engineer มีประสบการณ์ทำทั้งหน้าเว็บแอปพลิเคชันและระบบหลังบ้าน (Backend) ให้กับโปรเจกต์ระดับองค์กร ผมชอบนำเทคโนโลยีอย่าง Cloud Services และ AI มาประยุกต์ใช้เพื่อแก้ปัญหาทางธุรกิจ โดยมุ่งเน้นที่การเขียนโค้ดที่ดูแลรวดเร็ว ขยายตัวได้ง่าย และตอบโจทย์การใช้งานจริง"]}
+              words={["สวัสดีครับ ผมเป็น Software Engineer มีประสบการณ์ทำทั้งหน้าเว็บ(Fontend) และระบบหลังบ้าน(Backend) ให้กับโปรเจกต์ระดับองค์กร ผมชอบนำเทคโนโลยีอย่าง Cloud Services และ AI มาประยุกต์ใช้เพื่อแก้ปัญหาทางธุรกิจ โดยมุ่งเน้นที่การเขียนโค้ดที่ดูแลรวดเร็ว ขยายตัวได้ง่าย และตอบโจทย์การใช้งานจริง"]}
               loop={false}
               typingSpeed={15}
             />
           </div>
-          {/* 
-          <div style={{ 
-            marginTop: '2rem', 
-            padding: '1.5rem', 
-            background: 'linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%)', 
-            borderRadius: '16px', 
-            border: '1px solid rgba(255,255,255,0.08)',
-            boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
-            display: 'flex',
-            gap: '1.25rem',
-            alignItems: 'flex-start',
-            transition: 'transform 0.3s ease, border-color 0.3s ease'
-          }} className="education-card">
-            <div style={{ 
-              background: 'rgba(255,255,255,0.05)', 
-              padding: '0.75rem', 
-              borderRadius: '12px', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center',
-              border: '1px solid rgba(255,255,255,0.1)'
-            }}>
-              <img src="/rmuti.png" alt="RMUTI Logo" style={{ height: '48px', width: 'auto', filter: 'brightness(1.1)' }} />
-            </div>
-            <div style={{ flex: 1 }}>
-              <div style={{ 
-                fontSize: '0.75rem', 
-                fontWeight: 600, 
-                textTransform: 'uppercase', 
-                letterSpacing: '0.05em', 
-                color: 'var(--accent-light)',
-                marginBottom: '0.25rem',
-                opacity: 0.8
-              }}>
-                การศึกษา
-              </div>
-              <h3 style={{ fontSize: '1.2rem', margin: '0 0 0.25rem 0', color: '#fff', fontWeight: 600 }}>
-                ปริญญาตรี วิศวกรรมคอมพิวเตอร์
-              </h3>
-              <p style={{ margin: 0, fontSize: '1rem', color: 'var(--text-secondary)', lineHeight: '1.4' }}>
-                มหาวิทยาลัยเทคโนโลยีราชมงคลอีสาน
-              </p>
-              <div style={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: '0.5rem', 
-                marginTop: '0.75rem',
-                fontSize: '0.85rem',
-                color: 'var(--text-muted)'
-              }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                จบการศึกษา: พฤศจิกายน 2563
-              </div>
-            </div>
-          </div>
-          */}
         </>
       ),
       expTitle: "Work Experience",
@@ -592,7 +481,7 @@ export default function Home() {
     }
   };
 
-  const currentT = t[lang];
+  const currentT = t[locale];
 
   const getProjects = (l: Language): Project[] => [
     {
@@ -698,7 +587,7 @@ export default function Home() {
     }
   ];
 
-  const projects = getProjects(lang);
+  const projects = getProjects(locale);
 
   const getFilteredProjects = () => {
     if (filter === 'All') return projects;
@@ -781,11 +670,11 @@ export default function Home() {
     }
   ];
 
-  const experiences = getExperiences(lang);
+  const experiences = getExperiences(locale);
 
   const techGroups = [
     {
-      title: lang === 'en' ? 'Core Engineering' : 'Core Engineering',
+      title: locale === 'en' ? 'Core Engineering' : 'Core Engineering',
       techs: [
         { name: 'Node.js', icon: <StackIcon name="nodejs" style={{ width: 32, height: 32 }} />, level: 90 },
         { name: 'Go', icon: <StackIcon name="go" style={{ width: 32, height: 32 }} />, level: 55 },
@@ -795,7 +684,7 @@ export default function Home() {
       ]
     },
     {
-      title: lang === 'en' ? 'Frontend & UI' : 'Frontend & UI',
+      title: locale === 'en' ? 'Frontend & UI' : 'Frontend & UI',
       techs: [
         { name: 'Next.js 15', icon: <StackIcon name="nextjs2" style={{ width: 32, height: 32 }} />, level: 80 },
         { name: 'React 19', icon: <StackIcon name="react" style={{ width: 32, height: 32 }} />, level: 85 },
@@ -805,7 +694,7 @@ export default function Home() {
       ]
     },
     {
-      title: lang === 'en' ? 'Cloud & Infrastructure' : 'Cloud & Infrastructure',
+      title: locale === 'en' ? 'Cloud & Infrastructure' : 'Cloud & Infrastructure',
       techs: [
         { name: 'AWS', icon: <StackIcon name="aws" style={{ width: 32, height: 32 }} />, level: 80 },
         { name: 'Azure', icon: <StackIcon name="azure" style={{ width: 32, height: 32 }} />, level: 75 },
@@ -815,7 +704,7 @@ export default function Home() {
       ]
     },
     {
-      title: lang === 'en' ? 'Specialized' : 'Specialized',
+      title: locale === 'en' ? 'Specialized' : 'Specialized',
       techs: [
         { name: 'Ollama', icon: <Ollama.Avatar size={32} />, level: 65 },
         { name: 'Playwright', icon: <StackIcon name="playwright" style={{ width: 32, height: 32 }} />, level: 60 },
@@ -910,21 +799,30 @@ export default function Home() {
   // Command palette items
   const commandItems = useMemo(() => {
     const list = [
-      { icon: '👤', title: 'About', subtitle: lang === 'en' ? 'Jump to About section' : 'ไปยังส่วน About', action: () => { document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' }); setCommandPaletteOpen(false); } },
-      { icon: '💼', title: 'Experience', subtitle: lang === 'en' ? 'Jump to Experience section' : 'ไปยังส่วน Experience', action: () => { document.getElementById('experience')?.scrollIntoView({ behavior: 'smooth' }); setCommandPaletteOpen(false); } },
-      { icon: '📂', title: 'Projects', subtitle: lang === 'en' ? 'Jump to Projects section' : 'ไปยังส่วน Projects', action: () => { document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' }); setCommandPaletteOpen(false); } },
-      { icon: '⚡', title: 'Skills', subtitle: lang === 'en' ? 'Jump to Skills section' : 'ไปยังส่วน Skills', action: () => { document.getElementById('tech')?.scrollIntoView({ behavior: 'smooth' }); setCommandPaletteOpen(false); } },
-      { icon: '✍️', title: lang === 'en' ? 'Interests' : 'สิ่งที่กำลังสนใจอยู่', subtitle: lang === 'en' ? "Jump to Things I'm Interested In" : 'ไปยังส่วนสิ่งที่กำลังสนใจอยู่', action: () => { router.push('/blog'); setCommandPaletteOpen(false); } },
-      { icon: '✉️', title: 'Contact', subtitle: lang === 'en' ? 'Jump to Contact section' : 'ไปยังส่วน Contact', action: () => { document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }); setCommandPaletteOpen(false); } },
-      { icon: '📷', title: lang === 'en' ? 'Lifestyle & Hobbies' : 'ไลฟ์สไตล์และกิจกรรมสุดโปรด', subtitle: lang === 'en' ? 'View my lifestyles and hobbies page' : 'ไปยังหน้าดูไลฟ์สไตล์และกิจกรรมยามว่าง', action: () => { router.push('/lifestyle'); setCommandPaletteOpen(false); } },
-      { icon: '📄', title: lang === 'en' ? 'Download CV' : 'ดาวน์โหลด CV', subtitle: lang === 'en' ? 'Download resume as PDF' : 'ดาวน์โหลด resume เป็น PDF', action: () => { window.open('/resume.pdf', '_blank'); setCommandPaletteOpen(false); } },
-      { icon: theme === 'dark' ? '☀️' : '🌙', title: lang === 'en' ? 'Toggle Theme' : 'สลับธีม', subtitle: lang === 'en' ? `Switch to ${theme === 'dark' ? 'light' : 'dark'} mode` : `เปลี่ยนเป็นโหมด${theme === 'dark' ? 'สว่าง' : 'มืด'}`, action: () => { toggleTheme(); setCommandPaletteOpen(false); } },
-      { icon: '🌐', title: lang === 'en' ? 'Toggle Language' : 'สลับภาษา', subtitle: lang === 'en' ? 'Switch to Thai' : 'Switch to English', action: () => { setLang(lang === 'en' ? 'th' : 'en'); setCommandPaletteOpen(false); } },
-      { icon: '🔗', title: 'GitHub', subtitle: lang === 'en' ? 'Open GitHub profile' : 'เปิดโปรไฟล์ GitHub', action: () => { window.open('https://github.com/ColorsYoung', '_blank'); setCommandPaletteOpen(false); } },
-      { icon: '💼', title: 'LinkedIn', subtitle: lang === 'en' ? 'Open LinkedIn profile' : 'เปิดโปรไฟล์ LinkedIn', action: () => { window.open('https://www.linkedin.com/in/chanchai-chakam', '_blank'); setCommandPaletteOpen(false); } },
+      { icon: '👤', title: 'About', subtitle: locale === 'en' ? 'Jump to About section' : 'ไปยังส่วน About', action: () => { document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' }); setCommandPaletteOpen(false); } },
+      { icon: '💼', title: 'Experience', subtitle: locale === 'en' ? 'Jump to Experience section' : 'ไปยังส่วน Experience', action: () => { document.getElementById('experience')?.scrollIntoView({ behavior: 'smooth' }); setCommandPaletteOpen(false); } },
+      { icon: '📂', title: 'Projects', subtitle: locale === 'en' ? 'Jump to Projects section' : 'ไปยังส่วน Projects', action: () => { document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' }); setCommandPaletteOpen(false); } },
+      { icon: '⚡', title: 'Skills', subtitle: locale === 'en' ? 'Jump to Skills section' : 'ไปยังส่วน Skills', action: () => { document.getElementById('tech')?.scrollIntoView({ behavior: 'smooth' }); setCommandPaletteOpen(false); } },
+      { icon: '✍️', title: locale === 'en' ? 'Interests' : 'สิ่งที่กำลังสนใจอยู่', subtitle: locale === 'en' ? "Jump to Things I'm Interested In" : 'ไปยังส่วนสิ่งที่กำลังสนใจอยู่', action: () => { router.push('/blog'); setCommandPaletteOpen(false); } },
+      { icon: '✉️', title: 'Contact', subtitle: locale === 'en' ? 'Jump to Contact section' : 'ไปยังส่วน Contact', action: () => { document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }); setCommandPaletteOpen(false); } },
+      { icon: '📷', title: locale === 'en' ? 'Lifestyle & Hobbies' : 'ไลฟ์สไตล์และกิจกรรมสุดโปรด', subtitle: locale === 'en' ? 'View my lifestyles and hobbies page' : 'ไปยังหน้าดูไลฟ์สไตล์และกิจกรรมยามว่าง', action: () => { router.push('/lifestyle'); setCommandPaletteOpen(false); } },
+      { icon: '📄', title: locale === 'en' ? 'Download CV' : 'ดาวน์โหลด CV', subtitle: locale === 'en' ? 'Download resume as PDF' : 'ดาวน์โหลด resume เป็น PDF', action: () => { window.open('/resume.pdf', '_blank'); setCommandPaletteOpen(false); } },
+      { icon: theme === 'dark' ? '☀️' : '🌙', title: locale === 'en' ? 'Toggle Theme' : 'สลับธีม', subtitle: locale === 'en' ? `Switch to ${theme === 'dark' ? 'light' : 'dark'} mode` : `เปลี่ยนเป็นโหมด${theme === 'dark' ? 'สว่าง' : 'มืด'}`, action: () => { toggleTheme(); setCommandPaletteOpen(false); } },
+      {
+        icon: '🌐',
+        title: locale === 'en' ? 'Toggle Language' : 'สลับภาษา',
+        subtitle: locale === 'en' ? 'Switch to Thai' : 'Switch to English',
+        action: () => {
+          const newLocale = locale === 'en' ? 'th' : 'en';
+          router.replace(pathname, { locale: newLocale });
+          setCommandPaletteOpen(false);
+        }
+      },
+      { icon: '🔗', title: 'GitHub', subtitle: locale === 'en' ? 'Open GitHub profile' : 'เปิดโปรไฟล์ GitHub', action: () => { window.open('https://github.com/ColorsYoung', '_blank'); setCommandPaletteOpen(false); } },
+      { icon: '💼', title: 'LinkedIn', subtitle: locale === 'en' ? 'Open LinkedIn profile' : 'เปิดโปรไฟล์ LinkedIn', action: () => { window.open('https://www.linkedin.com/in/chanchai-chakam', '_blank'); setCommandPaletteOpen(false); } },
     ];
     return list;
-  }, [lang, theme, toggleTheme, router]);
+  }, [locale, theme, toggleTheme, router, pathname]);
 
   const filteredCommandItems = commandItems.filter(item =>
     item.title.toLowerCase().includes(commandQuery.toLowerCase()) ||
@@ -965,7 +863,7 @@ export default function Home() {
       if (res.ok) {
         setContactStatus('sent');
         setContactForm({ name: '', email: '', message: '' });
-        showToast(lang === 'en' ? 'Message sent! ✉️' : 'ส่งข้อความสำเร็จ! ✉️');
+        showToast(locale === 'en' ? 'Message sent! ✉️' : 'ส่งข้อความสำเร็จ! ✉️');
         setTimeout(() => setContactStatus('idle'), 5000);
       } else {
         setContactStatus('error');
@@ -1050,11 +948,9 @@ export default function Home() {
       {/* Modern Sticky Navigation */}
       <Navbar
         activeSection={activeSection}
-        lang={lang}
         theme={theme}
         mobileMenuOpen={mobileMenuOpen}
         toggleTheme={toggleTheme}
-        setLang={setLang}
         setMobileMenuOpen={setMobileMenuOpen}
         handleMobileLinkClick={handleMobileLinkClick}
         handleMagneticMove={handleMagneticMove}
@@ -1069,7 +965,7 @@ export default function Home() {
       />
 
       {/* About Me Section (Clean Centered Layout) */}
-      <About currentT={currentT} lang={lang} />
+      <About currentT={currentT} locale={locale} />
       {/* ยังไม่ใช้ */}
 
       {/* Experience Timeline */}
@@ -1095,7 +991,7 @@ export default function Home() {
       <Skills currentT={currentT} techGroups={techGroups} />
 
       {/* 12. Simulated Interactive GitHub Heatmap Section */}
-      <GitHubHeatmap lang={lang} />
+      <GitHubHeatmap locale={locale} />
 
       {/* 13. Inspirational Quotes Section */}
       <Quotes />
@@ -1120,15 +1016,15 @@ export default function Home() {
           }}>
             <div>
               <h3 style={{ fontSize: '1.3rem', color: 'var(--text-primary)', marginBottom: '0.75rem', fontWeight: 700 }}>
-                {lang === 'en' ? "Interesting articles I'd like to share." : 'บทความน่าสนใจของผมที่อยากแบ่งปัน'}
+                {locale === 'en' ? "Interesting articles I'd like to share." : 'บทความน่าสนใจของผมที่อยากแบ่งปัน'}
               </h3>
               <p style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', lineHeight: '1.6', marginBottom: '1.5rem', maxWidth: '340px' }}>
-                {lang === 'en'
+                {locale === 'en'
                   ? 'This blog is a place where I collect and share articles, ideas, and experiences that I find interesting and valuable — from technology and software engineering to thoughts and stories from everyday life. I hope these writings will be useful not only for myself, but also for others who share the same interests.'
                   : 'Blog ที่ผมสร้างขึ้นเพื่อรวบรวมบทความ เรื่องราว และไอเดียที่ผมพบว่าน่าสนใจและมีคุณค่า ทั้งในโลกของเทคโนโลยี การพัฒนา Software และประสบการณ์ต่างๆที่อยากนำมาแบ่งปัน ผมหวังว่าเนื้อหาเหล่านี้จะเป็นประโยชน์ทั้งกับตัวผมเองและเพื่อนๆที่มีความสนใจเหมือนกันครับ'}
               </p>
             </div>
-            <a href="/blog" style={{
+            <Link href="/blog" style={{
               display: 'inline-flex',
               alignItems: 'center',
               gap: '0.5rem',
@@ -1151,8 +1047,8 @@ export default function Home() {
                 e.currentTarget.style.boxShadow = '0 4px 15px rgba(187, 134, 252, 0.3)';
               }}
             >
-              {lang === 'en' ? 'Open Blog →' : 'เข้าสู่บล็อก →'}
-            </a>
+              {locale === 'en' ? 'Open Blog →' : 'เข้าสู่บล็อก →'}
+            </Link>
           </div>
 
           {/* Lifestyle CTA */}
@@ -1172,15 +1068,15 @@ export default function Home() {
           }}>
             <div>
               <h3 style={{ fontSize: '1.3rem', color: 'var(--text-primary)', marginBottom: '0.75rem', fontWeight: 700 }}>
-                {lang === 'en' ? 'My Lifestyle & Travel' : 'บันทึกเรื่องราวความทรงจำ และไลฟ์สไตล์ กิจกรรมต่างๆ ของผม'}
+                {locale === 'en' ? 'My Lifestyle & Travel' : 'บันทึกเรื่องราวความทรงจำ และไลฟ์สไตล์ กิจกรรมต่างๆ ของผม'}
               </h3>
               <p style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', lineHeight: '1.6', marginBottom: '1.5rem', maxWidth: '340px' }}>
-                {lang === 'en'
+                {locale === 'en'
                   ? 'Step away from the computer and the world of coding! Here, I share experiences beyond programming — from hiking and street photography to many other things I’m passionate about and would love to share with everyone.'
                   : 'ก้าวออกจากคอมพิวเตอร์และโลกของการเขียนโค้ด! ร่วมแชร์ประสบการณ์ของชีวิตนอกเหนือจากเรื่องการเขียนโปรแกรม ไม่ว่าจะเป็น การเดินป่า ถ่ายรูปสตรีทและอื่นๆอีกมากมายที่ผมอยากแบ่งปันให้ทุกคนได้อ่านกันครับ'}
               </p>
             </div>
-            <a href="/lifestyle" style={{
+            <Link href="/lifestyle" style={{
               display: 'inline-flex',
               alignItems: 'center',
               gap: '0.5rem',
@@ -1203,8 +1099,8 @@ export default function Home() {
                 e.currentTarget.style.boxShadow = '0 4px 15px rgba(187, 134, 252, 0.3)';
               }}
             >
-              {lang === 'en' ? 'Lifestyle and interests →' : 'ไลฟ์สไตล์ และความชอบของผม →'}
-            </a>
+              {locale === 'en' ? 'Lifestyle and interests →' : 'ไลฟ์สไตล์ และความชอบของผม →'}
+            </Link>
           </div>
         </div>
       </section>
@@ -1212,7 +1108,7 @@ export default function Home() {
       {/* Contact Form Section */}
       <Contact
         currentT={currentT}
-        lang={lang}
+        locale={locale}
         contactForm={contactForm}
         setContactForm={setContactForm}
         contactStatus={contactStatus}
@@ -1226,7 +1122,7 @@ export default function Home() {
         {/* Telemetry live status overlay inside footer */}
         <div style={{ marginTop: '0.75rem', fontSize: '0.72rem', color: 'var(--text-muted)', display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.25rem 0.65rem', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--card-border)', borderRadius: '12px' }}>
           <span className="pulse-active-dot" />
-          <span>{lang === 'en' ? 'Live Telemetry: ' : 'ข้อมูลสดของเซิร์ฟเวอร์: '}</span>
+          <span>{locale === 'en' ? 'Live Telemetry: ' : 'ข้อมูลสดของเซิร์ฟเวอร์: '}</span>
           <span style={{ fontWeight: 600, color: 'var(--accent-light)' }}>{liveVisitors} active visitors</span>
           <span>•</span>
           <span>{telemetryTime}</span>
@@ -1249,7 +1145,7 @@ export default function Home() {
         onClick={scrollToTop}
         onMouseMove={handleMagneticMove}
         onMouseLeave={handleMagneticLeave}
-        title={lang === 'en' ? 'Back to top' : 'กลับด้านบน'}
+        title={locale === 'en' ? 'Back to top' : 'กลับด้านบน'}
       >
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" width="22" height="22">
           <polyline points="18 15 12 9 6 15"></polyline>
@@ -1298,7 +1194,7 @@ export default function Home() {
                 ref={commandInputRef}
                 className="command-palette-input"
                 type="text"
-                placeholder={lang === 'en' ? 'Type a command...' : 'พิมพ์คำสั่ง...'}
+                placeholder={locale === 'en' ? 'Type a command...' : 'พิมพ์คำสั่ง...'}
                 value={commandQuery}
                 onChange={(e) => setCommandQuery(e.target.value)}
                 onKeyDown={(e) => {
@@ -1334,14 +1230,14 @@ export default function Home() {
                 ))
               ) : (
                 <div className="command-palette-empty">
-                  {lang === 'en' ? 'No results found' : 'ไม่พบผลลัพธ์'}
+                  {locale === 'en' ? 'No results found' : 'ไม่พบผลลัพธ์'}
                 </div>
               )}
             </div>
             <div className="command-palette-footer">
-              <span><kbd>↑↓</kbd> {lang === 'en' ? 'Navigate' : 'เลื่อน'}</span>
-              <span><kbd>↵</kbd> {lang === 'en' ? 'Select' : 'เลือก'}</span>
-              <span><kbd>Esc</kbd> {lang === 'en' ? 'Close' : 'ปิด'}</span>
+              <span><kbd>↑↓</kbd> {locale === 'en' ? 'Navigate' : 'เลื่อน'}</span>
+              <span><kbd>↵</kbd> {locale === 'en' ? 'Select' : 'เลือก'}</span>
+              <span><kbd>Esc</kbd> {locale === 'en' ? 'Close' : 'ปิด'}</span>
             </div>
           </div>
         </div>

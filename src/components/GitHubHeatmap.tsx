@@ -5,10 +5,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
 
 interface GitHubHeatmapProps {
-  lang: 'en' | 'th';
+  locale: 'en' | 'th';
 }
 
-export const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({ lang }) => {
+export const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({ locale }) => {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -30,7 +30,7 @@ export const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({ lang }) => {
     // Go back 371 days (53 weeks)
     date.setDate(date.getDate() - 371);
 
-    const months = lang === 'en'
+    const months = locale === 'en'
       ? ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
       : ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
 
@@ -56,13 +56,13 @@ export const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({ lang }) => {
       list.push({
         id: i,
         level,
-        tooltip: lang === 'en' 
+        tooltip: locale === 'en' 
           ? `${commitCount} contributions on ${formattedDate}`
           : `${commitCount === 'No' ? 'ไม่มี' : commitCount + ' การมีส่วนร่วม'} เมื่อ ${formattedDate}`
       });
     }
     return list;
-  }, [lang, mounted]);
+  }, [locale, mounted]);
 
   return (
     <div className="github-heatmap-container animate-on-scroll">
@@ -75,7 +75,7 @@ export const GitHubHeatmap: React.FC<GitHubHeatmapProps> = ({ lang }) => {
             Chanchai&apos;s Engineering Contribution Graph
           </div>
           <div className="github-heatmap-subtitle">
-            {lang === 'en' 
+            {locale === 'en' 
               ? '1,428 contributions in the last year (Active Developer Heatmap)'
               : '1,428 การมีส่วนร่วมในปีที่ผ่านมา (Active Developer Heatmap)'}
           </div>

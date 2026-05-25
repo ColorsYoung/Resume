@@ -2,7 +2,8 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from 'react';
-import Link from 'next/link';
+import { Link, usePathname, useRouter } from '@/i18n/routing';
+import { useLocale } from 'next-intl';
 
 export type Article = {
   id: string;
@@ -23,7 +24,9 @@ type HeadingItem = {
 };
 
 export default function BlogClient({ articles }: { articles: Article[] }) {
-  const [lang, setLang] = useState<'en' | 'th'>('en');
+  const locale = useLocale() as 'en' | 'th';
+  const pathname = usePathname();
+  const router = useRouter();
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const [selectedArticleId, setSelectedArticleId] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -68,6 +71,10 @@ export default function BlogClient({ articles }: { articles: Article[] }) {
     setTheme(prev => prev === 'dark' ? 'light' : 'dark');
   };
 
+  const switchLocale = (newLocale: 'en' | 'th') => {
+    router.replace(pathname, { locale: newLocale });
+  };
+
   // Handle Article Selection
   const handleSelectArticle = (id: string) => {
     setSelectedArticleId(id);
@@ -107,8 +114,8 @@ export default function BlogClient({ articles }: { articles: Article[] }) {
     const groups: Record<string, Article[]> = {};
 
     articles.forEach(article => {
-      const title = (lang === 'en' ? article.title_en : article.title_th).toLowerCase();
-      const excerpt = (lang === 'en' ? article.excerpt_en : article.excerpt_th).toLowerCase();
+      const title = (locale === 'en' ? article.title_en : article.title_th).toLowerCase();
+      const excerpt = (locale === 'en' ? article.excerpt_en : article.excerpt_th).toLowerCase();
       const tag = article.tag.toLowerCase();
 
       if (!query || title.includes(query) || excerpt.includes(query) || tag.includes(query)) {
@@ -119,7 +126,7 @@ export default function BlogClient({ articles }: { articles: Article[] }) {
     });
 
     return groups;
-  }, [articles, searchQuery, lang]);
+  }, [articles, searchQuery, locale]);
 
   // Parse Headings & Inject Copy Buttons
   useEffect(() => {
@@ -152,7 +159,7 @@ export default function BlogClient({ articles }: { articles: Article[] }) {
 
         const btn = document.createElement('button');
         btn.className = 'copy-code-btn';
-        btn.innerText = lang === 'en' ? 'Copy' : 'คัดลอก';
+        btn.innerText = locale === 'en' ? 'Copy' : 'คัดลอก';
         btn.style.position = 'absolute';
         btn.style.right = '0.75rem';
         btn.style.top = '0.75rem';
@@ -177,9 +184,9 @@ export default function BlogClient({ articles }: { articles: Article[] }) {
         btn.addEventListener('click', () => {
           const codeText = pre.querySelector('code')?.innerText || '';
           navigator.clipboard.writeText(codeText);
-          btn.innerText = lang === 'en' ? 'Copied!' : 'คัดลอกแล้ว!';
+          btn.innerText = locale === 'en' ? 'Copied!' : 'คัดลอกแล้ว!';
           setTimeout(() => {
-            btn.innerText = lang === 'en' ? 'Copy' : 'คัดลอก';
+            btn.innerText = locale === 'en' ? 'Copy' : 'คัดลอก';
           }, 2000);
         });
 
@@ -189,7 +196,7 @@ export default function BlogClient({ articles }: { articles: Article[] }) {
     }, 100);
 
     return () => clearTimeout(timer);
-  }, [activeArticle, lang]);
+  }, [activeArticle, locale]);
 
   // Scrollspy to highlight active TOC heading
   useEffect(() => {
@@ -236,11 +243,11 @@ export default function BlogClient({ articles }: { articles: Article[] }) {
       <header className="docs-navbar">
         <div className="docs-navbar-left">
           <Link href="/" className="docs-back-btn">
-            <span>←</span> {lang === 'en' ? 'Back to Portfolio' : 'กลับหน้าหลัก'}
+            <span>←</span> {locale === 'en' ? 'Back to Portfolio' : 'กลับหน้าหลัก'}
           </Link>
           <span style={{ color: 'var(--card-border)', fontSize: '1.2rem' }}>|</span>
           <span style={{ fontWeight: 800, fontSize: '1.1rem', background: 'linear-gradient(135deg, #fff 0%, var(--accent-light) 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-            {lang === 'en' ? 'Interesting Articles' : 'บทความน่าสนใจ'}
+            {locale === 'en' ? 'Interesting Articles' : 'บทความน่าสนใจ'}
           </span>
         </div>
 
@@ -288,12 +295,12 @@ export default function BlogClient({ articles }: { articles: Article[] }) {
             border: '1px solid var(--card-border)'
           }}>
             <button
-              onClick={() => setLang('en')}
+              onClick={() => switchLocale('en')}
               style={{
                 background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.75rem',
                 padding: '0.2rem 0.4rem',
-                fontWeight: lang === 'en' ? 'bold' : 'normal',
-                color: lang === 'en' ? 'var(--accent-light)' : 'var(--text-muted)',
+                fontWeight: locale === 'en' ? 'bold' : 'normal',
+                color: locale === 'en' ? 'var(--accent-light)' : 'var(--text-muted)',
                 transition: 'color 0.3s'
               }}
             >
@@ -301,12 +308,12 @@ export default function BlogClient({ articles }: { articles: Article[] }) {
             </button>
             <span style={{ color: 'var(--card-border)', fontSize: '0.75rem', alignSelf: 'center' }}>|</span>
             <button
-              onClick={() => setLang('th')}
+              onClick={() => switchLocale('th')}
               style={{
                 background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.75rem',
                 padding: '0.2rem 0.4rem',
-                fontWeight: lang === 'th' ? 'bold' : 'normal',
-                color: lang === 'th' ? 'var(--accent-light)' : 'var(--text-muted)',
+                fontWeight: locale === 'th' ? 'bold' : 'normal',
+                color: locale === 'th' ? 'var(--accent-light)' : 'var(--text-muted)',
                 transition: 'color 0.3s'
               }}
             >
@@ -324,10 +331,10 @@ export default function BlogClient({ articles }: { articles: Article[] }) {
             <line x1="3" y1="6" x2="21" y2="6"></line>
             <line x1="3" y1="18" x2="21" y2="18"></line>
           </svg>
-          {lang === 'en' ? 'Topics' : 'หัวข้อบทความ'}
+          {locale === 'en' ? 'Topics' : 'หัวข้อบทความ'}
         </button>
         <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '60%' }}>
-          {activeArticle ? (lang === 'en' ? activeArticle.title_en : activeArticle.title_th) : ''}
+          {activeArticle ? (locale === 'en' ? activeArticle.title_en : activeArticle.title_th) : ''}
         </span>
       </div>
 
@@ -354,7 +361,7 @@ export default function BlogClient({ articles }: { articles: Article[] }) {
               className="docs-search-input"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={lang === 'en' ? 'Search articles...' : 'ค้นหาบทความ...'}
+              placeholder={locale === 'en' ? 'Search articles...' : 'ค้นหาบทความ...'}
             />
           </div>
 
@@ -370,7 +377,7 @@ export default function BlogClient({ articles }: { articles: Article[] }) {
                       onClick={() => handleSelectArticle(art.id)}
                       style={{ background: 'none', border: 'none', width: '100%', textAlign: 'left', font: 'inherit' }}
                     >
-                      <span>{lang === 'en' ? art.title_en : art.title_th}</span>
+                      <span>{locale === 'en' ? art.title_en : art.title_th}</span>
                     </button>
                   </li>
                 ))}
@@ -380,7 +387,7 @@ export default function BlogClient({ articles }: { articles: Article[] }) {
 
           {Object.keys(filteredGroupedArticles).length === 0 && (
             <div style={{ textAlign: 'center', padding: '2rem 0', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-              {lang === 'en' ? 'No articles match query.' : 'ไม่พบควิรีที่ตรงกัน'}
+              {locale === 'en' ? 'No articles match query.' : 'ไม่พบควิรีที่ตรงกัน'}
             </div>
           )}
         </aside>
@@ -392,7 +399,7 @@ export default function BlogClient({ articles }: { articles: Article[] }) {
               <article className="docs-article" key={activeArticle.id}>
                 <header className="docs-article-header">
                   <h1 className="docs-article-title">
-                    {lang === 'en' ? activeArticle.title_en : activeArticle.title_th}
+                    {locale === 'en' ? activeArticle.title_en : activeArticle.title_th}
                   </h1>
                   <div className="docs-article-meta">
                     <span className="blog-tag">{activeArticle.tag}</span>
@@ -404,13 +411,13 @@ export default function BlogClient({ articles }: { articles: Article[] }) {
                 <div
                   className="docs-article-body"
                   dangerouslySetInnerHTML={{
-                    __html: lang === 'en' ? activeArticle.content_en : activeArticle.content_th
+                    __html: locale === 'en' ? activeArticle.content_en : activeArticle.content_th
                   }}
                 />
               </article>
             ) : (
               <div style={{ textAlign: 'center', padding: '4rem 0', color: 'var(--text-muted)' }}>
-                {lang === 'en' ? 'Please select an article.' : 'โปรดเลือกบทความที่ต้องการอ่าน'}
+                {locale === 'en' ? 'Please select an article.' : 'โปรดเลือกบทความที่ต้องการอ่าน'}
               </div>
             )}
           </div>
@@ -420,7 +427,7 @@ export default function BlogClient({ articles }: { articles: Article[] }) {
         {headings.length > 0 && (
           <aside className="docs-toc">
             <h4 className="docs-toc-title">
-              {lang === 'en' ? 'On this page' : 'ในหน้านี้'}
+              {locale === 'en' ? 'On this page' : 'ในหน้านี้'}
             </h4>
             <ul className="docs-toc-list">
               {headings.map(h => (

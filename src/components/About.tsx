@@ -8,10 +8,10 @@ interface AboutProps {
     aboutTitle: string;
     aboutContent: React.ReactNode;
   };
-  lang: 'en' | 'th';
+  locale: 'en' | 'th';
 }
 
-export const About: React.FC<AboutProps> = ({ currentT, lang }) => {
+export const About: React.FC<AboutProps> = ({ currentT, locale }) => {
   return (
     <>
       {/* About Me Section (Clean Centered Layout) */}
@@ -29,25 +29,25 @@ export const About: React.FC<AboutProps> = ({ currentT, lang }) => {
             <div className="stat-number">
               <AnimatedCounter target={3} />
             </div>
-            <div className="stat-label">{lang === 'en' ? 'Years of Experience' : 'ปีที่สั่งสมประสบการณ์'}</div>
+            <div className="stat-label">{locale === 'en' ? 'Years of Experience' : 'ปีที่สั่งสมประสบการณ์'}</div>
           </div>
           <div className="stat-card">
             <div className="stat-number" style={{ display: 'flex', justifyContent: 'center' }}>
               <AnimatedCounter target={10} />+
             </div>
-            <div className="stat-label">{lang === 'en' ? 'Projects Delivered' : 'โปรเจกต์เสร็จสมบูรณ์'}</div>
+            <div className="stat-label">{locale === 'en' ? 'Projects Delivered' : 'โปรเจกต์เสร็จสมบูรณ์'}</div>
           </div>
           <div className="stat-card">
             <div className="stat-number" style={{ display: 'flex', justifyContent: 'center' }}>
               <AnimatedCounter target={15} />+
             </div>
-            <div className="stat-label">{lang === 'en' ? 'Cloud Services Used' : 'บริการ Cloud ที่ชำนาญ'}</div>
+            <div className="stat-label">{locale === 'en' ? 'Cloud Services Used' : 'บริการ Cloud ที่ชำนาญ'}</div>
           </div>
           <div className="stat-card">
             <div className="stat-number" style={{ display: 'flex', justifyContent: 'center' }}>
               <AnimatedCounter target={1420} duration={1500} />+
             </div>
-            <div className="stat-label">{lang === 'en' ? 'Commits Written' : 'จำนวนคอมมิทที่เขียน'}</div>
+            <div className="stat-label">{locale === 'en' ? 'Commits Written' : 'จำนวนคอมมิทที่เขียน'}</div>
           </div>
         </div>
       </section>

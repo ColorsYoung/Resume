@@ -3,7 +3,8 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
+import { Link, usePathname, useRouter } from '@/i18n/routing';
+import { useLocale } from 'next-intl';
 
 export type LifestyleStat = { label: string; value: string };
 
@@ -21,7 +22,7 @@ export type LifestyleItem = {
 };
 
 // ===== Inner Gallery Component =====
-const LifestyleGallery = ({ lang, items }: { lang: 'en' | 'th'; items: LifestyleItem[] }) => {
+const LifestyleGallery = ({ locale, items }: { locale: 'en' | 'th'; items: LifestyleItem[] }) => {
   const [activeItem, setActiveItem] = useState<string | null>(null);
   const activeItemData = items.find(item => item.id === activeItem);
 
@@ -44,14 +45,14 @@ const LifestyleGallery = ({ lang, items }: { lang: 'en' | 'th'; items: Lifestyle
           >
             <div className="lifestyle-polaroid">
               <div className="lifestyle-img-container">
-                <img src={item.image} alt={lang === 'en' ? item.title_en : item.title_th} className="lifestyle-img" />
+                <img src={item.image} alt={locale === 'en' ? item.title_en : item.title_th} className="lifestyle-img" />
                 <div className="lifestyle-click-hint">
-                  <span>{lang === 'en' ? 'Click to inspect 🔎' : 'คลิกเพื่อดูสถิติ 🔎'}</span>
+                  <span>{locale === 'en' ? 'Click to inspect 🔎' : 'คลิกเพื่อดูสถิติ 🔎'}</span>
                 </div>
               </div>
               <div className="lifestyle-caption">
-                <h3 className="lifestyle-title">{lang === 'en' ? item.title_en : item.title_th}</h3>
-                <p className="lifestyle-subtitle">{lang === 'en' ? item.subtitle_en : item.subtitle_th}</p>
+                <h3 className="lifestyle-title">{locale === 'en' ? item.title_en : item.title_th}</h3>
+                <p className="lifestyle-subtitle">{locale === 'en' ? item.subtitle_en : item.subtitle_th}</p>
               </div>
             </div>
           </div>
@@ -63,13 +64,13 @@ const LifestyleGallery = ({ lang, items }: { lang: 'en' | 'th'; items: Lifestyle
           <div className="lifestyle-details-content" onClick={(e) => e.stopPropagation()}>
             <button className="lifestyle-close-btn" onClick={() => setActiveItem(null)}>×</button>
             <h4 style={{ margin: '0 0 0.5rem', color: 'var(--accent-light)', fontSize: '1.2rem' }}>
-              {lang === 'en' ? activeItemData.title_en : activeItemData.title_th}
+              {locale === 'en' ? activeItemData.title_en : activeItemData.title_th}
             </h4>
             <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: '1.5', margin: '0 0 1.25rem' }}>
-              {lang === 'en' ? activeItemData.details_en : activeItemData.details_th}
+              {locale === 'en' ? activeItemData.details_en : activeItemData.details_th}
             </p>
             <div className="lifestyle-stats-grid">
-              {(lang === 'en' ? activeItemData.stats_en : activeItemData.stats_th).map((st, i) => (
+              {(locale === 'en' ? activeItemData.stats_en : activeItemData.stats_th).map((st, i) => (
                 <div key={i} className="lifestyle-stat-box">
                   <div className="lifestyle-stat-val">{st.value}</div>
                   <div className="lifestyle-stat-lbl">{st.label}</div>
@@ -85,7 +86,9 @@ const LifestyleGallery = ({ lang, items }: { lang: 'en' | 'th'; items: Lifestyle
 
 // ===== Page Shell =====
 export default function LifestyleClient({ items }: { items: LifestyleItem[] }) {
-  const [lang, setLang] = useState<'en' | 'th'>('en');
+  const locale = useLocale() as 'en' | 'th';
+  const pathname = usePathname();
+  const router = useRouter();
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
 
   useEffect(() => {
@@ -101,6 +104,10 @@ export default function LifestyleClient({ items }: { items: LifestyleItem[] }) {
 
   const toggleTheme = () => {
     setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+  };
+
+  const switchLocale = (newLocale: 'en' | 'th') => {
+    router.replace(pathname, { locale: newLocale });
   };
 
   return (
@@ -134,7 +141,7 @@ export default function LifestyleClient({ items }: { items: LifestyleItem[] }) {
           e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
         }}
         >
-          <span>←</span> {lang === 'en' ? 'Back to Resume' : 'กลับหน้าหลัก'}
+          <span>←</span> {locale === 'en' ? 'Back to Portfolio' : 'กลับหน้าหลัก'}
         </Link>
 
         <div style={{ display: 'flex', gap: '0.85rem', alignItems: 'center' }}>
@@ -183,9 +190,9 @@ export default function LifestyleClient({ items }: { items: LifestyleItem[] }) {
             background: 'rgba(255,255,255,0.05)', borderRadius: '20px',
             border: '1px solid var(--card-border)'
           }}>
-            <button onClick={() => setLang('en')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.78rem', fontWeight: lang === 'en' ? 'bold' : 'normal', color: lang === 'en' ? 'var(--accent-light)' : 'var(--text-muted)', transition: 'color 0.3s' }}>EN</button>
+            <button onClick={() => switchLocale('en')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.78rem', fontWeight: locale === 'en' ? 'bold' : 'normal', color: locale === 'en' ? 'var(--accent-light)' : 'var(--text-muted)', transition: 'color 0.3s' }}>EN</button>
             <span style={{ color: 'var(--card-border)', fontSize: '0.78rem' }}>|</span>
-            <button onClick={() => setLang('th')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.78rem', fontWeight: lang === 'th' ? 'bold' : 'normal', color: lang === 'th' ? 'var(--accent-light)' : 'var(--text-muted)', transition: 'color 0.3s' }}>TH</button>
+            <button onClick={() => switchLocale('th')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.78rem', fontWeight: locale === 'th' ? 'bold' : 'normal', color: locale === 'th' ? 'var(--accent-light)' : 'var(--text-muted)', transition: 'color 0.3s' }}>TH</button>
           </div>
         </div>
       </header>
@@ -198,10 +205,10 @@ export default function LifestyleClient({ items }: { items: LifestyleItem[] }) {
           WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
           letterSpacing: '-0.02em'
         }}>
-          {lang === 'en' ? 'Lifestyle & Hobbies' : 'ไลฟ์สไตล์และกิจกรรมสุดโปรด'}
+          {locale === 'en' ? 'Lifestyle & Hobbies' : 'ไลฟ์สไตล์และกิจกรรมสุดโปรด'}
         </h1>
         <p style={{ fontSize: '1.05rem', color: 'var(--text-secondary)', lineHeight: '1.7', maxWidth: '650px', margin: '0 auto' }}>
-          {lang === 'en'
+          {locale === 'en'
             ? 'A window into my passions and routines outside of software engineering — exploring ridges, street photography, and brewing specialty drip coffee.'
             : 'มุมมองไลฟ์สไตล์และสิ่งที่ชื่นชอบยามว่างจากการพัฒนาซอฟต์แวร์ — เดินป่าตามหาธรรมชาติ ถ่ายภาพบันทึกความทรงจำ และศาสตร์แห่งกาแฟดริปพิเศษ'}
         </p>
@@ -209,7 +216,7 @@ export default function LifestyleClient({ items }: { items: LifestyleItem[] }) {
 
       {/* Gallery */}
       <section style={{ maxWidth: '850px', margin: '0 auto 4rem' }}>
-        <LifestyleGallery lang={lang} items={items} />
+        <LifestyleGallery locale={locale} items={items} />
       </section>
 
       <footer style={{ maxWidth: '850px', margin: '4rem auto 1rem', borderTop: '1px solid var(--card-border)', paddingTop: '1.5rem', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.8rem' }}>

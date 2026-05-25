@@ -14,7 +14,7 @@ interface ContactProps {
     contactSent: string;
     contactError: string;
   };
-  lang: 'en' | 'th';
+  locale: 'en' | 'th';
   contactForm: {
     name: string;
     email: string;
@@ -31,7 +31,7 @@ interface ContactProps {
 
 export const Contact: React.FC<ContactProps> = ({
   currentT,
-  lang,
+  locale,
   contactForm,
   setContactForm,
   contactStatus,
@@ -55,7 +55,7 @@ export const Contact: React.FC<ContactProps> = ({
                 value={contactForm.name}
                 onChange={(e) => setContactForm(prev => ({ ...prev, name: e.target.value }))}
                 required
-                placeholder={lang === 'en' ? 'John Doe' : 'ชื่อ-นามสกุล'}
+                placeholder={locale === 'en' ? 'John Doe' : 'ชื่อ-นามสกุล'}
               />
             </div>
             <div className="form-group">
@@ -79,7 +79,7 @@ export const Contact: React.FC<ContactProps> = ({
               value={contactForm.message}
               onChange={(e) => setContactForm(prev => ({ ...prev, message: e.target.value }))}
               required
-              placeholder={lang === 'en' ? "Tell me about your project or idea..." : "เล่าเกี่ยวกับโปรเจกต์หรือไอเดียของคุณ..."}
+              placeholder={locale === 'en' ? "Tell me about your project or idea..." : "เล่าเกี่ยวกับโปรเจกต์หรือไอเดียของคุณ..."}
             />
           </div>
           <div style={{ textAlign: 'center' }}>

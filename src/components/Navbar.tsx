@@ -1,16 +1,14 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter, Link } from '@/i18n/routing';
+import { useTranslations, useLocale } from 'next-intl';
 
 interface NavbarProps {
   activeSection: string;
-  lang: 'en' | 'th';
   theme: 'dark' | 'light';
   mobileMenuOpen: boolean;
   toggleTheme: () => void;
-  setLang: (lang: 'en' | 'th') => void;
   setMobileMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
   handleMobileLinkClick: (id: string) => void;
   handleMagneticMove: (e: React.MouseEvent<HTMLElement>) => void;
@@ -19,45 +17,23 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({
   activeSection,
-  lang,
   theme,
   mobileMenuOpen,
   toggleTheme,
-  setLang,
   setMobileMenuOpen,
   handleMobileLinkClick,
   handleMagneticMove,
   handleMagneticLeave
 }) => {
   const pathname = usePathname();
+  const router = useRouter();
+  const locale = useLocale();
+  const t = useTranslations('Navbar');
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
-
-  const t = {
-    en: {
-      about: 'About',
-      experience: 'Experience',
-      projects: 'Projects',
-      skills: 'Skills',
-      blog: 'Blog',
-      lifestyle: 'Lifestyle',
-      contact: 'Contact'
-    },
-    th: {
-      about: 'เกี่ยวกับผม',
-      experience: 'ประสบการณ์',
-      projects: 'โปรเจกต์',
-      skills: 'ทักษะ',
-      blog: 'บล็อก',
-      lifestyle: 'ไลฟ์สไตล์',
-      contact: 'ติดต่อ'
-    }
-  };
-
-  const currentT = t[lang];
 
   const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     e.preventDefault();
@@ -67,23 +43,27 @@ export const Navbar: React.FC<NavbarProps> = ({
     }
   };
 
+  const switchLocale = (newLocale: 'en' | 'th') => {
+    router.replace(pathname, { locale: newLocale });
+  };
+
   return (
     <>
       {/* Modern Sticky Navigation */}
       <nav className="nav-container">
         {/* Desktop nav-links */}
         <div className="nav-links">
-          <a href="#about" onClick={(e) => handleLinkClick(e, 'about')} className={`nav-link${activeSection === 'about' ? ' active' : ''}`}>{currentT.about}</a>
-          <a href="#experience" onClick={(e) => handleLinkClick(e, 'experience')} className={`nav-link${activeSection === 'experience' ? ' active' : ''}`}>{currentT.experience}</a>
-          <a href="#projects" onClick={(e) => handleLinkClick(e, 'projects')} className={`nav-link${activeSection === 'projects' ? ' active' : ''}`}>{currentT.projects}</a>
-          <a href="#tech" onClick={(e) => handleLinkClick(e, 'tech')} className={`nav-link${activeSection === 'tech' ? ' active' : ''}`}>{currentT.skills}</a>
+          <a href="#about" onClick={(e) => handleLinkClick(e, 'about')} className={`nav-link${activeSection === 'about' ? ' active' : ''}`}>{t('about')}</a>
+          <a href="#experience" onClick={(e) => handleLinkClick(e, 'experience')} className={`nav-link${activeSection === 'experience' ? ' active' : ''}`}>{t('experience')}</a>
+          <a href="#projects" onClick={(e) => handleLinkClick(e, 'projects')} className={`nav-link${activeSection === 'projects' ? ' active' : ''}`}>{t('projects')}</a>
+          <a href="#tech" onClick={(e) => handleLinkClick(e, 'tech')} className={`nav-link${activeSection === 'tech' ? ' active' : ''}`}>{t('skills')}</a>
           <Link href="/blog" className={`nav-link${pathname === '/blog' ? ' active' : ''}`} suppressHydrationWarning>
-            {mounted ? currentT.blog : 'Blog'}
+            {mounted ? t('blog') : 'Blog'}
           </Link>
           <Link href="/lifestyle" className={`nav-link${pathname === '/lifestyle' ? ' active' : ''}`} suppressHydrationWarning>
-            {mounted ? currentT.lifestyle : 'Lifestyle'}
+            {mounted ? t('lifestyle') : 'Lifestyle'}
           </Link>
-          <a href="#contact" onClick={(e) => handleLinkClick(e, 'contact')} className={`nav-link${activeSection === 'contact' ? ' active' : ''}`}>{currentT.contact}</a>
+          <a href="#contact" onClick={(e) => handleLinkClick(e, 'contact')} className={`nav-link${activeSection === 'contact' ? ' active' : ''}`}>{t('contact')}</a>
         </div>
 
         <div style={{ display: 'flex', gap: '0.65rem', alignItems: 'center' }}>
@@ -133,11 +113,11 @@ export const Navbar: React.FC<NavbarProps> = ({
             style={{ display: 'flex', gap: '0.45rem', background: 'rgba(255,255,255,0.05)', padding: '0.35rem 0.65rem', borderRadius: '20px', border: '1px solid var(--card-border)' }}
           >
             <button
-              onClick={() => setLang('en')}
+              onClick={() => switchLocale('en')}
               style={{
                 background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.78rem',
-                fontWeight: lang === 'en' ? 'bold' : 'normal',
-                color: lang === 'en' ? 'var(--accent-light)' : 'var(--text-muted)',
+                fontWeight: locale === 'en' ? 'bold' : 'normal',
+                color: locale === 'en' ? 'var(--accent-light)' : 'var(--text-muted)',
                 transition: 'color 0.3s'
               }}
             >
@@ -145,11 +125,11 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
             <span style={{ color: 'var(--divider)', fontSize: '0.78rem' }}>|</span>
             <button
-              onClick={() => setLang('th')}
+              onClick={() => switchLocale('th')}
               style={{
                 background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.78rem',
-                fontWeight: lang === 'th' ? 'bold' : 'normal',
-                color: lang === 'th' ? 'var(--accent-light)' : 'var(--text-muted)',
+                fontWeight: locale === 'th' ? 'bold' : 'normal',
+                color: locale === 'th' ? 'var(--accent-light)' : 'var(--text-muted)',
                 transition: 'color 0.3s'
               }}
             >
@@ -173,17 +153,17 @@ export const Navbar: React.FC<NavbarProps> = ({
       {/* Mobile Sliding Navigation Drawer */}
       <div className={`mobile-drawer${mobileMenuOpen ? ' open' : ''}`}>
         <div className="mobile-drawer-links">
-          <button onClick={() => handleMobileLinkClick('about')} className={`mobile-drawer-link${activeSection === 'about' ? ' active' : ''}`}>{currentT.about}</button>
-          <button onClick={() => handleMobileLinkClick('experience')} className={`mobile-drawer-link${activeSection === 'experience' ? ' active' : ''}`}>{currentT.experience}</button>
-          <button onClick={() => handleMobileLinkClick('projects')} className={`mobile-drawer-link${activeSection === 'projects' ? ' active' : ''}`}>{currentT.projects}</button>
-          <button onClick={() => handleMobileLinkClick('tech')} className={`mobile-drawer-link${activeSection === 'tech' ? ' active' : ''}`}>{currentT.skills}</button>
+          <button onClick={() => handleMobileLinkClick('about')} className={`mobile-drawer-link${activeSection === 'about' ? ' active' : ''}`}>{t('about')}</button>
+          <button onClick={() => handleMobileLinkClick('experience')} className={`mobile-drawer-link${activeSection === 'experience' ? ' active' : ''}`}>{t('experience')}</button>
+          <button onClick={() => handleMobileLinkClick('projects')} className={`mobile-drawer-link${activeSection === 'projects' ? ' active' : ''}`}>{t('projects')}</button>
+          <button onClick={() => handleMobileLinkClick('tech')} className={`mobile-drawer-link${activeSection === 'tech' ? ' active' : ''}`}>{t('skills')}</button>
           <button onClick={() => { setMobileMenuOpen(false); }} className={`mobile-drawer-link${pathname === '/blog' ? ' active' : ''}`}>
-            <Link href="/blog" style={{ color: 'inherit', textDecoration: 'none' }} suppressHydrationWarning>{currentT.blog}</Link>
+            <Link href="/blog" style={{ color: 'inherit', textDecoration: 'none' }} suppressHydrationWarning>{t('blog')}</Link>
           </button>
           <button onClick={() => { setMobileMenuOpen(false); }} className={`mobile-drawer-link${pathname === '/lifestyle' ? ' active' : ''}`}>
-            <Link href="/lifestyle" style={{ color: 'inherit', textDecoration: 'none' }} suppressHydrationWarning>{currentT.lifestyle}</Link>
+            <Link href="/lifestyle" style={{ color: 'inherit', textDecoration: 'none' }} suppressHydrationWarning>{t('lifestyle')}</Link>
           </button>
-          <button onClick={() => handleMobileLinkClick('contact')} className={`mobile-drawer-link${activeSection === 'contact' ? ' active' : ''}`}>{currentT.contact}</button>
+          <button onClick={() => handleMobileLinkClick('contact')} className={`mobile-drawer-link${activeSection === 'contact' ? ' active' : ''}`}>{t('contact')}</button>
         </div>
 
         {/* Mobile Control Dashboard */}
@@ -203,14 +183,14 @@ export const Navbar: React.FC<NavbarProps> = ({
                   <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
                   <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
                 </svg>
-                {lang === 'en' ? 'Light Mode' : 'โหมดสว่าง'}
+                {t('lightMode')}
               </>
             ) : (
               <>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16">
                   <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
                 </svg>
-                {lang === 'en' ? 'Dark Mode' : 'โหมดมืด'}
+                {t('darkMode')}
               </>
             )}
           </button>
@@ -218,15 +198,15 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* Mobile Language Toggle Selector */}
           <div className="mobile-drawer-lang">
             <button
-              onClick={() => setLang('en')}
-              className={lang === 'en' ? 'active' : ''}
+              onClick={() => switchLocale('en')}
+              className={locale === 'en' ? 'active' : ''}
             >
               English
             </button>
             <span>/</span>
             <button
-              onClick={() => setLang('th')}
-              className={lang === 'th' ? 'active' : ''}
+              onClick={() => switchLocale('th')}
+              className={locale === 'th' ? 'active' : ''}
             >
               ไทย
             </button>
