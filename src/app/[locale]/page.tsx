@@ -23,6 +23,9 @@ import { GitHubHeatmap } from '@/components/GitHubHeatmap';
 import { Quotes } from '@/components/Quotes';
 import { Contact } from '@/components/Contact';
 import { Typewriter } from '@/components/Typewriter';
+import dynamic from 'next/dynamic';
+
+const Galaxy = dynamic(() => import('@/components/Galaxy'), { ssr: false });
 
 type Language = 'en' | 'th';
 type Theme = 'dark' | 'light';
@@ -90,7 +93,6 @@ export default function Home() {
   const [cursorVisible, setCursorVisible] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [toast, setToast] = useState<{ show: boolean; message: string }>({ show: false, message: '' });
-  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   // Remaining features states
   const [showBackToTop, setShowBackToTop] = useState(false);
@@ -191,103 +193,6 @@ export default function Home() {
   const handleMagneticLeave = (e: React.MouseEvent<HTMLElement>) => {
     e.currentTarget.style.transform = 'translate(0px, 0px)';
   };
-
-  // Particle Background with Repel Physics
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    let animId: number;
-    const resize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
-    resize();
-    window.addEventListener('resize', resize);
-
-    const mouse = { x: -1000, y: -1000, active: false };
-    const handleMouseMove = (e: MouseEvent) => {
-      mouse.x = e.clientX;
-      mouse.y = e.clientY;
-      mouse.active = true;
-    };
-    const handleMouseLeave = () => {
-      mouse.x = -1000;
-      mouse.y = -1000;
-      mouse.active = false;
-    };
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mouseleave', handleMouseLeave);
-
-    const particles: { x: number; y: number; vx: number; vy: number; r: number }[] = [];
-    const COUNT = 70;
-    for (let i = 0; i < COUNT; i++) {
-      particles.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.4,
-        vy: (Math.random() - 0.5) * 0.4,
-        r: Math.random() * 2 + 1,
-      });
-    }
-
-    const draw = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      for (const p of particles) {
-        p.x += p.vx;
-        p.y += p.vy;
-
-        if (mouse.active) {
-          const dx = p.x - mouse.x;
-          const dy = p.y - mouse.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 150) {
-            const force = (150 - dist) / 150;
-            const repelStrength = 1.8;
-            p.x += (dx / dist) * force * repelStrength;
-            p.y += (dy / dist) * force * repelStrength;
-          }
-        }
-
-        if (p.x < 0) { p.x = 0; p.vx *= -1; }
-        else if (p.x > canvas.width) { p.x = canvas.width; p.vx *= -1; }
-        if (p.y < 0) { p.y = 0; p.vy *= -1; }
-        else if (p.y > canvas.height) { p.y = canvas.height; p.vy *= -1; }
-
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(187, 134, 252, 0.6)';
-        ctx.fill();
-      }
-
-      for (let i = 0; i < particles.length; i++) {
-        for (let j = i + 1; j < particles.length; j++) {
-          const dx = particles[i].x - particles[j].x;
-          const dy = particles[i].y - particles[j].y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 120) {
-            ctx.beginPath();
-            ctx.moveTo(particles[i].x, particles[i].y);
-            ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.strokeStyle = `rgba(187, 134, 252, ${0.15 * (1 - dist / 120)})`;
-            ctx.lineWidth = 0.8;
-            ctx.stroke();
-          }
-        }
-      }
-      animId = requestAnimationFrame(draw);
-    };
-    draw();
-    return () => {
-      cancelAnimationFrame(animId);
-      window.removeEventListener('resize', resize);
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseleave', handleMouseLeave);
-    };
-  }, []);
 
   // Active Section tracking
   useEffect(() => {
@@ -935,9 +840,8 @@ export default function Home() {
         }}
       />
 
-      {/* Full-page Particle Background */}
-      <canvas
-        ref={canvasRef}
+      {/* Full-page Galaxy Background */}
+      <div
         style={{
           position: 'fixed',
           top: 0,
@@ -946,9 +850,25 @@ export default function Home() {
           height: '100vh',
           pointerEvents: 'none',
           zIndex: 0,
-          opacity: 0.45,
+          opacity: theme === 'dark' ? 0.7 : 0.18,
+          transition: 'opacity 0.5s ease-in-out',
         }}
-      />
+      >
+        <Galaxy
+          mouseRepulsion={false}
+          mouseInteraction={true}
+          density={1.0}
+          glowIntensity={0.4}
+          saturation={0.7}
+          hueShift={140}
+          twinkleIntensity={0.7}
+          rotationSpeed={0.1}
+          repulsionStrength={2.0}
+          autoCenterRepulsion={0}
+          starSpeed={1.0}
+          speed={0.5}
+        />
+      </div>
 
       {/* Modern Sticky Navigation */}
       <Navbar
