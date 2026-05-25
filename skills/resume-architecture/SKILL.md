@@ -1,7 +1,7 @@
 ---
 name: "resume-architecture"
 description: "Core architecture, workspace files, components, and localization rules for the personal portfolio/resume project."
-version: "1.0.0"
+version: "1.1.0"
 triggers:
   - "portfolio architecture"
   - "project structure"
@@ -17,52 +17,50 @@ Use this skill to analyze, modify, or add features to the core portfolio pages a
 
 ## 1. Project Directory & File Tree
 
-Having a visual reference of the workspace prevents the AI from needing to run heavy list commands, conserving tokens:
+Visual reference of the active directory tree structure of the workspace (updated dynamically):
 
 ```text
+src/app/
+├── globals.css     # Central source of truth for styling
+└── [locale]/       # Localized App Router group
+    ├── blog/      # Sub-page route
+    ├── layout.tsx
+    ├── lifestyle/      # Sub-page route
+    ├── page.module.css
+    └── page.tsx
+
 ├── public/                 # Static assets (images, PDF CV, icons)
 ├── messages/               # Localization translation dictionaries (en.json, th.json)
 ├── detailcv/               # Markdown files containing full CV/Resume details
-├── data/                   # Raw content data
-│   └── blog/               # Blog post markdown articles (e.g., totourialai.md)
-├── src/
-│   ├── app/                # Next.js App Router root
-│   │   ├── globals.css     # Central source of truth for Vanilla CSS styling
-│   │   └── [locale]/       # Localized routing folder
-│   │       ├── page.tsx    # Home portfolio landing page
-│   │       ├── blog/       # Blog post viewing pages
-│   │       └── lifestyle/  # Lifestyle/hobbies page
-│   ├── components/         # Reusable UI components (Hero, Navbar, Experience, etc.)
-│   ├── i18n/               # next-intl routing and request configuration
-│   └── middleware.ts       # Pathname matching localization middleware
-├── skills/                 # Modular AI Skill sets
-│   ├── resume-architecture/
-│   ├── vanilla-css-styling/
-│   └── nextjs-approuter/
-├── PROJECT.skill.md        # Central index router for AI agents
-└── AGENTS.md               # Antigravity agent system instructions
+├── data/                   # Raw content data (blog posts, lifestyle content)
+└── doc_lib/                # Design documentations, UI blueprints, and spec sheets
 ```
 
 ## 2. Key Pages & Components Mapping
 - **Pages (`src/app/[locale]/`)**:
-  - `page.tsx`: Home landing page aggregating components: `Hero`, `About`, `Experience`, `Skills`, `Projects`, `GitHubHeatmap`, `Quotes`, `Contact`.
-  - `blog/`: Blog area rendering articles and reading modals via `BlogClient.tsx`.
-  - `lifestyle/`: Creative lifestyle hub (gallery, quotes, hobbies) via `LifestyleClient.tsx`.
-- **Components (`src/components/`)**:
-  - `Hero.tsx`: Dynamic introduction page containing CV download links and social buttons.
-  - `Navbar.tsx`: Responsive navigation bar with dark/light mode toggle and language switcher.
-  - `Experience.tsx` & `Projects.tsx`: Card timelines and grid display.
-  - `Skills.tsx` & `GitHubHeatmap.tsx`: Visual stats and activities.
-  - Helper UI components: `AnimatedCounter.tsx`, `Quotes.tsx`, `Typewriter.tsx`.
+  - `page.tsx`: Home portfolio landing page aggregating modules like Hero, Experience, Skills, Projects, and GitHubHeatmap.
+  - `blog/page.tsx`: Blog route rendering articles dynamically using Client-side state.
+  - `lifestyle/page.tsx`: Lifestyle and hobby collection rendering photo galleries and custom tags.
+- **Client Interactive Components (`src/components/`)**:
+  - `BlogClient.tsx`: Manage interactive blog views, markdown parsing, search fields, and read modals.
+  - `LifestyleClient.tsx`: Manage image viewer galleries, category switches, and hobby drawers.
+  - `Galaxy.tsx`: High-performance WebGL particle system using `ogl` rendering premium galaxy background.
+- **Modular Components in Project**:
+  - `About.tsx`
+  - `AnimatedCounter.tsx`
+  - `BlogClient.tsx`
+  - `Contact.tsx`
+  - `Experience.tsx`
+  - `Galaxy.tsx`
+  - `GitHubHeatmap.tsx`
+  - `Hero.tsx`
+  - `LifestyleClient.tsx`
+  - `Navbar.tsx`
+  - `Projects.tsx`
+  - `Quotes.tsx`
+  - `Skills.tsx`
+  - `Typewriter.tsx`
 
-## 2. Localization (Bilingual en/th)
-- Uses Next.js localized routing under `[locale]` and standard Next-intl config.
-- Translating content:
-  - Check the local dictionaries or translation files under `messages/` directory.
-  - When editing text, always update both English (`en`) and Thai (`th`) versions to ensure consistency.
-
-## 3. Implementation Workflow
-- **No Over-fetching**: Do not read all files in `src/components/` unless explicitly editing them. Use this architecture outline to target changes.
-- **Verification**:
-  - Always run `npm run lint` to check for TypeScript and ESLint compliance.
-  - Test production bundle capability with `npm run build`.
+## 3. Localization (Bilingual en/th)
+- Uses Next.js App Router localization under standard `[locale]` subroutes powered by `next-intl`.
+- Dictionary resources are under `messages/en.json` and `messages/th.json`. Update both files simultaneously when adding text keys.

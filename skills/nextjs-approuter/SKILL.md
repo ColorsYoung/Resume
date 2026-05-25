@@ -1,7 +1,7 @@
 ---
 name: "nextjs-approuter"
 description: "Guidelines and architecture for Next.js App Router (React 19), Server Components, locale routing, and next-intl translation bindings."
-version: "1.0.0"
+version: "1.1.0"
 triggers:
   - "nextjs routing"
   - "app router"
@@ -19,7 +19,7 @@ Use this skill when creating pages, modifying route structures, managing layouts
 ## 1. App Router & React 19 Paradigms
 - **Server Components (Default)**: Use standard Server Components for static/dynamic rendering.
 - **Client Components (`'use client'`)**: Mark components that use state (`useState`, `useEffect`), event handlers, browser-only APIs, or client-side navigation.
-  - Examples in this project: `Hero.tsx`, `Navbar.tsx`, `BlogClient.tsx`, `LifestyleClient.tsx` because of interactive states and browser behaviors.
+  - Interactive components: `BlogClient.tsx`, `LifestyleClient.tsx`, `Galaxy.tsx`, `Navbar.tsx`, `Hero.tsx`.
 
 ## 2. Localization Routing with `next-intl`
 - **Configuration (`src/i18n/routing.ts`)**:
