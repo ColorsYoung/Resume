@@ -29,7 +29,7 @@ interface ProjectsProps {
     archTitle: string;
     keyFeatures: string;
   };
-  architectureDiagrams: Record<string, string>;
+  architectureDiagrams?: Record<string, string>;
 }
 
 export const Projects: React.FC<ProjectsProps> = ({
@@ -148,14 +148,14 @@ export const Projects: React.FC<ProjectsProps> = ({
               </div>
               <p>{selectedProject.longDescription}</p>
 
-              {architectureDiagrams[selectedProject.id] && (
+              {/* {architectureDiagrams[selectedProject.id] && (
                 <>
                   <h3>{currentT.archTitle}</h3>
                   <div className="architecture-diagram">
                     {architectureDiagrams[selectedProject.id]}
                   </div>
                 </>
-              )}
+              )} */}
 
               <h3>{currentT.keyFeatures}</h3>
               <ul>

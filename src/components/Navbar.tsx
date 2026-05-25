@@ -108,7 +108,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           </button>
 
           {/* Language Toggle */}
-          <div 
+          <div
             className="hide-on-mobile"
             style={{ display: 'flex', gap: '0.45rem', background: 'rgba(255,255,255,0.05)', padding: '0.35rem 0.65rem', borderRadius: '20px', border: '1px solid var(--card-border)' }}
           >

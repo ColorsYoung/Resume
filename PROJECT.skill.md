@@ -24,5 +24,5 @@ This file serves as the core index and system router for the personal resume/por
 ## 1. Fast Development Guide
 - **Dev Server**: `npm run dev`
 - **Quality Checks**: `npm run lint` & `npm run build`
-- **Styling constraint**: Strict **Vanilla CSS ONLY**. Do not add TailwindCSS or other style engines unless requested.
+- **Styling constraint**: Supports **both Vanilla CSS and Tailwind CSS (twinCSS)**. Developers are allowed to use Tailwind CSS utility classes and Vanilla CSS styling side by side to achieve premium aesthetics.
 

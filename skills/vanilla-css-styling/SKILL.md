@@ -16,8 +16,8 @@ triggers:
 
 Use this skill whenever modifying styles, adding visual elements, fixing accessibility contrast, or creating custom CSS animations.
 
-## 1. Strict Styling Constraints
-- **NO TailwindCSS**: Avoid using Tailwind utility classes. All visual structures are written in pure Vanilla CSS.
+## 1. Styling Constraints & Flexibility
+- **Tailwind CSS & twinCSS Allowed**: Tailwind utility classes are fully allowed and supported. You can write styling using either Tailwind classes or pure Vanilla CSS, or combine them as needed.
 - **Single Source of Truth**: All global styles, root variables, animations, and core component styles belong in `src/app/globals.css`.
 - **CSS Variables**: Always use predefined CSS variables for colors, backgrounds, borders, and shadows to maintain design consistency and theme compatibility.
 
