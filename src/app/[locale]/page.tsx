@@ -1118,7 +1118,13 @@ export default function Home() {
       {/* Footer & Telemetry Mini Display */}
       <footer>
         <p>&copy; {new Date().getFullYear()} Chanchai Chakam. Built with Next.js.</p>
-
+        <div style={{ marginTop: '0.5rem', fontSize: '0.8rem', opacity: 0.6 }}>
+          <span>{locale === 'en' ? 'Press ' : 'กด '}</span>
+          <kbd style={{ background: 'rgba(255,255,255,0.1)', padding: '0.1rem 0.3rem', borderRadius: '4px', fontFamily: 'monospace' }}>
+            {navigator.platform.toUpperCase().includes('MAC') ? '⌘K' : 'Ctrl+K'}
+          </kbd>
+          <span> {locale === 'en' ? ' to open command menu' : ' เพื่อเปิดเมนูคำสั่ง'}</span>
+        </div>
         {/* Telemetry live status overlay inside footer */}
         <div style={{ marginTop: '0.75rem', fontSize: '0.72rem', color: 'var(--text-muted)', display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.25rem 0.65rem', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--card-border)', borderRadius: '12px' }}>
           <span className="pulse-active-dot" />
@@ -1192,7 +1198,7 @@ export default function Home() {
                     className={`command-item${idx === commandHighlight ? ' highlighted' : ''}`}
                     onClick={() => item.action()}
                   >
-                    <div className="command-item-icon">
+                    <div className="command-item-icon" style={{ color: 'var(--accent-light)' }}>
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="18" height="18">
                         {item.icon === 'user' && <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>}
                         {item.icon === 'user' && <circle cx="12" cy="7" r="4"></circle>}

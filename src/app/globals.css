@@ -1422,6 +1422,7 @@ footer {
 }
 
 /* ===== Command Palette ===== */
+/* ===== Command Palette ===== */
 .command-palette-overlay {
   position: fixed;
   top: 0;
@@ -1435,7 +1436,7 @@ footer {
   display: flex;
   justify-content: center;
   padding-top: 18vh;
-  animation: fadeIn 0.15s ease;
+  animation: fadeIn 0.2s ease-out forwards;
 }
 
 .command-palette {
@@ -1451,7 +1452,7 @@ footer {
   box-shadow:
     0 25px 60px rgba(0, 0, 0, 0.7),
     0 0 40px rgba(98, 0, 238, 0.12);
-  animation: modalSlideIn 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: modalSlideIn 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
   display: flex;
   flex-direction: column;
 }
