@@ -374,6 +374,59 @@ header p {
   fill: currentColor;
 }
 
+/* External Project Website Links - Refined Design */
+.external-links-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.external-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.1rem;
+  background: rgba(187, 134, 252, 0.1);
+  border: 1px solid rgba(187, 134, 252, 0.2);
+  border-radius: 30px;
+  color: var(--accent-light);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.external-link:hover {
+  background: var(--accent-light);
+  color: #121212;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(187, 134, 252, 0.3);
+  border-color: var(--accent-light);
+}
+
+.external-link svg {
+  transition: transform 0.3s ease;
+}
+
+.external-link:hover svg {
+  transform: scale(1.1) rotate(-10deg);
+}
+
+[data-theme="light"] .external-link {
+  background: rgba(98, 0, 238, 0.08);
+  border-color: rgba(98, 0, 238, 0.15);
+  color: var(--accent-color);
+}
+
+[data-theme="light"] .external-link:hover {
+  background: var(--accent-color);
+  color: #fff;
+  border-color: var(--accent-color);
+}
+
 /* Animations */
 @keyframes fadeInUp {
   from {
