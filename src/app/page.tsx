@@ -417,9 +417,12 @@ export default function Home() {
             />
           </div>
           <div style={{ marginTop: '1.5rem', padding: '1.25rem', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', border: '1px solid var(--card-border)', textAlign: 'left' }}>
-            <h3 style={{ fontSize: '1.1rem', marginBottom: '0.5rem', color: 'var(--accent-light)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <span>🎓</span> Education
-            </h3>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
+              <img src="/rmuti.png" alt="RMUTI Logo" style={{ height: '40px', width: 'auto', borderRadius: '4px' }} />
+              <h3 style={{ fontSize: '1.1rem', margin: 0, color: 'var(--accent-light)' }}>
+                Education
+              </h3>
+            </div>
             <p style={{ margin: 0, lineHeight: '1.6' }}>
               <strong>B.Eng. in Computer Engineering</strong><br />
               Rajamangala University of Technology Isan (Surin Campus)
@@ -465,9 +468,12 @@ export default function Home() {
             />
           </div>
           <div style={{ marginTop: '1.5rem', padding: '1.25rem', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', border: '1px solid var(--card-border)', textAlign: 'left' }}>
-            <h3 style={{ fontSize: '1.1rem', marginBottom: '0.5rem', color: 'var(--accent-light)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <span>🎓</span> การศึกษา
-            </h3>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
+              <img src="/rmuti.png" alt="RMUTI Logo" style={{ height: '40px', width: 'auto', borderRadius: '4px' }} />
+              <h3 style={{ fontSize: '1.1rem', margin: 0, color: 'var(--accent-light)' }}>
+                การศึกษา
+              </h3>
+            </div>
             <p style={{ margin: 0, lineHeight: '1.6' }}>
               <strong>ปริญญาตรี วิศวกรรมคอมพิวเตอร์</strong><br />
               มหาวิทยาลัยเทคโนโลยีราชมงคลอีสาน วิทยาเขตสุรินทร์
@@ -978,6 +984,7 @@ export default function Home() {
 
       {/* About Me Section (Clean Centered Layout) */}
       <About currentT={currentT} lang={lang} />
+      {/* ยังไม่ใช้ */}
 
       {/* Experience Timeline */}
       <Experience

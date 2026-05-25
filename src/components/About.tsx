@@ -14,7 +14,7 @@ interface AboutProps {
 export const About: React.FC<AboutProps> = ({ currentT, lang }) => {
   return (
     <>
-      About Me Section (Clean Centered Layout)
+      {/* About Me Section (Clean Centered Layout) */}
       <section id="about" className="animate-on-scroll" style={{ padding: '3rem 0', maxWidth: '850px', margin: '0 auto' }}>
         <h2 className="section-title" style={{ marginBottom: '2rem', textAlign: 'center' }}>{currentT.aboutTitle}</h2>
         <div style={{ color: 'var(--text-secondary)', fontSize: '1.1rem', lineHeight: '1.8' }}>

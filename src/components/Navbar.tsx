@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -30,6 +30,12 @@ export const Navbar: React.FC<NavbarProps> = ({
   handleMagneticLeave
 }) => {
   const pathname = usePathname();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const t = {
     en: {
       about: 'About',
@@ -71,8 +77,12 @@ export const Navbar: React.FC<NavbarProps> = ({
           <a href="#experience" onClick={(e) => handleLinkClick(e, 'experience')} className={`nav-link${activeSection === 'experience' ? ' active' : ''}`}>{currentT.experience}</a>
           <a href="#projects" onClick={(e) => handleLinkClick(e, 'projects')} className={`nav-link${activeSection === 'projects' ? ' active' : ''}`}>{currentT.projects}</a>
           <a href="#tech" onClick={(e) => handleLinkClick(e, 'tech')} className={`nav-link${activeSection === 'tech' ? ' active' : ''}`}>{currentT.skills}</a>
-          <Link href="/blog" className={`nav-link${pathname === '/blog' ? ' active' : ''}`}>{currentT.blog}</Link>
-          <Link href="/lifestyle" className={`nav-link${pathname === '/lifestyle' ? ' active' : ''}`}>{currentT.lifestyle}</Link>
+          <Link href="/blog" className={`nav-link${pathname === '/blog' ? ' active' : ''}`} suppressHydrationWarning>
+            {mounted ? currentT.blog : 'Blog'}
+          </Link>
+          <Link href="/lifestyle" className={`nav-link${pathname === '/lifestyle' ? ' active' : ''}`} suppressHydrationWarning>
+            {mounted ? currentT.lifestyle : 'Lifestyle'}
+          </Link>
           <a href="#contact" onClick={(e) => handleLinkClick(e, 'contact')} className={`nav-link${activeSection === 'contact' ? ' active' : ''}`}>{currentT.contact}</a>
         </div>
 
@@ -168,10 +178,10 @@ export const Navbar: React.FC<NavbarProps> = ({
           <button onClick={() => handleMobileLinkClick('projects')} className={`mobile-drawer-link${activeSection === 'projects' ? ' active' : ''}`}>{currentT.projects}</button>
           <button onClick={() => handleMobileLinkClick('tech')} className={`mobile-drawer-link${activeSection === 'tech' ? ' active' : ''}`}>{currentT.skills}</button>
           <button onClick={() => { setMobileMenuOpen(false); }} className={`mobile-drawer-link${pathname === '/blog' ? ' active' : ''}`}>
-            <Link href="/blog" style={{ color: 'inherit', textDecoration: 'none' }}>{currentT.blog}</Link>
+            <Link href="/blog" style={{ color: 'inherit', textDecoration: 'none' }} suppressHydrationWarning>{currentT.blog}</Link>
           </button>
           <button onClick={() => { setMobileMenuOpen(false); }} className={`mobile-drawer-link${pathname === '/lifestyle' ? ' active' : ''}`}>
-            <Link href="/lifestyle" style={{ color: 'inherit', textDecoration: 'none' }}>{currentT.lifestyle}</Link>
+            <Link href="/lifestyle" style={{ color: 'inherit', textDecoration: 'none' }} suppressHydrationWarning>{currentT.lifestyle}</Link>
           </button>
           <button onClick={() => handleMobileLinkClick('contact')} className={`mobile-drawer-link${activeSection === 'contact' ? ' active' : ''}`}>{currentT.contact}</button>
         </div>
