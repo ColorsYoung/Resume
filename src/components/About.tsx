@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { AnimatedCounter } from './AnimatedCounter';
+// import { AnimatedCounter } from './AnimatedCounter';
 
 interface AboutProps {
   currentT: {
@@ -22,7 +22,7 @@ export const About: React.FC<AboutProps> = ({ currentT, lang }) => {
         </div>
       </section>
 
-      {/* 3. Stats Counter Section with dynamic count-up numbers */}
+      {/* 
       <section className="stats-section animate-on-scroll">
         <div className="stats-grid">
           <div className="stat-card">
@@ -51,6 +51,7 @@ export const About: React.FC<AboutProps> = ({ currentT, lang }) => {
           </div>
         </div>
       </section>
+      */}
     </>
   );
 };
