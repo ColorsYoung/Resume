@@ -64,8 +64,8 @@ function getBlogArticles(): Article[] {
       content_th: marked(finalThParsed.content) as string,
     };
   })
-  .filter((a): a is Article => a !== null)
-  .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    .filter((a): a is Article => a !== null)
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 }
 
 export default function BlogPage() {

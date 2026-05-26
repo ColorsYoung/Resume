@@ -4,6 +4,7 @@ import {notFound} from 'next/navigation';
 import {routing} from '@/i18n/routing';
 import type { Metadata } from 'next';
 import '../globals.css';
+import Providers from '@/components/Providers';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://chanchai-portfolio.vercel.app'),
@@ -95,7 +96,9 @@ export default async function RootLayout({
       </head>
       <body suppressHydrationWarning>
         <NextIntlClientProvider messages={messages}>
-          {children}
+          <Providers>
+            {children}
+          </Providers>
         </NextIntlClientProvider>
       </body>
     </html>

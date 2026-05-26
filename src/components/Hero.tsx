@@ -1,7 +1,9 @@
 "use client";
 
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import Image from 'next/image';
+import { useLocale } from 'next-intl';
+import PasswordPromptModal from './PasswordPromptModal';
 
 interface HeroProps {
   currentT: {
@@ -20,22 +22,81 @@ export const Hero: React.FC<HeroProps> = ({
   handleMagneticMove,
   handleMagneticLeave
 }) => {
+  const locale = useLocale() as 'en' | 'th';
+  const [isHovered, setIsHovered] = useState(false);
+  const [showPwdPrompt, setShowPwdPrompt] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState('/ProfileNoom.jpeg');
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleAuthSuccess = () => {
+    setShowPwdPrompt(false);
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try {
+      const res = await fetch('/api/avatar/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (res.ok) {
+        setAvatarUrl(`/ProfileNoom.jpeg?ts=${Date.now()}`);
+      } else {
+        alert('Failed to upload avatar');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Error uploading avatar');
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   return (
     <header className="hero-section-header">
       {/* 1. Animated Hero Avatar / Profile Photo with pulse/rotating neon ring glow */}
-      <div className="avatar-container animate-on-scroll">
+      <div 
+        className="avatar-container animate-on-scroll"
+        onMouseEnter={() => setIsHovered(true)} 
+        onMouseLeave={() => setIsHovered(false)}
+        style={{ cursor: 'pointer' }}
+        onClick={() => setShowPwdPrompt(true)}
+      >
         <div className="avatar-ring" />
         <div className="avatar-image-wrapper">
           <Image
             className="avatar-image"
-            src="/ProfileNoom.jpeg"
+            src={avatarUrl}
             alt="Chanchai Chakam Avatar"
             fill
             sizes="155px"
             priority
           />
+          {isHovered && (
+            <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', zIndex: 10 }}>
+              <span style={{ color: 'white', fontSize: '13px', fontWeight: 'bold' }}>{isUploading ? '...' : (locale === 'en' ? 'Edit' : 'แก้ไข')}</span>
+            </div>
+          )}
         </div>
       </div>
+
+      <input type="file" ref={fileInputRef} style={{ display: 'none' }} accept="image/*" onChange={handleFileChange} />
+      {showPwdPrompt && (
+        <PasswordPromptModal
+          locale={locale}
+          onClose={() => setShowPwdPrompt(false)}
+          onSuccess={handleAuthSuccess}
+        />
+      )}
 
       <h1 className="animate-on-scroll">Chanchai Chakam</h1>
       <h2 className="animate-on-scroll" style={{ fontSize: '1.5rem', color: 'var(--accent-light)', marginBottom: '1.5rem', fontWeight: 600 }}>

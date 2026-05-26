@@ -198,10 +198,10 @@ export default function Galaxy({
   hueShift = 140,
   disableAnimation = false,
   speed = 1.0,
-  mouseInteraction = true,
+  mouseInteraction = false,
   glowIntensity = 0.3,
   saturation = 0.0,
-  mouseRepulsion = true,
+  mouseRepulsion = false,
   repulsionStrength = 2,
   twinkleIntensity = 0.3,
   rotationSpeed = 0.1,
@@ -283,9 +283,21 @@ export default function Galaxy({
 
     const mesh = new Mesh(gl, { geometry, program });
     let animateId: number;
+    let isVisible = true;
+
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0]) {
+        isVisible = entries[0].isIntersecting;
+      }
+    }, { threshold: 0 });
+
+    observer.observe(ctn);
 
     function update(t: number) {
       animateId = requestAnimationFrame(update);
+
+      if (!isVisible) return; // Pause GPU rendering if off-screen
+
       if (!disableAnimation) {
         program.uniforms.uTime.value = t * 0.001;
         program.uniforms.uStarSpeed.value = (t * 0.001 * starSpeed) / 10.0;
@@ -324,6 +336,7 @@ export default function Galaxy({
     }
 
     return () => {
+      observer.disconnect();
       cancelAnimationFrame(animateId);
       window.removeEventListener('resize', resize);
       if (mouseInteraction) {

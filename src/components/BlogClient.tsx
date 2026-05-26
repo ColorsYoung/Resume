@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Link, usePathname, useRouter } from '@/i18n/routing';
 import { useLocale } from 'next-intl';
 
@@ -33,6 +33,7 @@ export default function BlogClient({ articles }: { articles: Article[] }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
   const [headings, setHeadings] = useState<HeadingItem[]>([]);
   const [activeHeadingId, setActiveHeadingId] = useState<string>('');
+  const contentAreaRef = useRef<HTMLElement>(null);
 
   // Initial Theme Load
   useEffect(() => {
@@ -61,8 +62,8 @@ export default function BlogClient({ articles }: { articles: Article[] }) {
 
   // Scroll to top when article changes
   useEffect(() => {
-    if (selectedArticleId) {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (selectedArticleId && contentAreaRef.current) {
+      contentAreaRef.current.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }, [selectedArticleId]);
 
@@ -88,19 +89,21 @@ export default function BlogClient({ articles }: { articles: Article[] }) {
 
   const [showScrollTop, setShowScrollTop] = useState(false);
 
-  // Handle Scroll to Top visibility
+  // Handle Scroll to Top visibility (listen on the content area, not window)
   useEffect(() => {
+    const el = contentAreaRef.current;
+    if (!el) return;
+
     const handleScroll = () => {
-      // Check window scroll position
-      setShowScrollTop(window.scrollY > 300);
+      setShowScrollTop(el.scrollTop > 300);
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    el.addEventListener('scroll', handleScroll);
+    return () => el.removeEventListener('scroll', handleScroll);
   }, []);
 
   const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    contentAreaRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   // Find active article
@@ -393,7 +396,7 @@ export default function BlogClient({ articles }: { articles: Article[] }) {
         </aside>
 
         {/* Middle Reading Panel */}
-        <main className="docs-content-area">
+        <main className="docs-content-area" ref={contentAreaRef}>
           <div className="docs-content-inner">
             {activeArticle ? (
               <article className="docs-article" key={activeArticle.id}>
@@ -442,11 +445,11 @@ export default function BlogClient({ articles }: { articles: Article[] }) {
                     onClick={(e) => {
                       e.preventDefault();
                       const target = document.getElementById(h.id);
-                      if (target) {
+                      if (target && contentAreaRef.current) {
                         // Offset scroll to account for header heights
                         const yOffset = -80;
-                        const y = target.getBoundingClientRect().top + window.pageYOffset + yOffset;
-                        window.scrollTo({ top: y, behavior: 'smooth' });
+                        const y = target.getBoundingClientRect().top - contentAreaRef.current.getBoundingClientRect().top + contentAreaRef.current.scrollTop + yOffset;
+                        contentAreaRef.current.scrollTo({ top: y, behavior: 'smooth' });
                         setActiveHeadingId(h.id);
                       }
                     }}

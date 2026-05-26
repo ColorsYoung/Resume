@@ -3,6 +3,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link, usePathname, useRouter } from '@/i18n/routing';
 import { useLocale } from 'next-intl';
 import {
@@ -21,6 +22,7 @@ import {
   Sun,
   Moon
 } from 'lucide-react';
+import PasswordPromptModal from './PasswordPromptModal';
 
 export type LifestyleStat = { label: string; value: string };
 
@@ -359,6 +361,7 @@ const CreatorDashboardModal = ({
   onClose: () => void;
   router: any;
 }) => {
+  const queryClient = useQueryClient();
   const [slug, setSlug] = useState(editItem ? editItem.id : '');
   const [isSlugTouched, setIsSlugTouched] = useState(false);
   const [title, setTitle] = useState(editItem ? (locale === 'en' ? editItem.title_en : editItem.title_th) : '');
@@ -476,6 +479,7 @@ const CreatorDashboardModal = ({
         if (parentCelebrator) parentCelebrator();
 
         setIsSubmitting(false);
+        queryClient.invalidateQueries({ queryKey: ['lifestyleItems'] });
 
         // Wait briefly for user to see the success state
         setTimeout(() => {
@@ -733,86 +737,22 @@ const CreatorDashboardModal = ({
   );
 };
 
-// ===== Password Prompt Modal Component =====
-const PasswordPromptModal = ({
-  locale,
-  onClose,
-  onSuccess
-}: {
-  locale: 'en' | 'th';
-  onClose: () => void;
-  onSuccess: () => void;
-}) => {
-  const [pwd, setPwd] = useState('');
-  const [error, setError] = useState(false);
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setError(false);
-
-    try {
-      const res = await fetch('/api/auth/verify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password: pwd })
-      });
-
-      if (res.ok) {
-        onSuccess();
-      } else {
-        setError(true);
-        setPwd('');
-      }
-    } catch (err) {
-      setError(true);
-      setPwd('');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  return (
-    <div className="creator-overlay" onClick={onClose} style={{ zIndex: 11000 }}>
-      <div className="creator-modal" style={{ maxWidth: '400px', height: 'auto', padding: '2.5rem' }} onClick={(e) => e.stopPropagation()}>
-        <button className="creator-close-btn" onClick={onClose}><X size={16} /></button>
-        <h3 style={{ fontSize: '1.25rem', marginBottom: '0.5rem', color: '#fff' }}>
-          {locale === 'en' ? 'Admin Access Required' : 'ยืนยันสิทธิ์ผู้ดูแลระบบ'}
-        </h3>
-        <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
-          {locale === 'en' ? 'Please enter the password to modify content.' : 'กรุณาใส่รหัสผ่านเพื่อแก้ไขเนื้อหา'}
-        </p>
-        <form onSubmit={handleSubmit}>
-          <input
-            type="password"
-            autoFocus
-            className="creator-input"
-            style={{ marginBottom: '1rem', borderColor: error ? '#ff5555' : '' }}
-            placeholder={locale === 'en' ? 'Password' : 'รหัสผ่าน'}
-            value={pwd}
-            onChange={(e) => { setPwd(e.target.value); setError(false); }}
-          />
-          {error && (
-            <div style={{ color: '#ff5555', fontSize: '0.75rem', marginBottom: '1rem' }}>
-              {locale === 'en' ? 'Incorrect password. Please try again.' : 'รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่'}
-            </div>
-          )}
-          <button type="submit" className="creator-btn submit" style={{ width: '100%', justifyContent: 'center' }} disabled={isSubmitting}>
-            {isSubmitting ? (locale === 'en' ? 'Verifying...' : 'กำลังตรวจสอบ...') : (locale === 'en' ? 'Authenticate' : 'ยืนยัน')}
-          </button>
-        </form>
-      </div>
-    </div>
-  );
-};
-
 // ===== Page Shell Main Client Component =====
-export default function LifestyleClient({ items }: { items: LifestyleItem[] }) {
+export default function LifestyleClient({ items: initialItems }: { items: LifestyleItem[] }) {
   const locale = useLocale() as 'en' | 'th';
   const pathname = usePathname();
   const router = useRouter();
+
+  const { data: items = initialItems } = useQuery({
+    queryKey: ['lifestyleItems'],
+    queryFn: async () => {
+      const res = await fetch('/api/lifestyle/list');
+      if (!res.ok) throw new Error('Failed to fetch lifestyle items');
+      const json = await res.json();
+      return json.data as LifestyleItem[];
+    },
+    initialData: initialItems,
+  });
 
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const [activeItem, setActiveItem] = useState<string | null>(null);

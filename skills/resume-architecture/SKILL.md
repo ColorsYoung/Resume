@@ -56,7 +56,9 @@ src/app/
   - `Hero.tsx`
   - `LifestyleClient.tsx`
   - `Navbar.tsx`
+  - `PasswordPromptModal.tsx`
   - `Projects.tsx`
+  - `Providers.tsx`
   - `Quotes.tsx`
   - `Skills.tsx`
   - `Typewriter.tsx`
