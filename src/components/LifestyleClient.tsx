@@ -45,6 +45,8 @@ type ConfettiPiece = {
   duration: string;
   color: string;
   rotation: string;
+  width: string;
+  height: string;
 };
 
 const RatingStars = ({ val = 0, size = 14 }: { val?: number, size?: number }) => (
@@ -745,7 +747,9 @@ export default function LifestyleClient({ items }: { items: LifestyleItem[] }) {
           delay: `${Math.random() * 1.5}s`,
           duration: `${1.5 + Math.random() * 2}s`,
           color: colors[Math.floor(Math.random() * colors.length)],
-          rotation: `${Math.random() * 720}deg`
+          rotation: `${Math.random() * 720}deg`,
+          width: `${6 + Math.random() * 10}px`,
+          height: `${12 + Math.random() * 10}px`
         });
       }
       setConfetti(pieces);
@@ -826,8 +830,8 @@ export default function LifestyleClient({ items }: { items: LifestyleItem[] }) {
                 '--fall-duration': piece.duration,
                 '--rotation': piece.rotation,
                 background: piece.color,
-                width: `${6 + Math.random() * 10}px`,
-                height: `${12 + Math.random() * 10}px`,
+                width: piece.width,
+                height: piece.height,
                 borderRadius: '2px'
               } as React.CSSProperties}
             />

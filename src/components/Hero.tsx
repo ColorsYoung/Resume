@@ -21,7 +21,7 @@ export const Hero: React.FC<HeroProps> = ({
   handleMagneticLeave
 }) => {
   return (
-    <header>
+    <header className="hero-section-header">
       {/* 1. Animated Hero Avatar / Profile Photo with pulse/rotating neon ring glow */}
       <div className="avatar-container animate-on-scroll">
         <div className="avatar-ring" />
