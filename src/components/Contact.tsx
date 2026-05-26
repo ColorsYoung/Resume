@@ -1,6 +1,7 @@
 "use client";
 
 import React from 'react';
+import { Send } from 'lucide-react';
 
 interface ContactProps {
   currentT: {
@@ -89,13 +90,9 @@ export const Contact: React.FC<ContactProps> = ({
               disabled={contactStatus === 'sending'}
               style={{ minWidth: '200px', justifyContent: 'center' }}
             >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="20" height="20">
-                <line x1="22" y1="2" x2="11" y2="13"></line>
-                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-              </svg>
+              <Send size={20} style={{ marginRight: '8px' }} />
               {contactStatus === 'sending' ? currentT.contactSending : currentT.contactSend}
-            </button>
-          </div>
+            </button>          </div>
           {contactStatus === 'sent' && (
             <div className="form-status success">{currentT.contactSent}</div>
           )}

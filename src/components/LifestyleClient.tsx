@@ -5,6 +5,22 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, usePathname, useRouter } from '@/i18n/routing';
 import { useLocale } from 'next-intl';
+import { 
+  MapPin, 
+  Camera, 
+  Mountain, 
+  Map, 
+  Upload, 
+  Calendar, 
+  Star, 
+  FileEdit, 
+  X, 
+  Plus, 
+  ChevronLeft, 
+  ChevronRight,
+  Sun,
+  Moon
+} from 'lucide-react';
 
 export type LifestyleStat = { label: string; value: string };
 
@@ -31,71 +47,20 @@ type ConfettiPiece = {
   rotation: string;
 };
 
-// ===== SVG Icon Utilities =====
-const MapPinIcon = ({ size = 13, style = {} }) => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width={size} height={size} style={{ display: 'inline-block', verticalAlign: 'middle', ...style }}>
-    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-    <circle cx="12" cy="10" r="3"></circle>
-  </svg>
-);
-
-const CameraIcon = ({ size = 15, style = {} }) => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width={size} height={size} style={{ display: 'inline-block', verticalAlign: 'middle', ...style }}>
-    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
-    <circle cx="12" cy="13" r="4"></circle>
-  </svg>
-);
-
-const MountainIcon = ({ size = 15, style = {} }) => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width={size} height={size} style={{ display: 'inline-block', verticalAlign: 'middle', ...style }}>
-    <path d="M8 3l4 8 5-5 5 15H2L8 3z"></path>
-  </svg>
-);
-
-const MapIcon = ({ size = 18, style = {} }) => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width={size} height={size} style={{ display: 'inline-block', verticalAlign: 'middle', ...style }}>
-    <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"></polygon>
-    <line x1="9" y1="3" x2="9" y2="18"></line>
-    <line x1="15" y1="6" x2="15" y2="21"></line>
-  </svg>
-);
-
-const CloudUploadIcon = ({ size = 28, style = {} }) => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width={size} height={size} style={{ color: 'var(--accent-light)', marginBottom: '6px', ...style }}>
-    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-    <polyline points="17 8 12 3 7 8"></polyline>
-    <line x1="12" y1="3" x2="12" y2="15"></line>
-  </svg>
-);
-
-const CalendarIcon = ({ size = 12, style = {} }) => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width={size} height={size} style={{ display: 'inline-block', verticalAlign: 'middle', ...style }}>
-    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-    <line x1="16" y1="2" x2="16" y2="6"></line>
-    <line x1="8" y1="2" x2="8" y2="6"></line>
-    <line x1="3" y1="10" x2="3" y2="10"></line>
-  </svg>
-);
-
-const StarIcon = ({ size = 14, filled = false, style = {} }) => (
-  <svg
-    viewBox="0 0 24 24"
-    fill={filled ? "#ffc107" : "none"}
-    stroke={filled ? "#ffc107" : "currentColor"}
-    strokeWidth="2"
-    width={size}
-    height={size}
-    style={{ display: 'inline-block', verticalAlign: 'middle', ...style }}
-  >
-    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-  </svg>
-);
-
 const RatingStars = ({ val = 0, size = 14 }: { val?: number, size?: number }) => (
   <div style={{ display: 'flex', gap: '2px', alignItems: 'center' }}>
-    {[1, 2, 3, 4, 5].map(star => (
-      <StarIcon key={star} size={size} filled={star <= val} />
-    ))}
+    {[1, 2, 3, 4, 5].map(star => {
+      const isFilled = star <= val;
+      return (
+        <Star 
+          key={star} 
+          size={size} 
+          fill={isFilled ? "#ffc107" : "rgba(255, 193, 7, 0.1)"} 
+          stroke="#ffc107" 
+          strokeWidth={1.5}
+        />
+      );
+    })}
   </div>
 );
 
@@ -169,7 +134,7 @@ const ScrapbookJournalModal = ({
   return (
     <div className="scrapbook-overlay" onClick={onClose}>
       <div className="scrapbook-modal" onClick={(e) => e.stopPropagation()}>
-        <button className="scrapbook-close-btn" onClick={onClose} aria-label="Close modal">×</button>
+        <button className="scrapbook-close-btn" onClick={onClose} aria-label="Close modal"><X size={18} /></button>
 
         <div className="scrapbook-split-container">
 
@@ -206,7 +171,7 @@ const ScrapbookJournalModal = ({
                       }}
                       aria-label="Previous image"
                     >
-                      &lt;
+                      <ChevronLeft size={24} />
                     </button>
                     <button
                       type="button"
@@ -217,7 +182,7 @@ const ScrapbookJournalModal = ({
                       }}
                       aria-label="Next image"
                     >
-                      &gt;
+                      <ChevronRight size={24} />
                     </button>
                   </>
                 )}
@@ -260,12 +225,12 @@ const ScrapbookJournalModal = ({
             <div className="scrapbook-diary-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', flexWrap: 'wrap', gap: '0.8rem' }}>
               <div style={{ display: 'flex', gap: '0.65rem', alignItems: 'center' }}>
                 <span className="scrapbook-diary-badge location">
-                  <MapPinIcon size={12} style={{ marginRight: '4px' }} />
+                  <MapPin size={12} style={{ marginRight: '4px' }} />
                   {locationStat ? locationStat.value : (locale === 'en' ? 'Exploration' : 'การเดินทาง')}
                 </span>
                 {durationStat && (
                   <span className="scrapbook-diary-badge duration">
-                    <CalendarIcon size={12} style={{ marginRight: '4px' }} />
+                    <Calendar size={12} style={{ marginRight: '4px' }} />
                     {durationStat.value}
                   </span>
                 )}
@@ -282,7 +247,7 @@ const ScrapbookJournalModal = ({
                 className="lifestyle-back-btn"
                 style={{ padding: '0.35rem 0.95rem', fontSize: '0.78rem', gap: '0.35rem', cursor: 'pointer', margin: 0, height: 'auto', borderRadius: '30px' }}
               >
-                ✏️ {locale === 'en' ? 'Edit' : 'แก้ไข'}
+                <FileEdit size={12} style={{ marginRight: '2px' }} /> {locale === 'en' ? 'Edit' : 'แก้ไข'}
               </button>
             </div>
 
@@ -317,8 +282,7 @@ const ScrapbookJournalModal = ({
       {/* FULLSCREEN LIGHTBOX MODE WITH FULL SLIDE CONTROLS */}
       {isLightboxOpen && item.images.length > 0 && (
         <div className="lightbox-overlay" onClick={() => setIsLightboxOpen(false)}>
-          <button className="lightbox-close" onClick={() => setIsLightboxOpen(false)}>×</button>
-
+          <button className="lightbox-close" onClick={() => setIsLightboxOpen(false)}><X size={20} /></button>
           {/* Lightbox Prev Slide Arrow */}
           {item.images.length > 1 && (
             <button
@@ -329,7 +293,7 @@ const ScrapbookJournalModal = ({
               }}
               aria-label="Previous image"
             >
-              &lt;
+              <ChevronLeft size={32} />
             </button>
           )}
 
@@ -350,7 +314,7 @@ const ScrapbookJournalModal = ({
               }}
               aria-label="Next image"
             >
-              &gt;
+              <ChevronRight size={32} />
             </button>
           )}
 
@@ -514,7 +478,7 @@ const CreatorDashboardModal = ({
   return (
     <div className="creator-overlay" onClick={onClose}>
       <div className="creator-modal" onClick={(e) => e.stopPropagation()}>
-        <button className="creator-close-btn" onClick={onClose}>×</button>
+        <button className="creator-close-btn" onClick={onClose}><X size={16} /></button>
 
         <h2 className="creator-title">
           {editItem
@@ -597,7 +561,12 @@ const CreatorDashboardModal = ({
                     onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.2)'}
                     onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
                   >
-                    <StarIcon size={24} filled={star <= rating} />
+                    <Star 
+                      size={24} 
+                      fill={star <= rating ? "#ffc107" : "rgba(255, 193, 7, 0.1)"} 
+                      stroke="#ffc107" 
+                      strokeWidth={1.5}
+                    />
                   </button>
                 ))}
                 {rating > 0 && (
@@ -663,7 +632,7 @@ const CreatorDashboardModal = ({
                       onClick={() => removeExistingImage(src)}
                       title={locale === 'en' ? 'Delete this photo' : 'ลบรูปภาพนี้'}
                     >
-                      ×
+                      <X size={12} />
                     </button>
                   </div>
                 ))}
@@ -680,7 +649,7 @@ const CreatorDashboardModal = ({
               className="creator-upload-zone"
               onClick={() => fileInputRef.current?.click()}
             >
-              <CloudUploadIcon />
+              <Upload size={28} style={{ color: 'var(--accent-light)', marginBottom: '6px' }} />
               <div className="upload-zone-text">
                 {locale === 'en' ? 'Click to select trip photos' : 'คลิกเพื่อเลือกภาพถ่ายสถานที่ท่องเที่ยว'}
               </div>
@@ -706,7 +675,7 @@ const CreatorDashboardModal = ({
                       className="creator-preview-remove"
                       onClick={() => removeSelectedFile(idx)}
                     >
-                      ×
+                      <X size={12} />
                     </button>
                   </div>
                 ))}
@@ -876,7 +845,7 @@ export default function LifestyleClient({ items }: { items: LifestyleItem[] }) {
       {/* Subpage Navigation Header */}
       <header className="lifestyle-header">
         <Link href="/" className="lifestyle-back-btn">
-          <span>←</span> {locale === 'en' ? 'Back to Portfolio' : 'กลับหน้าหลัก'}
+          <ChevronLeft size={16} /> {locale === 'en' ? 'Back to Portfolio' : 'กลับหน้าหลัก'}
         </Link>
 
         <div className="lifestyle-nav-actions">
@@ -885,7 +854,7 @@ export default function LifestyleClient({ items }: { items: LifestyleItem[] }) {
             onClick={() => setIsCreatorOpen(true)}
             className="lifestyle-creator-trigger"
           >
-            {locale === 'en' ? 'Add Memory' : 'เพิ่มทริปใหม่'}
+            <Plus size={14} style={{ marginRight: '6px' }} /> {locale === 'en' ? 'Add Memory' : 'เพิ่มทริปใหม่'}
           </button>
 
           {/* Theme Toggler */}
@@ -895,21 +864,9 @@ export default function LifestyleClient({ items }: { items: LifestyleItem[] }) {
             aria-label="Toggle theme"
           >
             {theme === 'dark' ? (
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16">
-                <circle cx="12" cy="12" r="5"></circle>
-                <line x1="12" y1="1" x2="12" y2="3"></line>
-                <line x1="12" y1="21" x2="12" y2="23"></line>
-                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                <line x1="1" y1="12" x2="3" y2="12"></line>
-                <line x1="21" y1="12" x2="23" y2="12"></line>
-                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-              </svg>
+              <Sun size={16} />
             ) : (
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16">
-                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-              </svg>
+              <Moon size={16} />
             )}
           </button>
 
@@ -938,7 +895,7 @@ export default function LifestyleClient({ items }: { items: LifestyleItem[] }) {
       <section className="travel-stats-banner">
         <div className="travel-stat-card">
           <div className="travel-stat-icon">
-            <MapIcon />
+            <Map size={18} />
           </div>
           <div className="travel-stat-details">
             <span className="travel-stat-val">{totalDestinations}</span>
@@ -948,7 +905,7 @@ export default function LifestyleClient({ items }: { items: LifestyleItem[] }) {
 
         <div className="travel-stat-card">
           <div className="travel-stat-icon">
-            <CameraIcon size={20} />
+            <Camera size={20} />
           </div>
           <div className="travel-stat-details">
             <span className="travel-stat-val">{totalPhotos}</span>
@@ -958,7 +915,7 @@ export default function LifestyleClient({ items }: { items: LifestyleItem[] }) {
 
         <div className="travel-stat-card">
           <div className="travel-stat-icon">
-            <MountainIcon size={20} />
+            <Mountain size={20} />
           </div>
           <div className="travel-stat-details">
             <span className="travel-stat-val">{featuredPeak}</span>
@@ -996,16 +953,15 @@ export default function LifestyleClient({ items }: { items: LifestyleItem[] }) {
                       />
                     ) : (
                       <div className="polaroid-img-fallback">
-                        <CameraIcon size={32} style={{ opacity: 0.3 }} />
+                        <Camera size={32} style={{ opacity: 0.3 }} />
                       </div>
                     )}
 
                     {/* Location Pin Ribbon */}
                     <div className="polaroid-location-tag">
-                      <MapPinIcon size={11} style={{ marginRight: '4px' }} />
+                      <MapPin size={11} style={{ marginRight: '4px' }} />
                       {locationStat ? locationStat.value : (locale === 'en' ? 'Explore' : 'ท่องเที่ยว')}
                     </div>
-
                     {/* Album count badge */}
                     {item.images.length > 1 && (
                       <div className="polaroid-album-badge">
@@ -1046,9 +1002,9 @@ export default function LifestyleClient({ items }: { items: LifestyleItem[] }) {
 
                           return (
                             <span key={sIdx} className="card-stat-badge">
-                              {isLocation && <MapPinIcon size={11} style={{ marginRight: '4px', opacity: 0.8 }} />}
-                              {isDuration && <CalendarIcon size={11} style={{ marginRight: '4px', opacity: 0.8 }} />}
-                              {isElevation && <MountainIcon size={11} style={{ marginRight: '4px', opacity: 0.8 }} />}
+                              {isLocation && <MapPin size={11} style={{ marginRight: '4px', opacity: 0.8 }} />}
+                              {isDuration && <Calendar size={11} style={{ marginRight: '4px', opacity: 0.8 }} />}
+                              {isElevation && <Mountain size={11} style={{ marginRight: '4px', opacity: 0.8 }} />}
                               <strong className="badge-lbl">{st.label}:</strong> <span className="badge-val">{st.value}</span>
                             </span>
                           );
@@ -1057,7 +1013,7 @@ export default function LifestyleClient({ items }: { items: LifestyleItem[] }) {
                     )}
 
                     <span className="polaroid-read-log">
-                      {locale === 'en' ? 'Read Travel Log →' : 'อ่านบันทึกการเดินทาง →'}
+                      {locale === 'en' ? 'Read Travel Log' : 'อ่านบันทึกการเดินทาง'} <ChevronRight size={14} style={{ marginLeft: '4px' }} />
                     </span>
                   </div>
                 </div>
