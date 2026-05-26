@@ -5,18 +5,18 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, usePathname, useRouter } from '@/i18n/routing';
 import { useLocale } from 'next-intl';
-import { 
-  MapPin, 
-  Camera, 
-  Mountain, 
-  Map, 
-  Upload, 
-  Calendar, 
-  Star, 
-  FileEdit, 
-  X, 
-  Plus, 
-  ChevronLeft, 
+import {
+  MapPin,
+  Camera,
+  Mountain,
+  Map,
+  Upload,
+  Calendar,
+  Star,
+  FileEdit,
+  X,
+  Plus,
+  ChevronLeft,
   ChevronRight,
   Sun,
   Moon
@@ -54,11 +54,11 @@ const RatingStars = ({ val = 0, size = 14 }: { val?: number, size?: number }) =>
     {[1, 2, 3, 4, 5].map(star => {
       const isFilled = star <= val;
       return (
-        <Star 
-          key={star} 
-          size={size} 
-          fill={isFilled ? "#ffc107" : "rgba(255, 193, 7, 0.1)"} 
-          stroke="#ffc107" 
+        <Star
+          key={star}
+          size={size}
+          fill={isFilled ? "#ffc107" : "rgba(255, 193, 7, 0.1)"}
+          stroke="#ffc107"
           strokeWidth={1.5}
         />
       );
@@ -578,10 +578,10 @@ const CreatorDashboardModal = ({
                     onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.2)'}
                     onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
                   >
-                    <Star 
-                      size={24} 
-                      fill={star <= rating ? "#ffc107" : "rgba(255, 193, 7, 0.1)"} 
-                      stroke="#ffc107" 
+                    <Star
+                      size={24}
+                      fill={star <= rating ? "#ffc107" : "rgba(255, 193, 7, 0.1)"}
+                      stroke="#ffc107"
                       strokeWidth={1.5}
                     />
                   </button>
@@ -733,6 +733,81 @@ const CreatorDashboardModal = ({
   );
 };
 
+// ===== Password Prompt Modal Component =====
+const PasswordPromptModal = ({
+  locale,
+  onClose,
+  onSuccess
+}: {
+  locale: 'en' | 'th';
+  onClose: () => void;
+  onSuccess: () => void;
+}) => {
+  const [pwd, setPwd] = useState('');
+  const [error, setError] = useState(false);
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setError(false);
+
+    try {
+      const res = await fetch('/api/auth/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: pwd })
+      });
+
+      if (res.ok) {
+        onSuccess();
+      } else {
+        setError(true);
+        setPwd('');
+      }
+    } catch (err) {
+      setError(true);
+      setPwd('');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="creator-overlay" onClick={onClose} style={{ zIndex: 11000 }}>
+      <div className="creator-modal" style={{ maxWidth: '400px', height: 'auto', padding: '2.5rem' }} onClick={(e) => e.stopPropagation()}>
+        <button className="creator-close-btn" onClick={onClose}><X size={16} /></button>
+        <h3 style={{ fontSize: '1.25rem', marginBottom: '0.5rem', color: '#fff' }}>
+          {locale === 'en' ? 'Admin Access Required' : 'ยืนยันสิทธิ์ผู้ดูแลระบบ'}
+        </h3>
+        <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
+          {locale === 'en' ? 'Please enter the password to modify content.' : 'กรุณาใส่รหัสผ่านเพื่อแก้ไขเนื้อหา'}
+        </p>
+        <form onSubmit={handleSubmit}>
+          <input
+            type="password"
+            autoFocus
+            className="creator-input"
+            style={{ marginBottom: '1rem', borderColor: error ? '#ff5555' : '' }}
+            placeholder={locale === 'en' ? 'Password' : 'รหัสผ่าน'}
+            value={pwd}
+            onChange={(e) => { setPwd(e.target.value); setError(false); }}
+          />
+          {error && (
+            <div style={{ color: '#ff5555', fontSize: '0.75rem', marginBottom: '1rem' }}>
+              {locale === 'en' ? 'Incorrect password. Please try again.' : 'รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่'}
+            </div>
+          )}
+          <button type="submit" className="creator-btn submit" style={{ width: '100%', justifyContent: 'center' }} disabled={isSubmitting}>
+            {isSubmitting ? (locale === 'en' ? 'Verifying...' : 'กำลังตรวจสอบ...') : (locale === 'en' ? 'Authenticate' : 'ยืนยัน')}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+};
+
 // ===== Page Shell Main Client Component =====
 export default function LifestyleClient({ items }: { items: LifestyleItem[] }) {
   const locale = useLocale() as 'en' | 'th';
@@ -745,6 +820,7 @@ export default function LifestyleClient({ items }: { items: LifestyleItem[] }) {
   const [editItem, setEditItem] = useState<LifestyleItem | undefined>(undefined);
   const [confetti, setConfetti] = useState<ConfettiPiece[]>([]);
   const [successAnimation, setSuccessAnimation] = useState(false);
+  const [pwdPrompt, setPwdPrompt] = useState<{ isOpen: boolean; actionType: 'add' | 'edit' | null; targetItem?: LifestyleItem }>({ isOpen: false, actionType: null });
 
   const activeItemData = items.find(item => item.id === activeItem);
 
@@ -870,7 +946,14 @@ export default function LifestyleClient({ items }: { items: LifestyleItem[] }) {
         <div className="lifestyle-nav-actions">
           {/* Creator Dash Trigger */}
           <button
-            onClick={() => setIsCreatorOpen(true)}
+            onClick={() => {
+              const isAuth = sessionStorage.getItem('creatorAuth');
+              if (isAuth === 'true') {
+                setIsCreatorOpen(true);
+              } else {
+                setPwdPrompt({ isOpen: true, actionType: 'add' });
+              }
+            }}
             className="lifestyle-creator-trigger"
           >
             <Plus size={14} style={{ marginRight: '6px' }} /> {locale === 'en' ? 'Add Memory' : 'เพิ่มทริปใหม่'}
@@ -1049,8 +1132,13 @@ export default function LifestyleClient({ items }: { items: LifestyleItem[] }) {
           item={activeItemData}
           onClose={() => setActiveItem(null)}
           onEdit={(item) => {
-            setActiveItem(null);
-            setEditItem(item);
+            const isAuth = sessionStorage.getItem('creatorAuth');
+            if (isAuth === 'true') {
+              setActiveItem(null);
+              setEditItem(item);
+            } else {
+              setPwdPrompt({ isOpen: true, actionType: 'edit', targetItem: item });
+            }
           }}
         />
       )}
@@ -1065,6 +1153,24 @@ export default function LifestyleClient({ items }: { items: LifestyleItem[] }) {
             setEditItem(undefined);
           }}
           router={router}
+        />
+      )}
+
+      {/* Advanced Password Prompt UI Modal */}
+      {pwdPrompt.isOpen && (
+        <PasswordPromptModal
+          locale={locale}
+          onClose={() => setPwdPrompt({ isOpen: false, actionType: null })}
+          onSuccess={() => {
+            sessionStorage.setItem('creatorAuth', 'true');
+            if (pwdPrompt.actionType === 'add') {
+              setIsCreatorOpen(true);
+            } else if (pwdPrompt.actionType === 'edit' && pwdPrompt.targetItem) {
+              setActiveItem(null);
+              setEditItem(pwdPrompt.targetItem);
+            }
+            setPwdPrompt({ isOpen: false, actionType: null });
+          }}
         />
       )}
 
