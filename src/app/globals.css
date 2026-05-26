@@ -3192,6 +3192,65 @@ footer {
   .creator-modal {
     padding: 1.5rem;
   }
+
+  /* Polaroid grid and card mobile optimizations */
+  .lifestyle-grid {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.25rem;
+  }
+
+  .scrapbook-polaroid-card {
+    padding: 0.6rem 0.6rem 1rem 0.6rem;
+    border-radius: 16px;
+  }
+  
+  .scrapbook-polaroid-card::after,
+  .scrapbook-polaroid-card.has-stack::before {
+    border-radius: 16px;
+  }
+
+  .polaroid-image-frame {
+    border-radius: 10px;
+  }
+
+  .polaroid-location-tag {
+    bottom: 8px;
+    left: 8px;
+    font-size: 0.65rem;
+    padding: 0.2rem 0.6rem;
+  }
+
+  .polaroid-album-badge {
+    top: 8px;
+    right: 8px;
+    font-size: 0.65rem;
+    padding: 0.2rem 0.6rem;
+  }
+
+  .polaroid-title {
+    font-size: 0.95rem;
+  }
+
+  .polaroid-subtitle {
+    font-size: 0.75rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .polaroid-description-preview {
+    font-size: 0.72rem;
+    -webkit-line-clamp: 3;
+    margin-bottom: 0.6rem;
+  }
+
+  .card-mini-stats {
+    gap: 0.35rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .card-stat-badge {
+    font-size: 0.62rem;
+    padding: 0.15rem 0.45rem;
+  }
 }
 
 /* Light Theme Elegant Overrides */
@@ -3716,20 +3775,24 @@ footer {
   width: 100vw;
   height: 100vh;
   background: rgba(10, 10, 10, 0.98);
-  backdrop-filter: blur(20px);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
   z-index: 9999;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start; /* Start from top to allow scrolling on small views */
+  padding: 6.5rem 2rem 4rem 2rem; /* Comfortable top/bottom padding */
   gap: 2rem;
   transition: transform 0.45s cubic-bezier(0.25, 1, 0.5, 1);
   transform: translateX(100%);
   pointer-events: none;
+  overflow-y: auto; /* Enable scrolling when links/controls overflow screen height */
+  -webkit-overflow-scrolling: touch;
 }
 
 [data-theme="light"] .mobile-drawer {
-  background: rgba(250, 250, 250, 0.98);
+  background: rgba(255, 255, 255, 0.98);
 }
 
 .mobile-drawer.open {
@@ -3741,24 +3804,43 @@ footer {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.75rem;
+  gap: 1.5rem;
+  width: 100%;
 }
 
 .mobile-drawer-link {
-  font-size: 1.75rem;
+  font-size: 1.6rem;
   font-weight: 700;
-  color: var(--text-color);
+  color: var(--text-secondary);
   text-decoration: none;
-  transition:
-    color 0.25s ease,
-    transform 0.25s ease;
+  background: none;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.25s cubic-bezier(0.25, 1, 0.5, 1);
   position: relative;
+  text-align: center;
+  padding: 0.35rem 1.5rem;
+  display: inline-block;
+  width: auto;
+}
+
+[data-theme="light"] .mobile-drawer-link {
+  color: var(--text-primary);
 }
 
 .mobile-drawer-link:hover,
 .mobile-drawer-link.active {
   color: var(--accent-light);
   transform: scale(1.05);
+  text-shadow: 0 0 15px rgba(187, 134, 252, 0.45);
+}
+
+[data-theme="light"] .mobile-drawer-link:hover,
+[data-theme="light"] .mobile-drawer-link.active {
+  color: var(--accent-color);
+  text-shadow: 0 0 10px rgba(98, 0, 238, 0.15);
 }
 
 /* ===== Analytics / Telemetry Widget ===== */
@@ -4608,5 +4690,139 @@ footer {
   .docs-sidebar-backdrop.open {
     opacity: 1;
     pointer-events: auto;
+  }
+}
+
+/* ===== Immersive Scrapbook Journal Modal Mobile Responsiveness ===== */
+@media (max-width: 768px) {
+  .scrapbook-overlay {
+    padding: 0.5rem; /* Maximize visible area on small phones */
+  }
+
+  .scrapbook-modal {
+    height: 98vh; /* Near fullscreen height */
+    max-height: none;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .scrapbook-split-container {
+    display: grid;
+    grid-template-columns: 1fr !important;
+    grid-template-rows: 250px 1fr !important; /* Stack vertically: image height 250px, text covers the rest */
+    height: 100%;
+    width: 100%;
+  }
+
+  .scrapbook-photo-board {
+    border-right: none !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    height: 250px !important;
+    width: 100% !important;
+  }
+
+  .scrapbook-image-viewer-wrap {
+    padding: 1rem 1rem 3rem 1rem !important; /* Reduce padding for image view */
+  }
+
+  .immersive-filmstrip-wrapper {
+    bottom: 0.75rem !important;
+    width: 95% !important;
+    padding: 0.3rem 0.5rem !important;
+  }
+
+  .immersive-thumbnail-container {
+    width: 38px !important;
+    height: 38px !important;
+  }
+
+  .immersive-nav-arrow {
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 0.8rem !important;
+  }
+
+  .immersive-nav-arrow svg {
+    width: 16px !important;
+    height: 16px !important;
+  }
+
+  .immersive-nav-arrow.prev {
+    left: 0.75rem !important;
+  }
+
+  .immersive-nav-arrow.next {
+    right: 0.75rem !important;
+  }
+
+  .immersive-photo-counter {
+    top: 0.75rem !important;
+    left: 0.75rem !important;
+    padding: 0.2rem 0.6rem !important;
+    font-size: 0.65rem !important;
+  }
+
+  .scrapbook-diary-page {
+    padding: 1.5rem 1.25rem 2rem !important; /* Reduced padding */
+    background: #0e0e12 !important;
+    overflow-y: auto !important; /* Allow the diary content block to scroll */
+    min-height: 0; /* Flexbox / grid scroll fix */
+  }
+
+  .scrapbook-diary-header {
+    margin-bottom: 1rem !important;
+  }
+
+  .scrapbook-diary-title {
+    font-size: 1.45rem !important; /* Scale down title size */
+    margin-bottom: 0.35rem !important;
+  }
+
+  .scrapbook-diary-subtitle {
+    font-size: 0.85rem !important;
+    margin-bottom: 1rem !important;
+  }
+
+  .scrapbook-diary-divider {
+    margin-bottom: 1.25rem !important;
+  }
+
+  .scrapbook-diary-text {
+    font-size: 0.88rem !important;
+    line-height: 1.75 !important;
+    margin-bottom: 1.5rem !important;
+    overflow-y: visible !important; /* Let parent scrapbook-diary-page handle page scroll */
+  }
+
+  .scrapbook-diary-stats {
+    grid-template-columns: repeat(3, 1fr) !important; /* Keep 3-column stats but make them tighter */
+    gap: 0.5rem !important;
+    padding-top: 1rem !important;
+  }
+
+  .scrapbook-diary-stat-box {
+    padding: 0.6rem 0.3rem !important;
+    border-radius: 10px !important;
+  }
+
+  .scrapbook-diary-stat-value {
+    font-size: 0.8rem !important;
+  }
+
+  .scrapbook-diary-stat-label {
+    font-size: 0.58rem !important;
+  }
+
+  .scrapbook-close-btn {
+    top: 0.75rem !important;
+    right: 0.75rem !important;
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 0.9rem !important;
+    background: rgba(10, 10, 15, 0.6) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
   }
 }
