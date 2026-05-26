@@ -2628,8 +2628,10 @@ footer {
   gap: 0.65rem;
   overflow-x: auto;
   scrollbar-width: none; /* Firefox */
-  justify-content: center;
+  justify-content: flex-start; /* flex-start is required for scrollIntoView to work when items overflow */
   align-items: center;
+  /* Add horizontal padding so the first/last thumb can be centered when scrolled */
+  padding: 0 calc(50% - 24px);
 }
 
 .immersive-filmstrip::-webkit-scrollbar {

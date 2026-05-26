@@ -81,6 +81,20 @@ const ScrapbookJournalModal = ({
   const [currentImgIdx, setCurrentImgIdx] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
 
+  // Ref array pointing to each thumbnail element
+  const thumbnailRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  // Auto-scroll filmstrip: keep active thumbnail centered in view
+  useEffect(() => {
+    const activeThumb = thumbnailRefs.current[currentImgIdx];
+    if (!activeThumb) return;
+    activeThumb.scrollIntoView({
+      behavior: 'smooth',
+      block: 'nearest',
+      inline: 'center',
+    });
+  }, [currentImgIdx]);
+
   // Next / Prev slide logic
   const handleNext = () => {
     if (item.images.length > 1) {
@@ -209,6 +223,7 @@ const ScrapbookJournalModal = ({
                   {item.images.map((img, idx) => (
                     <div
                       key={idx}
+                      ref={el => { thumbnailRefs.current[idx] = el; }}
                       className={`immersive-thumbnail-container ${idx === currentImgIdx ? 'active' : ''}`}
                       onClick={() => setCurrentImgIdx(idx)}
                     >
