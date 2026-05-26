@@ -18,7 +18,7 @@ function getLifestyleItems(): LifestyleItem[] {
     }
   });
 
-  return Array.from(slugs).map(slug => {
+  return Array.from(slugs).map((slug): LifestyleItem | null => {
     const enFile = `${slug}.en.md`;
     const thFile = `${slug}.th.md`;
     const singleFile = `${slug}.md`;
@@ -69,15 +69,16 @@ function getLifestyleItems(): LifestyleItem[] {
 
     return {
       id: slug,
-      title_en: finalEnParsed.data.title ?? slug,
-      title_th: finalThParsed.data.title ?? finalEnParsed.data.title ?? slug,
-      subtitle_en: finalEnParsed.data.subtitle ?? '',
-      subtitle_th: finalThParsed.data.subtitle ?? finalEnParsed.data.subtitle ?? '',
+      title_en: String(finalEnParsed.data.title ?? slug),
+      title_th: String(finalThParsed.data.title ?? finalEnParsed.data.title ?? slug),
+      subtitle_en: String(finalEnParsed.data.subtitle ?? ''),
+      subtitle_th: String(finalThParsed.data.subtitle ?? finalEnParsed.data.subtitle ?? ''),
       images: images,
       details_en: finalEnParsed.content.trim(),
       details_th: finalThParsed.content.trim(),
       stats_en: enStats,
       stats_th: thStats,
+      rating: primaryParsed.data.rating ? Number(primaryParsed.data.rating) : undefined,
     };
   })
   .filter((item): item is LifestyleItem => item !== null);

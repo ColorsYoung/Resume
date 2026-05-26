@@ -1869,245 +1869,1563 @@ footer {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-}
-
-/* ===== Lifestyle Gallery Section Styles ===== */
-.lifestyle-gallery-wrapper {
+}/* ===== Travel Memories Scrapbook Section Styles ===== */
+.lifestyle-scrapbook-main {
   width: 100%;
-  margin-top: 1.5rem;
+  min-height: 100vh;
+  padding: 4rem 2rem;
+  background: radial-gradient(circle at 10% 20%, rgba(186, 104, 200, 0.06), transparent 45%),
+              radial-gradient(circle at 90% 80%, rgba(3, 218, 198, 0.05), transparent 45%),
+              var(--bg-dark);
+  color: var(--text-primary);
+  transition: background 0.3s, color 0.3s;
+  position: relative;
+  overflow: hidden;
 }
 
-.lifestyle-grid {
+/* Beautiful Animated Background Orbs for Premium feel */
+.lifestyle-scrapbook-main::before,
+.lifestyle-scrapbook-main::after {
+  content: '';
+  position: absolute;
+  width: 350px;
+  height: 350px;
+  border-radius: 50%;
+  filter: blur(140px);
+  z-index: 0;
+  opacity: 0.15;
+  pointer-events: none;
+}
+.lifestyle-scrapbook-main::before {
+  top: 15%;
+  left: -100px;
+  background: var(--accent-light);
+  animation: orbFloat 18s ease-in-out infinite alternate;
+}
+.lifestyle-scrapbook-main::after {
+  bottom: 15%;
+  right: -100px;
+  background: #03dac6;
+  animation: orbFloat 22s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes orbFloat {
+  0% { transform: translateY(0) scale(1); }
+  100% { transform: translateY(40px) scale(1.15); }
+}
+
+/* Subpage navigation header */
+.lifestyle-header {
+  max-width: 1350px;
+  margin: 0 auto 4rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  position: relative;
+  z-index: 10;
+}
+
+.lifestyle-back-btn {
+  text-decoration: none;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--card-border);
+  padding: 0.65rem 1.4rem;
+  border-radius: 30px;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.lifestyle-back-btn:hover {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.07);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  transform: translateX(-4px);
+}
+
+.lifestyle-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.lifestyle-creator-trigger {
+  background: linear-gradient(135deg, var(--accent-light) 0%, #03dac6 100%);
+  color: #000;
+  border: none;
+  font-weight: 700;
+  font-size: 0.88rem;
+  padding: 0.65rem 1.5rem;
+  border-radius: 30px;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(187, 134, 252, 0.35);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.lifestyle-creator-trigger:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(3, 218, 198, 0.45);
+}
+
+.lifestyle-theme-btn {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--card-border);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.lifestyle-theme-btn:hover {
+  border-color: var(--accent-light);
+  color: var(--accent-light);
+  transform: scale(1.08) rotate(15deg);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.lifestyle-lang-box {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.35rem 0.85rem;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 30px;
+  border: 1px solid var(--card-border);
+}
+
+.lifestyle-lang-box button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  transition: color 0.3s;
+}
+
+.lifestyle-lang-box button.active {
+  color: var(--accent-blue);
+  font-weight: 800;
+  text-shadow: 0 0 8px rgba(3, 218, 198, 0.3);
+}
+
+/* Premium Hero Section */
+.lifestyle-hero {
+  max-width: 800px;
+  margin: 0 auto 3.5rem;
+  text-align: center;
+  position: relative;
+  z-index: 10;
+}
+
+.lifestyle-hero-title {
+  font-size: 3.25rem;
+  font-weight: 850;
+  margin-bottom: 0.85rem;
+  background: linear-gradient(135deg, #ffffff 20%, #bb86fc 50%, #03dac6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+
+[data-theme="light"] .lifestyle-hero-title {
+  background: linear-gradient(135deg, #111111 20%, #6200ee 60%, #018786 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.lifestyle-hero-subtitle {
+  font-size: 1.15rem;
+  color: var(--text-secondary);
+  line-height: 1.8;
+  max-width: 620px;
+  margin: 0 auto;
+  opacity: 0.9;
+}
+
+/* Travel Dashboard Banner */
+.travel-stats-banner {
+  max-width: 1350px;
+  margin: 0 auto 4rem;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 2rem;
-  padding: 1rem 0;
-}
-
-@media (max-width: 768px) {
-  .lifestyle-grid {
-    grid-template-columns: 1fr;
-    gap: 2.5rem;
-  }
-}
-
-.lifestyle-card {
+  gap: 1.5rem;
   position: relative;
-  cursor: pointer;
-  perspective: 1000px;
+  z-index: 10;
 }
 
-.lifestyle-polaroid {
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
-  padding: 1rem 1rem 1.5rem 1rem;
-  border-radius: 12px;
-  box-shadow: var(--shadow-sm);
-  transition:
-    transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
-    box-shadow 0.4s ease,
-    border-color 0.4s ease;
+.travel-stat-card {
+  background: rgba(18, 18, 24, 0.5);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  padding: 1.5rem 1.75rem;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+}
+
+.travel-stat-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(187, 134, 252, 0.3);
+  background: rgba(24, 24, 35, 0.65);
+  box-shadow: 0 10px 30px rgba(187, 134, 252, 0.08);
+}
+
+.travel-stat-icon {
+  background: linear-gradient(135deg, rgba(187, 134, 252, 0.1) 0%, rgba(3, 218, 198, 0.1) 100%);
+  border-radius: 16px;
+  width: 54px;
+  height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: var(--accent-light);
+  flex-shrink: 0;
+  transition: transform 0.3s ease;
+}
+
+.travel-stat-card:hover .travel-stat-icon {
+  transform: scale(1.1) rotate(5deg);
+  color: #03dac6;
+}
+
+.travel-stat-details {
   display: flex;
   flex-direction: column;
 }
 
-.lifestyle-card:hover .lifestyle-polaroid {
-  transform: translateY(-8px) rotate(1.5deg);
-  box-shadow:
-    var(--shadow-lg),
-    0 0 20px rgba(187, 134, 252, 0.15);
-  border-color: var(--accent-light);
+.travel-stat-val {
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.01em;
+  background: linear-gradient(to right, #fff, var(--accent-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-/* Organic offset tilts */
-.lifestyle-grid > div:nth-child(even) .lifestyle-polaroid {
-  transform: rotate(-1deg);
-}
-.lifestyle-grid > div:nth-child(even):hover .lifestyle-polaroid {
-  transform: translateY(-8px) rotate(-2.5deg);
+.travel-stat-lbl {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  margin-top: 0.25rem;
 }
 
-.lifestyle-img-container {
+/* Beautiful Travel Cards Showcase Grid */
+.scrapbook-grid-section {
+  max-width: 1350px;
+  margin: 0 auto 5rem;
   position: relative;
-  width: 100%;
-  aspect-ratio: 4/3;
+  z-index: 10;
+}
+
+/* THE GRID DEFINITION - Crucial missing setup! */
+.lifestyle-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Modern Premium Glass Card Layout */
+.polaroid-wrapper {
+  cursor: pointer;
+  perspective: 1000px;
+  opacity: 0; /* Animated by IntersectionObserver or delay */
+  transform: translateY(30px);
+  transition: opacity 0.6s ease-out, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.polaroid-wrapper.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.scrapbook-polaroid-card {
+  background: rgba(18, 18, 24, 0.45);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 0.75rem 0.75rem 1.25rem 0.75rem;
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  position: relative;
   overflow: hidden;
-  border-radius: 6px;
-  background: #111;
 }
 
-.lifestyle-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
-}
-
-.lifestyle-card:hover .lifestyle-img {
-  transform: scale(1.08);
-}
-
-.lifestyle-click-hint {
+/* Premium gradient border overlay on card hover */
+.scrapbook-polaroid-card::after {
+  content: '';
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(2px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  border-radius: 20px;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(187, 134, 252, 0.3) 0%, rgba(3, 218, 198, 0.3) 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
   opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
 }
 
-.lifestyle-card:hover .lifestyle-click-hint {
+/* Dynamic stack borders effect for multi-image albums */
+.scrapbook-polaroid-card.has-stack::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  background: rgba(18, 18, 24, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  z-index: -1;
+  transform: rotate(2deg) scale(0.98);
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.polaroid-wrapper:hover .scrapbook-polaroid-card {
+  transform: translateY(-8px);
+  background: rgba(28, 28, 40, 0.55);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 25px rgba(187, 134, 252, 0.1);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.polaroid-wrapper:hover .scrapbook-polaroid-card::after {
   opacity: 1;
 }
 
-.lifestyle-click-hint span {
-  background: var(--bg-dark);
-  border: 1px solid var(--accent-light);
-  color: var(--accent-light);
-  font-size: 0.8rem;
-  font-weight: 600;
-  padding: 0.4rem 0.8rem;
-  border-radius: 30px;
-  box-shadow: 0 0 10px rgba(187, 134, 252, 0.3);
-  transform: scale(0.9);
-  transition: transform 0.3s ease;
+.polaroid-wrapper:hover .scrapbook-polaroid-card.has-stack::before {
+  transform: rotate(4deg) scale(0.99) translate(4px, 2px);
+  border-color: rgba(3, 218, 198, 0.25);
 }
 
-.lifestyle-card:hover .lifestyle-click-hint span {
-  transform: scale(1);
+/* Beautiful Image Container Frame */
+.polaroid-image-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1; /* Compact square ratio instead of vertical portrait */
+  overflow: hidden;
+  border-radius: 14px;
+  background: #09090c;
 }
 
-.lifestyle-caption {
-  margin-top: 1rem;
-  text-align: center;
+.polaroid-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.lifestyle-title {
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin: 0 0 0.25rem 0;
-  letter-spacing: -0.01em;
+.polaroid-wrapper:hover .polaroid-img {
+  transform: scale(1.08);
 }
 
-.lifestyle-subtitle {
-  font-size: 0.8rem;
+.polaroid-img-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.02);
   color: var(--text-muted);
-  margin: 0;
 }
 
-/* Modal Overlay Styling */
-.lifestyle-details-overlay {
+/* Modern Location Pin Overlay Ribbon */
+.polaroid-location-tag {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  background: rgba(10, 10, 15, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.3rem 0.75rem;
+  border-radius: 30px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  transition: background 0.3s;
+}
+
+.polaroid-wrapper:hover .polaroid-location-tag {
+  background: rgba(187, 134, 252, 0.95);
+  color: #000;
+  border-color: transparent;
+}
+
+/* Multi-photo album count badge */
+.polaroid-album-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(3, 218, 198, 0.9);
+  color: #000;
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 0.3rem 0.7rem;
+  border-radius: 30px;
+  box-shadow: 0 4px 12px rgba(3, 218, 198, 0.25);
+}
+
+/* Card Caption & Typography */
+.polaroid-caption {
+  margin-top: 0.85rem;
+  padding: 0 0.25rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.polaroid-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #fff;
+  margin: 0 0 0.3rem 0;
+  letter-spacing: -0.01em;
+  transition: color 0.3s;
+}
+
+.polaroid-wrapper:hover .polaroid-title {
+  color: var(--accent-light);
+}
+
+.polaroid-subtitle {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin: 0 0 0.4rem 0;
+  line-height: 1.4;
+}
+
+.polaroid-description-preview {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin: 0 0 0.6rem 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0.85;
+}
+
+/* Beautiful modern card stats badges */
+.card-mini-stats {
+  display: flex;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  margin: 0 0 1.25rem 0;
+}
+
+.card-stat-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: var(--text-secondary);
+  padding: 0.25rem 0.65rem;
+  border-radius: 30px;
+  display: inline-flex;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.polaroid-wrapper:hover .card-stat-badge {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.card-stat-badge strong.badge-lbl {
+  color: var(--accent-light);
+  margin-right: 3px;
+}
+
+.card-stat-badge span.badge-val {
+  color: #fff;
+}
+
+.polaroid-read-log {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--accent-blue);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  transition: all 0.3s ease;
+  margin-top: auto;
+}
+
+.polaroid-wrapper:hover .polaroid-read-log {
+  transform: translateX(4px);
+  color: var(--accent-light);
+}
+
+/* IMMERSIVE DIARY SPLIT MODAL */
+.scrapbook-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(8px);
+  background: rgba(3, 3, 5, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 10000;
-  padding: 1.5rem;
-  animation: fadeIn 0.25s ease-out;
+  padding: 2rem;
+  animation: fadeIn 0.3s ease-out forwards;
 }
 
-.lifestyle-details-content {
-  background: var(--bg-dark);
-  border: 1px solid var(--card-border);
-  border-radius: 20px;
+.scrapbook-modal {
+  background: #0e0e12;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 28px;
   width: 100%;
-  max-width: 460px;
-  padding: 2.25rem 2rem 2rem;
+  max-width: 1250px;
+  height: 90vh;
+  max-height: 820px;
   position: relative;
-  box-shadow:
-    var(--shadow-xl),
-    0 0 30px rgba(187, 134, 252, 0.1);
-  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  text-align: left;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 0 0 50px rgba(187, 134, 252, 0.05);
+  animation: scaleUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  overflow: hidden;
 }
 
-.lifestyle-close-btn {
+/* Custom modal scaleUp animation */
+@keyframes scaleUp {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.scrapbook-close-btn {
   position: absolute;
-  top: 1.25rem;
-  right: 1.25rem;
-  background: rgba(255, 255, 255, 0.05);
-  border: none;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   color: var(--text-muted);
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   font-size: 1.5rem;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 100;
 }
 
-.lifestyle-close-btn:hover {
-  background: rgba(255, 255, 255, 0.15);
-  color: var(--text-primary);
+.scrapbook-close-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
   transform: rotate(90deg);
+  border-color: rgba(255, 255, 255, 0.15);
 }
 
-.lifestyle-stats-grid {
+.scrapbook-split-container {
+  display: grid;
+  grid-template-columns: 55% 45%;
+  width: 100%;
+  height: 100%;
+}
+
+/* Left Pane: Image Gallery Board (Immersive Blurred-Backdrop Design) */
+.scrapbook-photo-board {
+  background: #000;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  height: 100%;
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Immersive background blurred-backdrop mirroring active image */
+.scrapbook-blur-backdrop {
+  position: absolute;
+  inset: -20px;
+  background-size: cover;
+  background-position: center;
+  filter: blur(50px) brightness(0.28) saturate(1.2);
+  opacity: 0.75;
+  z-index: 1;
+  transition: background-image 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+
+/* Sharp floating active image viewer */
+.scrapbook-image-viewer-wrap {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  padding: 2.5rem 2.5rem 6rem 2.5rem;
+  box-sizing: border-box;
+}
+
+.scrapbook-image-viewer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 100%;
+  max-height: 100%;
+  cursor: zoom-in;
+}
+
+.scrapbook-immersive-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 16px;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.75), 0 0 40px rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.scrapbook-image-viewer:hover .scrapbook-immersive-image {
+  transform: scale(1.02);
+}
+
+/* Immersive Slideshow floating navigation arrows */
+.immersive-nav-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(10, 10, 15, 0.4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #fff;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  font-size: 1.1rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 10;
+}
+
+.immersive-nav-arrow:hover {
+  background: rgba(187, 134, 252, 0.9);
+  color: #000;
+  border-color: transparent;
+  box-shadow: 0 0 15px rgba(187, 134, 252, 0.4);
+}
+
+.immersive-nav-arrow.prev {
+  left: 1.5rem;
+}
+
+.immersive-nav-arrow.next {
+  right: 1.5rem;
+}
+
+/* Photo counter index pill */
+.immersive-photo-counter {
+  position: absolute;
+  top: 1.5rem;
+  left: 1.5rem;
+  background: rgba(10, 10, 15, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.35rem 0.85rem;
+  border-radius: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  z-index: 10;
+}
+
+.scrapbook-no-image {
+  width: 100%;
+  aspect-ratio: 3/2;
+  background: rgba(255, 255, 255, 0.02);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+}
+
+/* Immersive Floating Filmstrip Preview list */
+.immersive-filmstrip-wrapper {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 440px;
+  z-index: 10;
+  background: rgba(10, 10, 15, 0.45);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 18px;
+  padding: 0.45rem 0.75rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.immersive-filmstrip {
+  display: flex;
+  gap: 0.65rem;
+  overflow-x: auto;
+  scrollbar-width: none; /* Firefox */
+  justify-content: center;
+  align-items: center;
+}
+
+.immersive-filmstrip::-webkit-scrollbar {
+  display: none; /* Safari/Chrome */
+}
+
+.immersive-thumbnail-container {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  cursor: pointer;
+  opacity: 0.45;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  flex-shrink: 0;
+}
+
+.immersive-thumbnail-container.active {
+  border-color: var(--accent-light);
+  box-shadow: 0 0 12px rgba(187, 134, 252, 0.45);
+  opacity: 1;
+  transform: scale(1.08);
+}
+
+.immersive-thumbnail-container:hover {
+  opacity: 0.9;
+}
+
+.immersive-thumbnail {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Right Pane: Diary Content */
+.scrapbook-diary-page {
+  background: #0c0c10;
+  padding: 3.5rem 3rem;
+  overflow-y: auto;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.scrapbook-diary-header {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.scrapbook-diary-badge {
+  font-size: 0.72rem;
+  font-weight: 750;
+  padding: 0.35rem 0.85rem;
+  border-radius: 30px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.scrapbook-diary-badge.location {
+  background: rgba(187, 134, 252, 0.08);
+  border: 1px solid rgba(187, 134, 252, 0.15);
+  color: var(--accent-light);
+}
+
+.scrapbook-diary-badge.duration {
+  background: rgba(3, 218, 198, 0.08);
+  border: 1px solid rgba(3, 218, 198, 0.15);
+  color: #03dac6;
+}
+
+.scrapbook-diary-content {
+  flex: 1;
+}
+
+.scrapbook-diary-title {
+  font-size: 2rem;
+  font-weight: 850;
+  color: #fff;
+  margin: 0 0 0.5rem 0;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+
+.scrapbook-diary-subtitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin: 0 0 1.5rem 0;
+}
+
+.scrapbook-diary-divider {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(to right, rgba(255, 255, 255, 0.08), transparent);
+  margin-bottom: 1.75rem;
+}
+
+.scrapbook-diary-text {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.85;
+  margin-bottom: 2rem;
+}
+
+.journal-paragraph {
+  margin: 0 0 1.25rem 0;
+}
+
+/* Stats inside Modal Journal */
+.scrapbook-diary-stats {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
-  margin-top: 1.25rem;
+  margin-top: auto;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.lifestyle-stat-box {
+.scrapbook-diary-stat-box {
   background: rgba(255, 255, 255, 0.02);
-  border: 1px solid var(--card-border);
-  border-radius: 10px;
-  padding: 0.75rem 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 14px;
+  padding: 0.85rem 0.5rem;
   text-align: center;
-  transition:
-    border-color 0.2s ease,
-    transform 0.2s ease;
+  transition: all 0.3s ease;
 }
 
-.lifestyle-stat-box:hover {
-  border-color: var(--accent-light);
+.scrapbook-diary-stat-box:hover {
+  border-color: rgba(187,134,252,0.3);
   transform: translateY(-2px);
+  background: rgba(187, 134, 252, 0.03);
 }
 
-.lifestyle-stat-val {
+.scrapbook-diary-stat-value {
   font-size: 1rem;
   font-weight: 800;
   color: var(--accent-light);
+  margin-bottom: 0.2rem;
+}
+
+.scrapbook-diary-stat-label {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+/* FULLSCREEN LIGHTBOX MODE */
+.lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(3, 3, 5, 0.96);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20000;
+  cursor: zoom-out;
+  padding: 2rem;
+  animation: fadeIn 0.25s ease-out;
+}
+
+.lightbox-image {
+  max-width: 90%;
+  max-height: 85vh;
+  object-fit: contain;
+  border-radius: 12px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7);
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #fff;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  font-size: 2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s ease;
+}
+
+.lightbox-close:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: scale(1.05);
+}
+
+/* LOCAL CREATOR FORM MODAL */
+.creator-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(3, 3, 5, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10500;
+  padding: 1.5rem;
+  animation: fadeIn 0.25s ease-out;
+}
+
+.creator-modal {
+  background: #0e0e12;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  width: 100%;
+  max-width: 720px;
+  max-height: 90vh;
+  padding: 2.5rem;
+  position: relative;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 40px rgba(3, 218, 198, 0.05);
+  animation: scaleUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.creator-close-btn {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: var(--text-muted);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  font-size: 1.3rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s ease;
+}
+
+.creator-close-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  transform: rotate(90deg);
+}
+
+.creator-title {
+  font-size: 1.65rem;
+  font-weight: 850;
+  color: #fff;
+  margin: 0 0 0.4rem 0;
+  letter-spacing: -0.02em;
+}
+
+.creator-subtitle {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin: 0 0 2rem 0;
+  line-height: 1.6;
+}
+
+.creator-error-banner {
+  background: rgba(255, 85, 85, 0.1);
+  border: 1px solid rgba(255, 85, 85, 0.2);
+  color: #ff5555;
+  padding: 0.85rem 1.25rem;
+  border-radius: 12px;
+  font-size: 0.88rem;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+
+.creator-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.creator-form-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+.creator-form-row.col-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.creator-form-row.col-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.creator-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.creator-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.creator-input,
+.creator-textarea {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #fff;
+  border-radius: 12px;
+  padding: 0.8rem 1rem;
+  font-size: 0.92rem;
+  transition: all 0.3s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.creator-input:focus,
+.creator-textarea:focus {
+  outline: none;
+  border-color: var(--accent-light);
+  box-shadow: 0 0 10px rgba(187, 134, 252, 0.25);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.creator-textarea {
+  resize: vertical;
+  line-height: 1.6;
+}
+
+/* Stats label creator details */
+.creator-stats-title {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--accent-light);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-top: 0.5rem;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+  padding-bottom: 0.5rem;
+}
+
+.creator-stat-lbl-input {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 0.3rem;
+  letter-spacing: 0.05em;
+  width: 100%;
+}
+
+.creator-stat-lbl-input:focus {
+  outline: none;
+  color: var(--accent-light);
+}
+
+/* Custom file/photo drag zone setup */
+.creator-upload-zone {
+  border: 2px dashed rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.01);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.creator-upload-zone:hover {
+  border-color: var(--accent-light);
+  background: rgba(187, 134, 252, 0.02);
+}
+
+.upload-zone-text {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #fff;
+  margin-top: 0.5rem;
   margin-bottom: 0.25rem;
 }
 
-.lifestyle-stat-lbl {
-  font-size: 0.7rem;
+.upload-zone-hint {
+  font-size: 0.75rem;
   color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
+.creator-preview-strip {
+  display: flex;
+  gap: 0.85rem;
+  overflow-x: auto;
+  padding: 1rem 0 0.5rem;
+}
+
+.creator-preview-item {
+  width: 76px;
+  height: 76px;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+}
+
+.creator-preview-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.creator-preview-remove {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.creator-preview-remove:hover {
+  background: #ff5555;
+}
+
+.creator-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: 2rem;
+}
+
+.creator-btn {
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 0.75rem 1.75rem;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  border: none;
+}
+
+.creator-btn.cancel {
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.creator-btn.cancel:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.creator-btn.submit {
+  background: linear-gradient(135deg, var(--accent-light) 0%, #03dac6 100%);
+  color: #000;
+  box-shadow: 0 4px 18px rgba(187, 134, 252, 0.3);
+}
+
+.creator-btn.submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 22px rgba(3, 218, 198, 0.45);
+}
+
+.creator-btn.submit:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* SUCCESS TOAST BANNER */
+.creator-success-toast {
+  position: fixed;
+  top: 2.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #03dac6;
+  color: #000;
+  font-weight: 800;
+  font-size: 0.95rem;
+  padding: 0.9rem 2.25rem;
+  border-radius: 30px;
+  box-shadow: 0 10px 30px rgba(3, 218, 198, 0.4);
+  z-index: 30000;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  animation: slideDown 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Media Query Responsiveness overrides */
+@media (max-width: 900px) {
+  .scrapbook-split-container {
+    grid-template-columns: 1fr;
   }
-  to {
-    opacity: 1;
+  
+  .scrapbook-modal {
+    height: 95vh;
+    max-height: 95vh;
+    border-radius: 20px;
+  }
+  
+  .scrapbook-photo-board {
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 2rem;
+  }
+  
+  .scrapbook-polaroid-frame {
+    padding: 0.85rem;
+  }
+  
+  .scrapbook-diary-page {
+    padding: 2.25rem 2rem;
+  }
+  
+  .travel-stats-banner {
+    grid-template-columns: 1fr;
+    gap: 1rem;
   }
 }
 
-@keyframes slideUp {
-  from {
-    transform: translateY(20px);
-    opacity: 0;
+@media (max-width: 600px) {
+  .lifestyle-scrapbook-main {
+    padding: 3rem 1rem;
   }
-  to {
-    transform: translateY(0);
-    opacity: 1;
+  
+  .lifestyle-hero-title {
+    font-size: 2.35rem;
+  }
+  
+  .creator-form-row.col-2,
+  .creator-form-row.col-3 {
+    grid-template-columns: 1fr;
+  }
+  
+  .creator-modal {
+    padding: 1.5rem;
   }
 }
+
+/* Light Theme Elegant Overrides */
+[data-theme="light"] .lifestyle-scrapbook-main {
+  background: radial-gradient(circle at 10% 20%, rgba(98, 0, 238, 0.02), transparent 45%),
+              radial-gradient(circle at 90% 80%, rgba(1, 135, 134, 0.02), transparent 45%),
+              #ffffff;
+}
+
+[data-theme="light"] .lifestyle-scrapbook-main::before,
+[data-theme="light"] .lifestyle-scrapbook-main::after {
+  opacity: 0.07;
+}
+
+[data-theme="light"] .lifestyle-back-btn {
+  background: rgba(0, 0, 0, 0.02);
+  border-color: rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="light"] .lifestyle-back-btn:hover {
+  background: rgba(0, 0, 0, 0.04);
+  border-color: rgba(0, 0, 0, 0.15);
+  color: #000;
+}
+
+[data-theme="light"] .lifestyle-theme-btn,
+[data-theme="light"] .lifestyle-lang-box {
+  background: rgba(0, 0, 0, 0.02);
+  border-color: rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="light"] .lifestyle-theme-btn:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="light"] .travel-stat-card {
+  background: rgba(255, 255, 255, 0.7);
+  border-color: rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+}
+
+[data-theme="light"] .travel-stat-card:hover {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(98, 0, 238, 0.2);
+  box-shadow: 0 10px 25px rgba(98, 0, 238, 0.05);
+}
+
+[data-theme="light"] .travel-stat-icon {
+  background: linear-gradient(135deg, rgba(98, 0, 238, 0.06) 0%, rgba(1, 135, 134, 0.06) 100%);
+  border-color: rgba(0, 0, 0, 0.04);
+  color: var(--accent-light);
+}
+
+[data-theme="light"] .travel-stat-val {
+  background: linear-gradient(to right, #000, var(--accent-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+[data-theme="light"] .scrapbook-polaroid-card {
+  background: rgba(255, 255, 255, 0.75);
+  border-color: rgba(0, 0, 0, 0.05);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="light"] .scrapbook-polaroid-card.has-stack::before {
+  background: rgba(255, 255, 255, 0.55);
+  border-color: rgba(0, 0, 0, 0.03);
+}
+
+[data-theme="light"] .polaroid-wrapper:hover .scrapbook-polaroid-card {
+  background: #ffffff;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08), 0 0 25px rgba(98, 0, 238, 0.05);
+  border-color: rgba(98, 0, 238, 0.15);
+}
+
+[data-theme="light"] .scrapbook-polaroid-card::after {
+  background: linear-gradient(135deg, rgba(98, 0, 238, 0.2) 0%, rgba(1, 135, 134, 0.2) 100%);
+}
+
+[data-theme="light"] .polaroid-title {
+  color: #111;
+}
+
+[data-theme="light"] .polaroid-location-tag {
+  background: rgba(255, 255, 255, 0.85);
+  color: #111;
+  border-color: rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="light"] .scrapbook-modal {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.08);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15), 0 0 50px rgba(98, 0, 238, 0.03);
+}
+
+[data-theme="light"] .scrapbook-photo-board {
+  background: #f8f9fa;
+  border-right-color: rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="light"] .scrapbook-polaroid-frame {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.05);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="light"] .scrapbook-diary-page {
+  background: #ffffff;
+}
+
+[data-theme="light"] .scrapbook-diary-title {
+  color: #111;
+}
+
+[data-theme="light"] .scrapbook-diary-divider {
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.05), transparent);
+}
+
+[data-theme="light"] .scrapbook-diary-stat-box {
+  background: rgba(0, 0, 0, 0.01);
+  border-color: rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="light"] .creator-modal {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .creator-title {
+  color: #111;
+}
+
+[data-theme="light"] .creator-input,
+[data-theme="light"] .creator-textarea {
+  background: rgba(0, 0, 0, 0.015);
+  border-color: rgba(0, 0, 0, 0.08);
+  color: #111;
+}
+
+[data-theme="light"] .creator-input:focus,
+[data-theme="light"] .creator-textarea:focus {
+  background: #fff;
+}
+
+[data-theme="light"] .creator-btn.cancel {
+  background: rgba(0, 0, 0, 0.02);
+  border-color: rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="light"] .creator-btn.cancel:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: #000;
+}
+
+[data-theme="light"] .upload-zone-text {
+  color: #333;
+}
+
+/* Active photo slideshow controls positioning */
+.scrapbook-active-image-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.scrapbook-arrow-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(10, 10, 15, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 1rem;
+  font-weight: bold;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 10;
+}
+
+.scrapbook-arrow-btn:hover {
+  background: var(--accent-light);
+  color: #000;
+  border-color: transparent;
+  transform: translateY(-50%) scale(1.08);
+}
+
+.scrapbook-arrow-btn.prev { left: 10px; }
+.scrapbook-arrow-btn.next { right: 10px; }
+
+/* Slideshow navigation on lightbox */
+.lightbox-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 2rem;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 20005;
+}
+
+.lightbox-arrow:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-50%) scale(1.08);
+}
+
+.lightbox-arrow.prev { left: 2rem; }
+.lightbox-arrow.next { right: 2rem; }
+
+@media (max-width: 768px) {
+  .lightbox-arrow {
+    width: 44px;
+    height: 44px;
+    font-size: 1.4rem;
+  }
+  .lightbox-arrow.prev { left: 0.5rem; }
+  .lightbox-arrow.next { right: 0.5rem; }
+}
+
+/* ===== End of Travel Memories Scrapbook ===== */
+
 
 /* ===== GitHub Heatmap Board ===== */
 .github-heatmap-section {
