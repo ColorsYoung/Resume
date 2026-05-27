@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { useLocale } from 'next-intl';
 import PasswordPromptModal from './PasswordPromptModal';
@@ -29,6 +29,14 @@ export const Hero: React.FC<HeroProps> = ({
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Fetch current avatar URL (supports Vercel Blob on production)
+  useEffect(() => {
+    fetch('/api/avatar/url')
+      .then(res => res.json())
+      .then(data => { if (data.url) setAvatarUrl(data.url); })
+      .catch(() => {});
+  }, []);
+
   const handleAuthSuccess = () => {
     setShowPwdPrompt(false);
     fileInputRef.current?.click();
@@ -49,9 +57,11 @@ export const Hero: React.FC<HeroProps> = ({
       });
 
       if (res.ok) {
-        setAvatarUrl(`/ProfileNoom.jpeg?ts=${Date.now()}`);
+        const data = await res.json().catch(() => ({}));
+        setAvatarUrl(data.url || `/ProfileNoom.jpeg?ts=${Date.now()}`);
       } else {
-        alert('Failed to upload avatar');
+        const errData = await res.json().catch(() => ({}));
+        alert(`Failed to upload avatar: ${errData.error || res.statusText}`);
       }
     } catch (err) {
       console.error(err);
