@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs/promises';
 import path from 'path';
+import sharp from 'sharp';
 
 export async function POST(request: NextRequest) {
   try {
@@ -52,7 +53,7 @@ export async function POST(request: NextRequest) {
     let existingFiles: string[] = [];
     try {
       existingFiles = await fs.readdir(targetDir);
-      existingFiles = existingFiles.filter(f => /\.(png|jpg|jpeg|gif|svg)$/i.test(f));
+      existingFiles = existingFiles.filter(f => /\.(png|jpg|jpeg|gif|svg|webp|avif)$/i.test(f));
     } catch (e) {
       console.error('Failed to read target directory', e);
     }
@@ -72,11 +73,26 @@ export async function POST(request: NextRequest) {
     let newImageCounter = maxCounter + 1;
     for (const image of newImages) {
       if (image && image.size > 0) {
-        const buffer = Buffer.from(await image.arrayBuffer());
+        let buffer = Buffer.from(await image.arrayBuffer());
         let ext = '.png';
         if (image.name) {
-          const matched = image.name.match(/\.(png|jpg|jpeg|gif|svg)$/i);
+          const matched = image.name.match(/\.(png|jpg|jpeg|gif|svg|webp|heic|heif|avif)$/i);
           if (matched) ext = matched[0].toLowerCase();
+        }
+        // Fallback: detect from MIME type
+        if (ext === '.png' && image.type) {
+          const mimeMap: Record<string, string> = {
+            'image/heic': '.heic', 'image/heif': '.heif',
+            'image/webp': '.webp', 'image/avif': '.avif',
+            'image/jpeg': '.jpg', 'image/png': '.png',
+            'image/gif': '.gif', 'image/svg+xml': '.svg',
+          };
+          ext = mimeMap[image.type.toLowerCase()] || ext;
+        }
+        // Convert HEIC/HEIF to WebP for browser compatibility
+        if (ext === '.heic' || ext === '.heif') {
+          buffer = await sharp(buffer).webp({ quality: 85 }).toBuffer() as Buffer<ArrayBuffer>;
+          ext = '.webp';
         }
         const fileName = `${newImageCounter}${ext}`;
         await fs.writeFile(path.join(targetDir, fileName), buffer);
@@ -87,7 +103,7 @@ export async function POST(request: NextRequest) {
     // 4. Sequentialize image names cleanly so there are no holes (e.g. if we deleted "2.png" but have "1.png" and "3.png")
     try {
       let finalFiles = await fs.readdir(targetDir);
-      finalFiles = finalFiles.filter(f => /\.(png|jpg|jpeg|gif|svg)$/i.test(f));
+      finalFiles = finalFiles.filter(f => /\.(png|jpg|jpeg|gif|svg|webp|avif)$/i.test(f));
 
       // Sort files numerically by name first, falling back to alphabetical
       finalFiles.sort((a, b) => {

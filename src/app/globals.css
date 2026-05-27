@@ -1673,13 +1673,18 @@ footer {
 }
 
 .preloader-logo {
-  font-size: 2.75rem;
+  font-size: clamp(1.5rem, 6vw, 2.75rem);
   font-weight: 800;
   color: var(--accent-light);
-  letter-spacing: 0.15em;
+  letter-spacing: clamp(0.05em, 1.5vw, 0.15em);
   text-shadow: 0 0 15px rgba(187, 134, 252, 0.4);
   margin-bottom: 1.5rem;
   animation: preloaderPulse 1.8s ease-in-out infinite;
+  padding: 0 1rem;
+  text-align: center;
+  word-break: keep-all;
+  white-space: nowrap;
+  max-width: 100%;
 }
 
 [data-theme="light"] .preloader-logo {

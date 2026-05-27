@@ -61,7 +61,7 @@ export function getLifestyleItems(): LifestyleItem[] {
     let images: string[] = [];
     if (fs.existsSync(imagesDir)) {
       images = fs.readdirSync(imagesDir)
-        .filter(f => /\.(png|jpg|jpeg|gif|svg)$/.test(f))
+        .filter(f => /\.(png|jpg|jpeg|gif|svg|webp|avif)$/i.test(f))
         .map(f => `/lifestyle/${slug}/${f}`);
     } else if (finalEnParsed.data.image) {
       images = [finalEnParsed.data.image];

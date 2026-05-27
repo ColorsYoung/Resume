@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs/promises';
 import path from 'path';
+import sharp from 'sharp';
 
 export async function POST(request: NextRequest) {
   try {
@@ -34,12 +35,27 @@ export async function POST(request: NextRequest) {
     let imageCounter = 1;
     for (const image of images) {
       if (image && image.size > 0) {
-        const buffer = Buffer.from(await image.arrayBuffer());
-        // Determine file extension, default to .png
+        let buffer = Buffer.from(await image.arrayBuffer());
+        // Determine file extension from filename or MIME type
         let ext = '.png';
         if (image.name) {
-          const matched = image.name.match(/\.(png|jpg|jpeg|gif|svg)$/i);
+          const matched = image.name.match(/\.(png|jpg|jpeg|gif|svg|webp|heic|heif|avif)$/i);
           if (matched) ext = matched[0].toLowerCase();
+        }
+        // Fallback: detect from MIME type
+        if (ext === '.png' && image.type) {
+          const mimeMap: Record<string, string> = {
+            'image/heic': '.heic', 'image/heif': '.heif',
+            'image/webp': '.webp', 'image/avif': '.avif',
+            'image/jpeg': '.jpg', 'image/png': '.png',
+            'image/gif': '.gif', 'image/svg+xml': '.svg',
+          };
+          ext = mimeMap[image.type.toLowerCase()] || ext;
+        }
+        // Convert HEIC/HEIF to WebP for browser compatibility
+        if (ext === '.heic' || ext === '.heif') {
+          buffer = await sharp(buffer).webp({ quality: 85 }).toBuffer() as Buffer<ArrayBuffer>;
+          ext = '.webp';
         }
         const fileName = `${imageCounter}${ext}`;
         await fs.writeFile(path.join(targetDir, fileName), buffer);
