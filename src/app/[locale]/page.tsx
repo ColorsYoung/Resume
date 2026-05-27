@@ -89,8 +89,7 @@ export default function Home() {
   const [theme, setTheme] = useState<Theme>('dark');
   const [filter, setFilter] = useState<string>('All');
   const [activeSection, setActiveSection] = useState<string>('about');
-  const [cursorPos, setCursorPos] = useState({ x: -100, y: -100 });
-  const [cursorVisible, setCursorVisible] = useState(false);
+
   const [scrollProgress, setScrollProgress] = useState(0);
   const [toast, setToast] = useState<{ show: boolean; message: string }>({ show: false, message: '' });
 
@@ -215,17 +214,7 @@ export default function Home() {
     return () => observers.forEach(o => o.disconnect());
   }, []);
 
-  // Cursor Follower
-  useEffect(() => {
-    const move = (e: MouseEvent) => {
-      setCursorPos({ x: e.clientX, y: e.clientY });
-      setCursorVisible(true);
-    };
-    const hide = () => setCursorVisible(false);
-    window.addEventListener('mousemove', move);
-    window.addEventListener('mouseleave', hide);
-    return () => { window.removeEventListener('mousemove', move); window.removeEventListener('mouseleave', hide); };
-  }, []);
+
 
   // Timeline Active Highlight
   useEffect(() => {
@@ -830,15 +819,7 @@ export default function Home() {
         }}
       />
 
-      {/* Custom Cursor Follower */}
-      <div
-        className="cursor-follower"
-        style={{
-          left: cursorPos.x,
-          top: cursorPos.y,
-          opacity: cursorVisible ? 1 : 0,
-        }}
-      />
+
 
       {/* Full-page Galaxy Background */}
       <div
