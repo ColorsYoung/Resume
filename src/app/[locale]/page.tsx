@@ -499,20 +499,26 @@ export default function Home() {
   const getExperiences = (l: Language) => [
     {
       id: 1,
-      role: l === 'en' ? 'Software Engineer' : 'นักพัฒนาซอฟต์แวร์',
+      role: l === 'en' ? 'Software Engineer (Full-Stack)' : 'นักพัฒนาซอฟต์แวร์ (Full-Stack)',
       company: 'Thinkbit Co., Ltd.',
       period: l === 'en' ? '2024 - Present' : '2567 - ปัจจุบัน',
       description: l === 'en'
-        ? 'Developed and maintained enterprise-level applications, encompassing complex backend systems (Node.js, Cloud Architecture), decoupled frontends, and integrated local AI for data processing. Acted as Core/Lead Developer for major products: APIOil, Excise Classic Car, LuckyTabien, and the AI Trading Bot platform.'
-        : 'พัฒนาและดูแลระบบ Enterprise ให้กับลูกค้าระดับองค์กร ครอบคลุมทั้งฝั่ง Frontend และ Backend (Node.js, Cloud Architecture) รวมถึงนำ AI มาประยุกต์ใช้ในระบบ โดยทำหน้าที่เป็นนักพัฒนาหลัก (Lead Developer) ในการออกแบบสร้างแพลตฟอร์มสำคัญ ได้แก่ APIOil, Excise Classic Car, LuckyTabien และระบบบอทเทรดคริปโต AI',
-      techStack: ['Node.js', 'TypeScript', 'React 18', 'AWS', 'Azure', 'Prisma', 'MSSQL', 'Docker', 'Socket.IO', 'Ollama'],
+        ? 'Developed and maintained enterprise-level applications, encompassing complex backend systems (Node.js, Cloud Architecture), decoupled frontends (React 18, Vite), and integrated local AI for data processing. Acted as Core/Lead Developer for major products: APIOil, Excise Classic Car, LuckyTabien, and the AI Trading Bot platform.'
+        : 'พัฒนาและดูแลระบบ Enterprise ให้กับลูกค้าระดับองค์กร ครอบคลุมทั้งฝั่ง Frontend (React 18, Vite) และ Backend (Node.js, Cloud Architecture) รวมถึงนำ AI มาประยุกต์ใช้ในระบบ โดยทำหน้าที่เป็นนักพัฒนาหลัก (Lead Developer) ในการออกแบบสร้างแพลตฟอร์มสำคัญ ได้แก่ APIOil, Excise Classic Car, LuckyTabien และระบบบอทเทรดคริปโต AI',
+      techStack: ['React 18/19', 'Zustand', 'React Query', 'Node.js', 'TypeScript', 'AWS', 'Azure', 'Prisma', 'MSSQL', 'Docker', 'Socket.IO', 'Ollama'],
       achievements: l === 'en' ? [
         'Designed and built key architectures for high-traffic products: APIOil, Classic Car, LuckyTabien, and AI Trading Bot',
+        'Developed responsive user portals and admin interfaces using React 18/19, Vite, Tailwind CSS, and Material UI',
+        'Optimized client-side performance and state management using Zustand and React Query, minimizing API calls',
+        'Engineered dynamic client-side report generation (Excel/PDF) utilizing ExcelJS, jsPDF, and pdf-lib',
         'Architected and deployed Multi-Cloud API systems across AWS and Azure infrastructure',
         'Integrated Azure AI Document Intelligence (OCR) for automated excise tax forms processing',
         'Built real-time client notification services using Socket.IO server modules',
       ] : [
         'ออกแบบและพัฒนาสถาปัตยกรรมหลักของระบบซอฟต์แวร์หลัก: APIOil, Classic Car, LuckyTabien และบอทเทรดคริปโต AI',
+        'พัฒนาระบบหน้าบ้าน (User Portal) และหลังบ้าน (Admin Portal) แบบ Responsive ด้วย React 18/19, Vite, Tailwind CSS และ MUI',
+        'เพิ่มประสิทธิภาพการทำงานของระบบฝั่งหน้าบ้านด้วย Zustand และ React Query สำหรับการจัดการ State และ Caching',
+        'พัฒนาระบบสร้างและส่งออกรายงาน Excel/PDF ในฝั่ง Client-side ด้วย ExcelJS, jsPDF และ pdf-lib',
         'ออกแบบและติดตั้ง (Deploy) ระบบ API แบบ Multi-Cloud บนโครงสร้างพื้นฐาน AWS และ Azure',
         'เชื่อมต่อระบบวิเคราะห์เอกสารอัจฉริยะ Azure AI Document Intelligence สำหรับประมวลผลฟอร์มภาษีสรรพสามิตอัตโนมัติ (OCR)',
         'พัฒนาโมดูลระบบแจ้งเตือน Real-time บนระบบด้วย Socket.IO',
